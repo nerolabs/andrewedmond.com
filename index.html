@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andrew Edmond — Technical diligence for the AI era</title>
+<meta name="description" content="Independent buy-side technical due diligence for AI-era software: architecture, engineering practice, key-person risk, and the AI provenance of the codebase — delivered as a plain-English risk register for the investment committee.">
+<meta name="theme-color" content="#F8F8F6">
+<link rel="canonical" href="https://andrewedmond.com/">
+
+<!-- Open Graph / this link gets pasted into emails and Slack -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://andrewedmond.com/">
+<meta property="og:title" content="Andrew Edmond — Technical diligence for the AI era">
+<meta property="og:description" content="Independent buy-side technical due diligence for AI-era software — delivered as a plain-English risk register for the investment committee.">
+<!-- TODO: create og.png (1200×630) before launch; scrapers won't render SVG. -->
+<meta property="og:image" content="https://andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Plausible (no cookie banner) goes here at launch:
+     <script defer data-domain="andrewedmond.com" src="https://plausible.io/js/script.js"></script> -->
+
+<style>
+  :root{
+    /* Palette — cool laser-printed paper, ink, one pen, three signal pips */
+    --paper:   #F8F8F6;
+    --paper-2: #F1F1EE;   /* recessed panels */
+    --ink:     #1A1D1F;
+    --ink-2:   #4A4E50;   /* secondary text */
+    --label:   #83887F;   /* mono labels / marginalia */
+    --rule:    #D8D9D4;   /* hairlines */
+    --pen:     #1B3A5B;   /* the one accent: links + assessor's marks */
+    --pen-2:   #2C5A87;
+    /* R/A/G — deliberately desaturated; used ONLY as register status */
+    --ok:   #3E7D5A;
+    --warn: #B8862F;
+    --risk: #A23B2D;
+
+    --rail: 8.5rem;
+    --gutter: 2.25rem;
+    --measure: 60ch;
+    --sheet: 63rem;
+
+    --font-display: "Helvetica Neue", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    --font-body: "Helvetica Neue", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:1.0625rem;
+    line-height:1.6;
+    letter-spacing:.005em;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ---- Links: the pen underline ---- */
+  a{ color:var(--pen); text-decoration:none; }
+  .link{
+    color:var(--pen);
+    border-bottom:1px solid rgba(27,58,91,.32);
+    padding-bottom:1px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .link:hover{ color:var(--pen-2); border-bottom-color:var(--pen-2); }
+
+  :focus-visible{ outline:2px solid var(--pen); outline-offset:3px; border-radius:1px; }
+
+  .skip{
+    position:absolute; left:-999px; top:0;
+    background:var(--ink); color:var(--paper);
+    padding:.6rem 1rem; z-index:10; font:600 .9rem/1 var(--font-body);
+  }
+  .skip:focus{ left:.75rem; top:.75rem; }
+
+  /* ---- Sheet + document rows ---- */
+  .sheet{ max-width:var(--sheet); margin:0 auto; padding:0 1.5rem; }
+
+  .row{
+    display:grid;
+    grid-template-columns:var(--rail) minmax(0,1fr);
+    gap:var(--gutter);
+    padding:3.25rem 0;
+    border-top:1px solid var(--rule);
+  }
+  .body{ max-width:var(--measure); }
+
+  /* ---- The margin rail: running assessor's marks ---- */
+  .rail{ font-family:var(--font-mono); }
+  .rail .ref{
+    display:block;
+    color:var(--pen);
+    font-size:.72rem; letter-spacing:.06em;
+  }
+  .rail .sec{
+    display:block;
+    margin-top:.35rem;
+    color:var(--label);
+    font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
+  }
+
+  /* ---- Masthead ---- */
+  .masthead{
+    display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+    gap:1rem 2rem;
+    padding:2.5rem 0 1.5rem;
+    border-bottom:2px solid var(--ink);
+  }
+  .name{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.35rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin:0;
+  }
+  .kicker{
+    font-family:var(--font-mono);
+    font-size:.72rem; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--label);
+    margin:.5rem 0 0;
+  }
+  .masthead .meta{
+    font-family:var(--font-mono);
+    font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--label);
+    text-align:right;
+  }
+
+  /* ---- Hero / Summary ---- */
+  .claim{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(2.35rem, 6vw, 3.9rem);
+    line-height:1.03;
+    letter-spacing:-.02em;
+    margin:.2rem 0 1.4rem;
+    text-wrap:balance;
+  }
+  .proof{
+    font-size:clamp(1.1rem,2.3vw,1.35rem);
+    line-height:1.5;
+    color:var(--ink);
+    max-width:44ch;
+    margin:0 0 2rem;
+  }
+  .proof b{ font-weight:600; }
+  .actions{
+    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.5rem;
+    font-family:var(--font-mono);
+    font-size:.9rem;
+  }
+  .actions .sep{ color:var(--rule); }
+
+  /* ---- Section headings ---- */
+  .h{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(1.4rem,3vw,1.85rem);
+    letter-spacing:-.01em;
+    line-height:1.12;
+    margin:0 0 1.4rem;
+  }
+  .lead{ color:var(--ink-2); margin:0 0 1.8rem; max-width:52ch; }
+
+  /* ---- Services ---- */
+  .svc{ margin:0 0 1.9rem; }
+  .svc:last-child{ margin-bottom:0; }
+  .svc h3{
+    font-family:var(--font-display);
+    font-weight:700; font-size:1.12rem; letter-spacing:-.005em;
+    margin:0 0 .35rem;
+  }
+  .svc p{ margin:0; color:var(--ink-2); }
+  .streams{
+    list-style:none; margin:.7rem 0 0; padding:0;
+    display:flex; flex-wrap:wrap; gap:.4rem .5rem;
+  }
+  .streams li{
+    font-family:var(--font-mono);
+    font-size:.76rem; letter-spacing:.02em;
+    color:var(--ink-2);
+    background:var(--paper-2);
+    border:1px solid var(--rule);
+    padding:.28rem .55rem;
+  }
+
+  /* ---- The Framework: the signature block ---- */
+  .fw-eyebrow{
+    font-family:var(--font-mono);
+    font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--pen); margin:0 0 .7rem;
+  }
+  .register{
+    border:1px solid var(--ink);
+    background:#fff;
+    margin:.4rem 0 1.5rem;
+  }
+  .register .crit{
+    display:grid;
+    grid-template-columns:2.6rem 1fr 1.6rem;
+    align-items:center;
+    gap:1rem;
+    padding:.85rem 1.1rem;
+    border-top:1px solid var(--rule);
+  }
+  .register .crit:first-child{ border-top:0; }
+  .register .num{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--label);
+    letter-spacing:.04em;
+  }
+  .register .crit-label{ font-weight:600; font-size:1rem; }
+  .register .crit-note{
+    display:block; font-weight:400; font-size:.86rem; color:var(--ink-2);
+    margin-top:.1rem;
+  }
+  .pip{
+    justify-self:end;
+    width:.7rem; height:.7rem; border-radius:50%;
+    background:var(--label);
+    display:inline-block;
+  }
+  .pip--ok{ background:var(--ok); }
+  .pip--warn{ background:var(--warn); }
+  .pip--risk{ background:var(--risk); }
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:1.2rem;
+    font-family:var(--font-mono); font-size:.74rem; color:var(--ink-2);
+    letter-spacing:.02em;
+    padding:.5rem 0 0;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:.5rem; }
+  .legend .pip{ position:relative; top:0; }
+
+  .placeholder{
+    border:1px dashed var(--label);
+    background:var(--paper-2);
+    padding:1.1rem 1.2rem;
+    margin-top:1.6rem;
+    font-family:var(--font-mono);
+    font-size:.82rem; line-height:1.6; color:var(--ink-2);
+  }
+  .placeholder b{ color:var(--ink); text-transform:uppercase; letter-spacing:.1em; font-size:.72rem; }
+
+  /* ---- Evidence + Background ---- */
+  .exhibit{ margin:0 0 1.6rem; }
+  .exhibit:last-child{ margin-bottom:0; }
+  .exhibit h3{
+    font-family:var(--font-display); font-weight:700; font-size:1.08rem;
+    margin:0 0 .3rem;
+  }
+  .exhibit p{ margin:0; color:var(--ink-2); }
+
+  .bg{ color:var(--ink-2); }
+  .bg b{ color:var(--ink); font-weight:600; }
+
+  /* ---- Contact ---- */
+  .contact-lines{
+    display:flex; flex-direction:column; gap:.9rem;
+    font-size:1.15rem;
+  }
+  .contact-lines .mono{ font-family:var(--font-mono); font-size:1rem; }
+  .quiet{
+    margin-top:1.8rem;
+    font-size:.92rem; color:var(--label);
+    max-width:48ch;
+  }
+  .quiet a{ color:var(--ink-2); border-bottom:1px solid var(--rule); }
+  .quiet a:hover{ color:var(--pen); border-bottom-color:var(--pen); }
+
+  /* ---- Footer ---- */
+  footer{
+    padding:2.5rem 0 3.5rem;
+    border-top:1px solid var(--rule);
+    font-family:var(--font-mono);
+    font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--label);
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:.6rem;
+  }
+
+  /* ---- Ink-in motion for the register pips ---- */
+  @media (prefers-reduced-motion: no-preference){
+    .register .pip, .legend .pip{ opacity:0; animation:ink .5s ease forwards; }
+    .register .crit:nth-child(1) .pip{ animation-delay:.15s; }
+    .register .crit:nth-child(2) .pip{ animation-delay:.27s; }
+    .register .crit:nth-child(3) .pip{ animation-delay:.39s; }
+    .register .crit:nth-child(4) .pip{ animation-delay:.51s; }
+    .register .crit:nth-child(5) .pip{ animation-delay:.63s; }
+    @keyframes ink{
+      from{ opacity:0; transform:scale(.35); }
+      to{ opacity:1; transform:scale(1); }
+    }
+  }
+
+  /* ---- Mobile: rail folds into an inline eyebrow ---- */
+  @media (max-width: 800px){
+    .row{ grid-template-columns:1fr; gap:1rem; padding:2.5rem 0; }
+    .rail{ display:flex; align-items:baseline; gap:.75rem; }
+    .rail .ref{ display:inline; }
+    .rail .sec{ display:inline; margin-top:0; }
+    .masthead .meta{ text-align:left; }
+    .register .crit{ grid-template-columns:2.2rem 1fr 1.4rem; gap:.7rem; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#summary">Skip to content</a>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div>
+      <h1 class="name">Andrew Edmond</h1>
+      <p class="kicker">Independent buy-side technical due diligence</p>
+    </div>
+    <p class="meta">Southern Spain · Remote<br>On your deal timeline</p>
+  </header>
+
+  <!-- §1 SUMMARY -->
+  <section class="row" id="summary">
+    <div class="rail"><span class="ref">§1</span><span class="sec">Summary</span></div>
+    <div class="body">
+      <h2 class="claim">Technical diligence for the AI era.</h2>
+      <p class="proof">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — five AI-capability acquisitions at Amazon, and production software shipped solo this year.</p>
+      <div class="actions">
+        <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
+        <span class="sep">·</span>
+        <!-- TODO: replace # with the real scheduling link -->
+        <a class="link" href="#contact">Book a call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- §2 SCOPE -->
+  <section class="row" id="scope">
+    <div class="rail"><span class="ref">§2</span><span class="sec">Scope</span></div>
+    <div class="body">
+      <h2 class="h">What I do</h2>
+      <div class="svc">
+        <h3>Buy-side diligence</h3>
+        <p>Typically two to four weeks, run on your deal timeline. One assessor, close to the code.</p>
+        <ul class="streams">
+          <li>Architecture</li>
+          <li>SDLC &amp; engineering practice</li>
+          <li>Security posture</li>
+          <li>Org capability &amp; key-person risk</li>
+          <li>AI provenance &amp; maintainability</li>
+          <li>Risk register for the IC</li>
+        </ul>
+      </div>
+      <div class="svc">
+        <h3>Sell-side readiness</h3>
+        <p>The same assessment, run before a process starts — so the findings are yours to fix, not the buyer's to discount.</p>
+      </div>
+      <div class="svc">
+        <h3>Post-close assessment</h3>
+        <p>For portfolio companies, after the deal — where the engineering risk actually gets managed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §3 METHOD — the framework (signature) -->
+  <section class="row" id="framework">
+    <div class="rail"><span class="ref">§3</span><span class="sec">Method</span></div>
+    <div class="body">
+      <p class="fw-eyebrow">The Framework</p>
+      <h2 class="h">Assessing a codebase the AI wrote.</h2>
+      <p class="lead">A public rubric for AI-assisted codebases. Each criterion becomes a rated finding in the register you hand your investment committee.</p>
+
+      <div class="register" role="table" aria-label="Framework criteria and register grammar">
+        <div class="crit" role="row">
+          <span class="num" role="cell">01</span>
+          <span class="crit-label" role="cell">Test coverage relative to generated volume<span class="crit-note">Is the safety net keeping pace with how fast code was produced?</span></span>
+          <span class="pip pip--ok" role="cell" aria-label="rated: pass"></span>
+        </div>
+        <div class="crit" role="row">
+          <span class="num" role="cell">02</span>
+          <span class="crit-label" role="cell">Architectural coherence<span class="crit-note">One considered design, or many local answers stitched together?</span></span>
+          <span class="pip pip--warn" role="cell" aria-label="rated: caution"></span>
+        </div>
+        <div class="crit" role="row">
+          <span class="num" role="cell">03</span>
+          <span class="crit-label" role="cell">Dependency sprawl<span class="crit-note">What was pulled in, and who understands it now?</span></span>
+          <span class="pip pip--ok" role="cell" aria-label="rated: pass"></span>
+        </div>
+        <div class="crit" role="row">
+          <span class="num" role="cell">04</span>
+          <span class="crit-label" role="cell">Commit &amp; review patterns<span class="crit-note">Does the history show engineering judgment, or accepted output?</span></span>
+          <span class="pip pip--warn" role="cell" aria-label="rated: caution"></span>
+        </div>
+        <div class="crit" role="row">
+          <span class="num" role="cell">05</span>
+          <span class="crit-label" role="cell">Can the team maintain what the tooling produced?<span class="crit-note">The question the whole assessment resolves to.</span></span>
+          <span class="pip pip--risk" role="cell" aria-label="rated: risk"></span>
+        </div>
+      </div>
+
+      <div class="legend" aria-hidden="true">
+        <span><i class="pip pip--ok"></i> Pass</span>
+        <span><i class="pip pip--warn"></i> Caution</span>
+        <span><i class="pip pip--risk"></i> Risk</span>
+        <span style="color:var(--label)">— how each finding is rated in the register</span>
+      </div>
+
+      <div class="placeholder">
+        <b>Framework — draft in place</b><br>
+        Andrew to write the assessment guidance under each criterion. The five rows above are the brief's own enumerated signals; the prose that turns each into a rating is yours to write. The ratings shown are illustrative of the register grammar, not a live assessment.
+      </div>
+    </div>
+  </section>
+
+  <!-- §4 EVIDENCE -->
+  <section class="row" id="evidence">
+    <div class="rail"><span class="ref">§4</span><span class="sec">Evidence</span></div>
+    <div class="body">
+      <h2 class="h">Current hands-on practice</h2>
+      <div class="exhibit">
+        <h3>Get Camino</h3>
+        <p>A Spain relocation planner — <a class="link" href="https://getcamino.app">getcamino.app</a>. Empty repo to live product in under a week: ~13,700 lines of TypeScript, five languages, iOS shipped. The <a class="link" href="https://getcamino.app/how-i-was-built">build log</a> documents how it was engineered.</p>
+      </div>
+      <div class="exhibit">
+        <h3>SiltHQ</h3>
+        <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>.</p>
+      </div>
+      <p class="quiet">Source available for the projects above on request, or on <a href="https://github.com/">GitHub</a> — engineered to the standard the framework describes.</p>
+    </div>
+  </section>
+
+  <!-- §5 BACKGROUND -->
+  <section class="row" id="background">
+    <div class="rail"><span class="ref">§5</span><span class="sec">Background</span></div>
+    <div class="body">
+      <h2 class="h">Background</h2>
+      <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. <b>Principal, M&amp;A Technology and Engineering Integration at Amazon</b>, leading five strategic AI-capability acquisitions for AWS, buy-side. CTO at Woot.com. Engineering leadership at Twitch. AI-first SaaS transformation at Valdera. Computer Engineering, USC. Based in southern Spain; work is remote — deal timelines are the constraint, not geography.</p>
+    </div>
+  </section>
+
+  <!-- §6 CONTACT -->
+  <section class="row" id="contact">
+    <div class="rail"><span class="ref">§6</span><span class="sec">Contact</span></div>
+    <div class="body">
+      <h2 class="h">Reach a person</h2>
+      <div class="contact-lines">
+        <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
+        <!-- TODO: replace # with the real scheduling link -->
+        <a class="link mono" href="#">Book a call →</a>
+      </div>
+      <p class="quiet">Selective <a href="mailto:andrew@andrewedmond.com?subject=Advisory%20enquiry">advisory</a> and <a href="mailto:andrew@andrewedmond.com?subject=Fractional%20enquiry">fractional</a> engagements are taken by referral.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Andrew Edmond</span>
+    <span>Buy-side technical diligence</span>
+    <span>Southern Spain · Remote</span>
+  </footer>
+
+</div>
+</body>
+</html>
