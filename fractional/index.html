@@ -41,8 +41,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     --gold:    #C2A15A;   /* the one accent */
     --gold-2:  #D8BC7E;   /* hover */
 
-    --measure: 60ch;
-    --sheet: 58rem;
+    --measure: 68ch;
+    --sheet: 72rem;
 
     --serif: "Fraunces", "Hoefler Text", "Georgia", "Times New Roman", serif;
     --sans:  "Mulish", "Avenir Next", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
@@ -114,6 +114,24 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     margin:0 0 1.5rem;
   }
 
+  /* Reading sections: label sits in a left rail, content flows in the main column,
+     so the page uses its full width instead of clumping flush-left. */
+  #own, #fit, #how, #who, #contact{
+    display:grid;
+    grid-template-columns:12rem minmax(0,1fr);
+    gap:.4rem 3.5rem;
+    align-items:start;
+  }
+  #own > .eyebrow, #fit > .eyebrow,
+  #how > .eyebrow, #who > .eyebrow, #contact > .eyebrow{ margin:0; padding-top:.4rem; }
+  #own > .body, #fit > .body,
+  #how > .body, #who > .body, #contact > .body{ max-width:74ch; }
+  @media (max-width: 820px){
+    #own, #fit, #how, #who, #contact{ grid-template-columns:1fr; gap:.3rem; }
+    #own > .eyebrow, #fit > .eyebrow,
+    #how > .eyebrow, #who > .eyebrow, #contact > .eyebrow{ margin:0 0 1.4rem; padding-top:0; }
+  }
+
   /* ---- Masthead + monogram ---- */
   .masthead{
     display:flex; align-items:center; justify-content:space-between;
@@ -172,6 +190,38 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     font-size:.98rem;
   }
   .actions .sep{ color:var(--hair-2); }
+
+  /* Two-column hero: claim spans; argument + CTA on the left, credentials fill the right */
+  .hero-cols{
+    display:grid;
+    grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+    gap:2rem 4rem;
+    align-items:start;
+    margin-top:2.2rem;
+  }
+  .hero-main .proof{ max-width:54ch; }
+  .hero-side{
+    position:relative;
+    border-top:1px solid var(--hair);
+    padding-top:1.2rem;
+  }
+  .hero-side::before{
+    content:""; position:absolute; top:-1px; left:0;
+    width:2.2rem; height:1px; background:var(--gold);
+  }
+  .side-label{
+    font-family:var(--serif); font-optical-sizing:auto; font-weight:560;
+    font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 1.1rem;
+  }
+  .creds-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.95rem; }
+  .creds-list li{ font-size:.96rem; line-height:1.46; color:var(--bone-3); }
+  .creds-list b{ color:var(--bone); font-weight:600; }
+  .creds-list .dim{ color:var(--bone-3); }
+  .hero-side .actions{ margin-top:1.8rem; }
+  @media (max-width: 820px){
+    .hero-cols{ grid-template-columns:1fr; gap:2rem; margin-top:1.7rem; }
+  }
 
   /* ---- Section headings ---- */
   .h{
@@ -238,8 +288,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   @media (prefers-reduced-motion: no-preference){
     .fade{ opacity:0; transform:translateY(10px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
     .hero .claim{ animation-delay:.05s; }
-    .hero .proof{ animation-delay:.16s; }
-    .hero .actions{ animation-delay:.26s; }
+    .hero .hero-side{ animation-delay:.16s; }
+    .hero .proof{ animation-delay:.22s; }
+    .hero .actions{ animation-delay:.3s; }
     @keyframes rise{ to{ opacity:1; transform:none; } }
   }
 
@@ -270,15 +321,25 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
 
     <!-- HERO -->
     <section class="hero">
-      <p class="eyebrow fade">Fractional CTO</p>
-      <div class="body">
-        <h1 class="claim fade">A CTO in the room — <span class="em">part-time, and on the hook.</span></h1>
-        <p class="proof fade">For founders and CEOs who need senior engineering leadership now — not a nine-month search. I own the technical direction, the team, and the outcomes, at the fraction you actually need.</p>
-        <div class="actions fade">
-          <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
-          <span class="sep">·</span>
-          <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call</a>
+      <p class="eyebrow fade">AI software development lifecycle expert</p>
+      <h1 class="claim fade">A CTO in the room — <span class="em">part-time, and on the hook.</span></h1>
+      <div class="hero-cols">
+        <div class="hero-main">
+          <p class="proof fade">For founders and CEOs who need senior engineering leadership now — not a nine-month search. I own the technical direction, the team, and delivery, at the fraction you actually need.</p>
+          <div class="actions fade">
+            <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
+            <span class="sep">·</span>
+            <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call</a>
+          </div>
         </div>
+        <aside class="hero-side fade">
+          <p class="side-label">Track record</p>
+          <ul class="creds-list">
+            <li>Principal, M&amp;A Technology &amp; Engineering Integration <b>— Amazon</b></li>
+            <li>CTO <b>— Woot.com</b> <span class="dim">(an Amazon company)</span></li>
+            <li>Founding Seattle Site Engineering Leader <b>— Twitch</b></li>
+          </ul>
+        </aside>
       </div>
     </section>
 
@@ -322,7 +383,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <section id="who">
       <p class="eyebrow">Who I am</p>
       <div class="body">
-        <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. <b>CTO at Woot.com</b> (Amazon), engineering leadership at Twitch, and Principal, M&amp;A Technology and Engineering Integration at Amazon, leading five AI-capability acquisitions for AWS. Currently building production software solo with AI tooling — <a class="link" href="https://getcamino.app">Get Camino</a>, empty repo to shipped product in under a week. Computer Engineering, USC. Based in southern Spain; work is remote and conducted in English.</p>
+        <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. Most recently at Amazon, leading five AI-capability acquisitions for AWS; before that, CTO at Woot.com and engineering leadership at Twitch. Thirty years in, I still build production software myself — <a class="link" href="https://getcamino.app">Get Camino</a>, empty repo to shipped product in under a week. Computer Engineering, USC. Based in southern Spain; work is remote, with onsite time as the engagement requires. Engagements are conducted in English.</p>
       </div>
     </section>
 
