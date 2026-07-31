@@ -139,7 +139,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   #scope > .eyebrow, #evidence > .eyebrow,
   #background > .eyebrow, #contact > .eyebrow, .fw-head > .eyebrow{ margin:0; padding-top:.4rem; }
   #scope > .body, #evidence > .body,
-  #background > .body, #contact > .body{ max-width:74ch; }
+  #background > .body, #contact > .body, .fw-head > .body{ max-width:74ch; }
   @media (max-width: 820px){
     #scope, #evidence, #background, #contact, .fw-head{ grid-template-columns:1fr; gap:.3rem; }
     #scope > .eyebrow, #evidence > .eyebrow,
@@ -237,7 +237,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   .creds-list li{ font-size:.96rem; line-height:1.46; color:var(--bone-3); }
   .creds-list b{ color:var(--bone); font-weight:600; }
   .creds-list .dim{ color:var(--bone-3); }
-  .hero-side .actions{ margin-top:1.8rem; }
+  .hero-main .actions{ margin-top:1.8rem; }
   @media (max-width: 820px){
     .hero-cols{ grid-template-columns:1fr; gap:2rem; margin-top:1.7rem; }
   }
@@ -254,6 +254,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   }
   .lead{ color:var(--bone-2); margin:0 0 1.4rem; max-width:56ch; }
   .lead:last-of-type{ margin-bottom:2rem; }
+  /* framework intro fills the section measure so it aligns with the heading
+     and the other reading sections, instead of floating at a narrow width */
+  .fw-head .lead{ max-width:none; }
 
   /* ---- Services ---- */
   .svc{ margin:0 0 2.2rem; }
@@ -494,7 +497,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   .quiet{
     margin-top:2rem;
     font-size:.94rem; color:var(--bone-3);
-    max-width:48ch;
+    text-wrap:pretty;
   }
   .quiet a{ color:var(--bone-2); border-bottom:1px solid var(--hair-2); }
   .quiet a:hover{ color:var(--gold); border-bottom-color:var(--gold); }
@@ -553,9 +556,13 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     section{ padding:3.25rem 0; }
     .masthead .meta{ text-align:left; }
     .creds .cred{ white-space:normal; }
-    /* single column: the meter (bar + level) stacks below the text */
-    .crit__row{ grid-template-columns:1fr; gap:.9rem; }
-    .crit__meter{ grid-template-columns:minmax(0,1fr) 1.2rem; gap:.8rem; }
+    /* single column: meter (bar + LED) sits directly under the title, before the
+       prose — so each dimension still leads with its risk read on a phone */
+    .crit__row{ display:flex; flex-direction:column; gap:.9rem; }
+    .crit__text{ display:contents; }
+    .crit__head{ order:1; }
+    .crit__meter{ order:2; grid-template-columns:minmax(0,1fr) 1.2rem; gap:.8rem; }
+    .crit__prose{ order:3; }
     /* axis: keep only the No./Dimension labels; the scale/level move into rows */
     .axis{ grid-template-columns:2.3rem minmax(0,1fr); gap:.8rem; }
     .axis .axis-left{ display:contents; }
@@ -588,7 +595,12 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <h2 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h2>
     <div class="hero-cols">
       <div class="hero-main">
-        <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — I led the buy-side technical diligence on five AI-capability acquisitions at Amazon, and, thirty years in, I still build production software myself. This year, solo: distributed, encrypted systems at scale, and a shipped consumer AI app.</p>
+        <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I’ve done <b>both</b> — I led the buy-side technical diligence on five AI-capability acquisitions at Amazon, and, decades in, I still build production software myself. This year, solo: distributed, encrypted systems and the hard parts of scaling them — and a shipped consumer AI app.</p>
+        <div class="actions fade">
+          <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
+          <span class="sep">·</span>
+          <a target="_blank" rel="noopener" class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7">Book a call</a>
+        </div>
       </div>
       <aside class="hero-side fade">
         <p class="side-label">Track record</p>
@@ -597,11 +609,6 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
           <li>CTO <b>— Woot.com</b> <span class="dim">(an Amazon company)</span></li>
           <li>Founding Seattle Site Engineering Leader <b>— Twitch</b></li>
         </ul>
-        <div class="actions fade">
-          <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
-          <span class="sep">·</span>
-          <a target="_blank" rel="noopener" class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7">Book a call</a>
-        </div>
       </aside>
     </div>
   </section>
@@ -641,7 +648,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
       <p class="eyebrow">The Framework</p>
       <div class="body">
         <h2 class="h">How I assess a target.</h2>
-        <p class="lead">The job is to know all the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across seven dimensions. Each becomes a detailed, rated finding in a plain-English risk register — written so the whole cross-functional investment committee, not just its engineers, can act on it. Being fluent in AI-built code is one of those dimensions — the part most large firms can't cover — but it sits inside the full-scope assessment, never stands in for it.</p>
+        <p class="lead">The job is to know the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across seven dimensions. Each becomes a detailed, rated finding in a plain-English risk register — written so the whole cross-functional investment committee, not just its engineers, can act on it. Being fluent in AI-built code is one of those dimensions — the part most large firms can’t cover — but it sits inside the full-scope assessment, never stands in for it.</p>
       </div>
     </div>
 
@@ -704,7 +711,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
               <div class="crit__prose">
                 <p>How the team plans, builds, reviews, tests, and ships. Is delivery repeatable and measured, or heroic and dependent on individuals? I look across the whole software development lifecycle: planning and estimation, branching and review discipline, CI/CD, testing strategy, and how predictably work moves from idea to production — including release and incident response.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>process lives in people's heads, releases are risky events, and there's no repeatable path to production.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>process lives in people’s heads, releases are risky events, and there’s no repeatable path to production.</li>
                 </ul>
               </div>
             </div>
@@ -732,7 +739,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                 <span class="lab" role="cell">Organization &amp; key-person risk<span class="sub">Where does the critical knowledge actually live?</span></span>
               </div>
               <div class="crit__prose">
-                <p>The team behind the code — its structure, depth, and where the knowledge actually lives. Single points of knowledge are the quiet deal-killer, but organizational risk runs broader than any one person: I assess how the org hires, develops, manages, and exits people, how it onboards and trains, whether critical knowledge is documented or lives only in people's heads, and whether it can absorb a departure or scale with the plan. I've seen deals hinge on a single key person — a risk that has to be resolved before close. Finding organizational issues early, and naming what it takes to fix them, is the point.</p>
+                <p>The team behind the code — its structure, depth, and where the knowledge actually lives. Single points of knowledge are the quiet deal-killer, but organizational risk runs broader than any one person: I assess how the org hires, develops, manages, and exits people, how it onboards and trains, whether critical knowledge is documented or lives only in people’s heads, and whether it can absorb a departure or scale with the plan. Finding organizational issues early, and naming what it takes to fix them, is the point.</p>
                 <ul class="flags">
                   <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and the organization has no repeatable way to hire, develop, and retain the engineers it needs.</li>
                 </ul>
@@ -762,9 +769,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                 <span class="lab" role="cell">Product &amp; engineering maturity<span class="sub">Built for where the business is going, or barely keeping up?</span></span>
               </div>
               <div class="crit__prose">
-                <p>How mature the product and engineering function are relative to the company's stage and the investment thesis. Is the organization building for where the business is going, or barely keeping up with where it is? I assess roadmap credibility, technical debt and its trajectory, scalability headroom, and whether engineering investment matches the growth the deal assumes.</p>
+                <p>How mature the product and engineering function are relative to the company’s stage and the investment thesis. Is the organization building for where the business is going, or barely keeping up with where it is? I assess roadmap credibility, technical debt and its trajectory, scalability headroom, and whether engineering investment matches the growth the deal assumes.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>maturity lags the stage, and debt is compounding faster than it's paid down.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>maturity lags the stage, and debt is compounding faster than it’s paid down.</li>
                 </ul>
               </div>
             </div>
@@ -789,10 +796,10 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
             <div class="crit__text">
               <div class="crit__head">
                 <span class="num" role="cell">05</span>
-                <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they're existential.</span></span>
+                <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they’re existential.</span></span>
               </div>
               <div class="crit__prose">
-                <p>I run security scans across the code and the architecture, and review the history of security incidents and how the team responded to them. I assess data handling and the system's resilience to failure, then flag the critical, highest-severity risks in plain English — the failure modes that turn into a breach, an outage, or a liability after close.</p>
+                <p>I run security scans across the code and the architecture, and review the history of security incidents and how the team responded to them. I assess data handling and the system’s resilience to failure, then flag the critical, highest-severity risks in plain English — the failure modes that turn into a breach, an outage, or a liability after close.</p>
                 <ul class="flags">
                   <li><span class="tag tag--flag">Risk rises when</span>security is an afterthought, sensitive data is mishandled, and single points of failure go unmanaged.</li>
                 </ul>
@@ -824,7 +831,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
               <div class="crit__prose">
                 <p>Good software has to run in production, not just pass review. I assess the operational picture: live telemetry and monitoring, error tracking and logging, on-call and incident response when things turn bad, and the operational review processes that keep a system healthy over time. AI-built products often ship fast and instrument late — so this is where velocity quietly borrows against reliability.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>there's little visibility into production, incidents are handled ad hoc, on-call is informal, and no one owns operational health.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>there’s little visibility into production, incidents are handled ad hoc, on-call is informal, and no one owns operational health.</li>
                 </ul>
               </div>
             </div>
@@ -852,7 +859,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                 <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
               </div>
               <div class="crit__prose">
-                <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
+                <p>Buy-side specific, and where value is won or lost: how well the target’s engineering organization and technology fit the acquirer’s. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
                 <ul class="flags">
                   <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
                 </ul>
@@ -889,11 +896,11 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
       <div class="close-note">
         <div class="cn">
           <h3>The process</h3>
-          <p>Diligence runs remote and onsite — I'm available to go onsite with the target, and with the buyer, as the process requires.</p>
+          <p>Diligence runs remote and onsite — I’m available to go onsite with the target, and with the buyer, as the process requires.</p>
         </div>
         <div class="cn">
           <h3>The deliverable</h3>
-          <p>A plain-English risk register the whole committee can read — every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take. Behind it sits the full report: a detailed write-up of all seven dimensions to double-click into, raw notes and evidence included. I show my work.</p>
+          <p>A plain-English risk register the whole committee can read — every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take. Behind it sits the full report: a detailed write-up of all seven dimensions to dig into, raw notes and evidence included. I show my work.</p>
         </div>
       </div>
     </div>
@@ -909,7 +916,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
       </div>
       <div class="exhibit">
         <h3>SiltHQ</h3>
-        <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>. Where I practice AI-assisted development against genuinely hard problems: distributed-systems logic, scaling, encryption, and networking. <a class="link" href="https://github.com/nerolabs/silt">Source on GitHub</a>.</p>
+        <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>. Where I practice AI-assisted development against genuinely hard problems: distributed-systems logic, scaling, encryption, and networking; <a class="link" href="https://github.com/nerolabs/silt">source on GitHub</a>.</p>
       </div>
       <p class="quiet">Both are open source — engineered to the standard the framework describes.</p>
     </div>
