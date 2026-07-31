@@ -175,9 +175,14 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     line-height:1.55;
     color:var(--bone-2);
     max-width:46ch;
-    margin:0 0 2.2rem;
+    margin:0 0 1.4rem;
   }
   .proof b{ font-weight:600; color:var(--bone); }
+  .creds{
+    font-size:.92rem; line-height:1.55; color:var(--bone-3);
+    max-width:58ch; margin:0 0 2rem; letter-spacing:.005em;
+  }
+  .creds b{ color:var(--bone); font-weight:600; }
   .actions{
     display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.6rem;
     font-size:.98rem;
@@ -460,7 +465,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     .fade{ opacity:0; transform:translateY(10px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
     .hero .claim{ animation-delay:.05s; }
     .hero .proof{ animation-delay:.16s; }
-    .hero .actions{ animation-delay:.26s; }
+    .hero .creds{ animation-delay:.22s; }
+    .hero .actions{ animation-delay:.28s; }
     @keyframes rise{ to{ opacity:1; transform:none; } }
 
     .gauge .bar{ transform:scaleX(0); animation:sweep .9s cubic-bezier(.22,.61,.36,1) forwards; }
@@ -528,6 +534,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <div class="body">
       <h2 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h2>
       <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — five AI-capability acquisitions at Amazon, nearly thirty years as an engineer and engineering leader, and, recently, production software shipped solo this year.</p>
+      <p class="creds fade">Principal, M&amp;A Technology &amp; Engineering Integration — <b>Amazon</b> · CTO — <b>Woot.com</b> (an Amazon company) · Engineering leadership — <b>Twitch</b></p>
       <div class="actions fade">
         <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
         <span class="sep">·</span>
