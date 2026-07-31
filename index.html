@@ -55,8 +55,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     --elevated:#C79A55;   /* antique gold as amber */
     --high:    #B96A4E;   /* warm oxblood / brick */
 
-    --measure: 60ch;
-    --sheet: 58rem;
+    --measure: 68ch;
+    --sheet: 72rem;
 
     --serif: "Fraunces", "Hoefler Text", "Georgia", "Times New Roman", serif;
     --sans:  "Mulish", "Avenir Next", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
@@ -179,10 +179,11 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   }
   .proof b{ font-weight:600; color:var(--bone); }
   .creds{
-    font-size:.92rem; line-height:1.55; color:var(--bone-3);
-    max-width:58ch; margin:0 0 2rem; letter-spacing:.005em;
+    font-size:.92rem; line-height:1.6; color:var(--bone-3);
+    max-width:72ch; margin:.2rem 0 1.7rem; letter-spacing:.005em;
   }
   .creds b{ color:var(--bone); font-weight:600; }
+  .creds .cred{ white-space:nowrap; }
   .actions{
     display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.6rem;
     font-size:.98rem;
@@ -265,8 +266,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
      Two macro-columns match the crit rows below: LEFT text measure, RIGHT meter. */
   .axis{
     display:grid;
-    grid-template-columns:minmax(0,1fr) 15rem;
-    align-items:center; gap:1.1rem 2.6rem;
+    grid-template-columns:minmax(0,1fr) 13rem;
+    align-items:center; gap:1.1rem 2rem;
     padding:.6rem 1.5rem;
     border-bottom:1px solid var(--hair);
     font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
@@ -291,8 +292,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
      (bar + level LED) with its own space beside the text. */
   .crit__row{
     display:grid;
-    grid-template-columns:minmax(0,1fr) 15rem;
-    align-items:start; gap:1.1rem 2.6rem;
+    grid-template-columns:minmax(0,1fr) 13rem;
+    align-items:start; gap:1.1rem 2rem;
   }
   .crit__text{ min-width:0; }
   .crit__head{
@@ -344,7 +345,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   .crit__prose{
     margin:.85rem 0 0;
     padding-left:3.9rem;   /* align under the label column */
-    max-width:62ch;
+    max-width:none;
   }
   .crit__prose p{ margin:0; color:var(--bone-2); font-size:.96rem; line-height:1.58; }
   .flags{
@@ -464,9 +465,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   @media (prefers-reduced-motion: no-preference){
     .fade{ opacity:0; transform:translateY(10px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
     .hero .claim{ animation-delay:.05s; }
-    .hero .proof{ animation-delay:.16s; }
-    .hero .creds{ animation-delay:.22s; }
-    .hero .actions{ animation-delay:.28s; }
+    .hero .creds{ animation-delay:.14s; }
+    .hero .proof{ animation-delay:.22s; }
+    .hero .actions{ animation-delay:.3s; }
     @keyframes rise{ to{ opacity:1; transform:none; } }
 
     .gauge .bar{ transform:scaleX(0); animation:sweep .9s cubic-bezier(.22,.61,.36,1) forwards; }
@@ -526,15 +527,15 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
         <p class="kicker">Independent buy-side technical due diligence</p>
       </div>
     </div>
-    <p class="meta">Southern Spain · Remote &amp; onsite<br>On your deal timeline</p>
+    <p class="meta">Southern Spain · Remote &amp; onsite</p>
   </header>
 
   <!-- SUMMARY -->
   <section class="hero" id="summary">
     <div class="body">
       <h2 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h2>
-      <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — five AI-capability acquisitions at Amazon, nearly thirty years as an engineer and engineering leader, and, recently, production software shipped solo this year.</p>
-      <p class="creds fade">Principal, M&amp;A Technology &amp; Engineering Integration — <b>Amazon</b> · CTO — <b>Woot.com</b> (an Amazon company) · Engineering leadership — <b>Twitch</b></p>
+      <p class="creds fade"><span class="cred">Principal, M&amp;A Technology &amp; Engineering Integration — <b>Amazon</b></span> · <span class="cred">CTO — <b>Woot.com</b> (an Amazon company)</span> · <span class="cred">Founding Seattle Site Engineering Leader — <b>Twitch</b></span></p>
+      <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — I led five AI-capability acquisitions at Amazon, and, thirty years in, I still build production software myself: this year, solo, against genuinely hard problems — distributed systems, encryption, and scale.</p>
       <div class="actions fade">
         <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
         <span class="sep">·</span>
@@ -609,7 +610,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                   <li><b>Maintainability</b> — can the team change what the tooling produced, or only regenerate it?</li>
                 </ul>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>the codebase looks mature but no one can safely change it — volume without understanding.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>the codebase looks mature but no one can safely change it — or a fragile architecture is being scaled past its limits. Volume without understanding.</li>
                 </ul>
               </div>
             </div>
@@ -727,7 +728,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                 <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they're existential.</span></span>
               </div>
               <div class="crit__prose">
-                <p>Security practice and exposure, data handling, and the resilience of the system — the failure modes that turn into a breach, an outage, or a liability after close.</p>
+                <p>I run security scans across the code and the architecture, and review the history of security incidents and how the team responded to them. I assess data handling and the system's resilience to failure, then flag the critical, highest-severity risks in plain English — the failure modes that turn into a breach, an outage, or a liability after close.</p>
                 <ul class="flags">
                   <li><span class="tag tag--flag">Risk rises when</span>security is an afterthought, sensitive data is mishandled, and single points of failure go unmanaged.</li>
                 </ul>
@@ -754,12 +755,12 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
             <div class="crit__text">
               <div class="crit__head">
                 <span class="num" role="cell">06</span>
-                <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
+                <span class="lab" role="cell">Observability &amp; operations<span class="sub">Can the team see production — and act when it breaks?</span></span>
               </div>
               <div class="crit__prose">
-                <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
+                <p>Good software has to run in production, not just pass review. I assess the operational picture: live telemetry and monitoring, error tracking and logging, on-call and incident response when things turn bad, and the operational review processes that keep a system healthy over time. AI-built products often ship fast and instrument late — so this is where velocity quietly borrows against reliability.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>there's little visibility into production, incidents are handled ad hoc, on-call is informal, and no one owns operational health.</li>
                 </ul>
               </div>
             </div>
@@ -784,12 +785,12 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
             <div class="crit__text">
               <div class="crit__head">
                 <span class="num" role="cell">07</span>
-                <span class="lab" role="cell">Observability &amp; operations<span class="sub">Can the team see production — and act when it breaks?</span></span>
+                <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
               </div>
               <div class="crit__prose">
-                <p>Good software has to run in production, not just pass review. I assess the operational picture: live telemetry and monitoring, error tracking and logging, on-call and incident response when things turn bad, and the operational review processes that keep a system healthy over time. AI-built products often ship fast and instrument late — so this is where velocity quietly borrows against reliability.</p>
+                <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>there's little visibility into production, incidents are handled ad hoc, on-call is informal, and no one owns operational health.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
                 </ul>
               </div>
             </div>
