@@ -5,308 +5,442 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Andrew Edmond — Technical diligence for the AI era</title>
 <meta name="description" content="Independent buy-side technical due diligence for AI-era software: architecture, engineering practice, key-person risk, and the AI provenance of the codebase — delivered as a plain-English risk register for the investment committee.">
-<meta name="theme-color" content="#F8F8F6">
-<link rel="canonical" href="https://andrewedmond.com/">
+<meta name="theme-color" content="#211C18">
+<link rel="canonical" href="https://www.andrewedmond.com/">
 
 <!-- Open Graph / this link gets pasted into emails and Slack -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://andrewedmond.com/">
+<meta property="og:url" content="https://www.andrewedmond.com/">
 <meta property="og:title" content="Andrew Edmond — Technical diligence for the AI era">
 <meta property="og:description" content="Independent buy-side technical due diligence for AI-era software — delivered as a plain-English risk register for the investment committee.">
-<!-- TODO: create og.png (1200×630) before launch; scrapers won't render SVG. -->
-<meta property="og:image" content="https://andrewedmond.com/og.png">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 
 <!-- Plausible (no cookie banner) goes here at launch:
      <script defer data-domain="andrewedmond.com" src="https://plausible.io/js/script.js"></script> -->
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    /* Palette — cool laser-printed paper, ink, one pen, three signal pips */
-    --paper:   #F8F8F6;
-    --paper-2: #F1F1EE;   /* recessed panels */
-    --ink:     #1A1D1F;
-    --ink-2:   #4A4E50;   /* secondary text */
-    --label:   #83887F;   /* mono labels / marginalia */
-    --rule:    #D8D9D4;   /* hairlines */
-    --pen:     #1B3A5B;   /* the one accent: links + assessor's marks */
-    --pen-2:   #2C5A87;
-    /* R/A/G — deliberately desaturated; used ONLY as register status */
-    --ok:   #3E7D5A;
-    --warn: #B8862F;
-    --risk: #A23B2D;
+    /* Palette — "Private Office": deep espresso, warm bone type, antique gold */
+    --ground:  #211C18;   /* espresso ground */
+    --panel:   #29231E;   /* recessed panels */
+    --panel-2: #2F2822;   /* lifted card */
+    --bone:    #EDE7DC;   /* primary type */
+    --bone-2:  #C4B9AA;   /* secondary type */
+    --bone-3:  #8E8477;   /* labels / marginalia */
+    --hair:    #43392F;   /* hairlines */
+    --hair-2:  #574B3E;   /* lifted hairlines */
+    --gold:    #C2A15A;   /* the one accent */
+    --gold-2:  #D8BC7E;   /* hover */
+    /* Register signals — muted, warm, never neon; used ONLY as status.
+       Bar length encodes RISK: sage = low, amber/gold = elevated, oxblood = high. */
+    --low:     #8AA37E;   /* muted sage-green */
+    --elevated:#C79A55;   /* antique gold as amber */
+    --high:    #B96A4E;   /* warm oxblood / brick */
 
-    --rail: 8.5rem;
-    --gutter: 2.25rem;
     --measure: 60ch;
-    --sheet: 63rem;
+    --sheet: 58rem;
 
-    --font-display: "Helvetica Neue", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-    --font-body: "Helvetica Neue", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-    --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
+    --serif: "Fraunces", "Hoefler Text", "Georgia", "Times New Roman", serif;
+    --sans:  "Mulish", "Avenir Next", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   }
 
   *,*::before,*::after{ box-sizing:border-box; }
   html{ -webkit-text-size-adjust:100%; }
   body{
     margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:var(--font-body);
+    background:var(--ground);
+    color:var(--bone);
+    font-family:var(--sans);
     font-size:1.0625rem;
-    line-height:1.6;
-    letter-spacing:.005em;
+    line-height:1.62;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
   }
-
-  /* ---- Links: the pen underline ---- */
-  a{ color:var(--pen); text-decoration:none; }
-  .link{
-    color:var(--pen);
-    border-bottom:1px solid rgba(27,58,91,.32);
-    padding-bottom:1px;
-    transition:border-color .15s ease, color .15s ease;
+  /* faint warm vignette so the ground reads like paper under a desk lamp */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% -10%, #2B241E 0%, #211C18 55%, #1C1814 100%);
   }
-  .link:hover{ color:var(--pen-2); border-bottom-color:var(--pen-2); }
 
-  :focus-visible{ outline:2px solid var(--pen); outline-offset:3px; border-radius:1px; }
+  /* ---- Links ---- */
+  a{ color:var(--gold); text-decoration:none; }
+  .link{
+    color:var(--gold);
+    background-image:linear-gradient(currentColor,currentColor);
+    background-size:100% 1px; background-repeat:no-repeat;
+    background-position:0 1.18em;
+    padding-bottom:1px;
+    transition:color .18s ease, background-size .18s ease;
+  }
+  .link:hover{ color:var(--gold-2); }
+
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
 
   .skip{
     position:absolute; left:-999px; top:0;
-    background:var(--ink); color:var(--paper);
-    padding:.6rem 1rem; z-index:10; font:600 .9rem/1 var(--font-body);
+    background:var(--gold); color:var(--ground);
+    padding:.6rem 1rem; z-index:10; font:600 .9rem/1 var(--sans);
   }
   .skip:focus{ left:.75rem; top:.75rem; }
 
-  /* ---- Sheet + document rows ---- */
-  .sheet{ max-width:var(--sheet); margin:0 auto; padding:0 1.5rem; }
-
-  .row{
-    display:grid;
-    grid-template-columns:var(--rail) minmax(0,1fr);
-    gap:var(--gutter);
-    padding:3.25rem 0;
-    border-top:1px solid var(--rule);
-  }
+  /* ---- Sheet + rhythm ---- */
+  .sheet{ max-width:var(--sheet); margin:0 auto; padding:0 1.6rem; }
   .body{ max-width:var(--measure); }
 
-  /* ---- The margin rail: running assessor's marks ---- */
-  .rail{ font-family:var(--font-mono); }
-  .rail .ref{
-    display:block;
-    color:var(--pen);
-    font-size:.72rem; letter-spacing:.06em;
+  section{ padding:4.25rem 0; }
+  /* Signature rule: a hairline capped at its left by a short gold tick */
+  section + section, .divider-top{
+    position:relative;
+    border-top:1px solid var(--hair);
   }
-  .rail .sec{
-    display:block;
-    margin-top:.35rem;
-    color:var(--label);
-    font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
+  section + section::before, .divider-top::before{
+    content:""; position:absolute; top:-1px; left:0;
+    width:2.75rem; height:1px; background:var(--gold);
   }
 
-  /* ---- Masthead ---- */
-  .masthead{
-    display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
-    gap:1rem 2rem;
-    padding:2.5rem 0 1.5rem;
-    border-bottom:2px solid var(--ink);
-  }
-  .name{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:1.35rem;
-    letter-spacing:.14em;
+  /* ---- Eyebrow (gold small-caps) — the section signposting ---- */
+  .eyebrow{
+    font-family:var(--serif);
+    font-optical-sizing:auto;
+    font-weight:560;
+    font-size:.82rem;
+    letter-spacing:.24em;
     text-transform:uppercase;
-    margin:0;
+    color:var(--gold);
+    margin:0 0 1.5rem;
   }
-  .kicker{
-    font-family:var(--font-mono);
-    font-size:.72rem; letter-spacing:.13em; text-transform:uppercase;
-    color:var(--label);
-    margin:.5rem 0 0;
+
+  /* ---- Masthead + monogram ---- */
+  .masthead{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:1.2rem 2rem;
+    padding:2.75rem 0 2.5rem;
+  }
+  .brand{ display:flex; align-items:center; gap:1rem; }
+  .monogram{
+    flex:0 0 auto;
+    width:3.1rem; height:3.1rem; border-radius:50%;
+    border:1px solid var(--gold);
+    display:grid; place-items:center;
+    font-family:var(--serif); font-weight:420; font-size:1.15rem;
+    letter-spacing:.02em; color:var(--gold);
+  }
+  .wordmark h1{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:420; font-size:1.5rem; letter-spacing:.005em;
+    margin:0; line-height:1.1;
+  }
+  .wordmark .kicker{
+    font-size:.82rem; letter-spacing:.04em; color:var(--bone-3);
+    margin:.2rem 0 0;
   }
   .masthead .meta{
-    font-family:var(--font-mono);
-    font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--label);
-    text-align:right;
+    font-size:.8rem; letter-spacing:.05em; color:var(--bone-3);
+    text-align:right; line-height:1.5;
   }
 
   /* ---- Hero / Summary ---- */
+  .hero{ padding-top:1.5rem; }
   .claim{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:clamp(2.35rem, 6vw, 3.9rem);
-    line-height:1.03;
-    letter-spacing:-.02em;
-    margin:.2rem 0 1.4rem;
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:340;
+    font-size:clamp(2.6rem, 6.4vw, 4.6rem);
+    line-height:1.02;
+    letter-spacing:-.012em;
+    margin:.2rem 0 1.6rem;
     text-wrap:balance;
+    color:var(--bone);
   }
+  .claim .em{ font-style:italic; font-weight:340; color:var(--gold); }
   .proof{
-    font-size:clamp(1.1rem,2.3vw,1.35rem);
-    line-height:1.5;
-    color:var(--ink);
-    max-width:44ch;
-    margin:0 0 2rem;
+    font-size:clamp(1.12rem,2.3vw,1.32rem);
+    line-height:1.55;
+    color:var(--bone-2);
+    max-width:46ch;
+    margin:0 0 2.2rem;
   }
-  .proof b{ font-weight:600; }
+  .proof b{ font-weight:600; color:var(--bone); }
   .actions{
-    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.5rem;
-    font-family:var(--font-mono);
-    font-size:.9rem;
+    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.6rem;
+    font-size:.98rem;
   }
-  .actions .sep{ color:var(--rule); }
+  .actions .sep{ color:var(--hair-2); }
 
   /* ---- Section headings ---- */
   .h{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:clamp(1.4rem,3vw,1.85rem);
-    letter-spacing:-.01em;
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:420;
+    font-size:clamp(1.7rem,3.3vw,2.35rem);
+    letter-spacing:-.006em;
     line-height:1.12;
-    margin:0 0 1.4rem;
+    margin:0 0 1.3rem;
+    color:var(--bone);
   }
-  .lead{ color:var(--ink-2); margin:0 0 1.8rem; max-width:52ch; }
+  .lead{ color:var(--bone-2); margin:0 0 1.4rem; max-width:56ch; }
+  .lead:last-of-type{ margin-bottom:2rem; }
 
   /* ---- Services ---- */
-  .svc{ margin:0 0 1.9rem; }
+  .svc{ margin:0 0 2.2rem; }
   .svc:last-child{ margin-bottom:0; }
   .svc h3{
-    font-family:var(--font-display);
-    font-weight:700; font-size:1.12rem; letter-spacing:-.005em;
-    margin:0 0 .35rem;
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:560; font-size:1.22rem; letter-spacing:.005em;
+    margin:0 0 .4rem; color:var(--bone);
   }
-  .svc p{ margin:0; color:var(--ink-2); }
+  .svc p{ margin:0; color:var(--bone-2); }
   .streams{
-    list-style:none; margin:.7rem 0 0; padding:0;
-    display:flex; flex-wrap:wrap; gap:.4rem .5rem;
+    list-style:none; margin:.9rem 0 0; padding:0;
+    display:flex; flex-wrap:wrap; gap:.45rem .5rem;
   }
   .streams li{
-    font-family:var(--font-mono);
-    font-size:.76rem; letter-spacing:.02em;
-    color:var(--ink-2);
-    background:var(--paper-2);
-    border:1px solid var(--rule);
-    padding:.28rem .55rem;
+    font-size:.82rem; letter-spacing:.01em;
+    color:var(--bone-2);
+    background:var(--panel);
+    border:1px solid var(--hair);
+    border-radius:999px;
+    padding:.32rem .8rem;
   }
 
-  /* ---- The Framework: the signature block ---- */
-  .fw-eyebrow{
-    font-family:var(--font-mono);
-    font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--pen); margin:0 0 .7rem;
+  /* ---- The Framework: the risk readout (signature block) ---- */
+  .readout{
+    border:1px solid var(--hair-2);
+    background:var(--panel);
+    border-radius:4px;
+    margin:.4rem 0 1.4rem;
+    overflow:hidden;
   }
-  .register{
-    border:1px solid var(--ink);
-    background:#fff;
-    margin:.4rem 0 1.5rem;
-  }
-  .register .crit{
-    display:grid;
-    grid-template-columns:2.6rem 1fr 1.6rem;
-    align-items:center;
+  .readout__head{
+    display:flex; align-items:center; justify-content:space-between;
     gap:1rem;
-    padding:.85rem 1.1rem;
-    border-top:1px solid var(--rule);
+    padding:.7rem 1.3rem;
+    border-bottom:1px solid var(--hair);
+    background:var(--panel-2);
+    font-family:var(--serif); font-optical-sizing:auto; font-weight:560;
+    font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--bone-3);
   }
-  .register .crit:first-child{ border-top:0; }
-  .register .num{
-    font-family:var(--font-mono); font-size:.82rem; color:var(--label);
-    letter-spacing:.04em;
+  .readout__head .unit{ color:var(--gold); }
+
+  /* Axis header: LOW RISK → HIGH RISK across the bar channel */
+  .axis{
+    display:grid;
+    grid-template-columns:2.8rem minmax(0,1fr) 9rem 1.4rem;
+    align-items:center; gap:1.1rem;
+    padding:.6rem 1.3rem;
+    border-bottom:1px solid var(--hair);
+    font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--bone-3);
   }
-  .register .crit-label{ font-weight:600; font-size:1rem; }
-  .register .crit-note{
-    display:block; font-weight:400; font-size:.86rem; color:var(--ink-2);
-    margin-top:.1rem;
+  .axis .axis-scale{ display:flex; justify-content:space-between; }
+
+  .crit{
+    padding:1.05rem 1.3rem;
+    border-top:1px solid var(--hair);
   }
-  .pip{
+  .crit:first-of-type{ border-top:0; }
+  .crit__row{
+    display:grid;
+    grid-template-columns:2.8rem minmax(0,1fr) 9rem 1.4rem;
+    align-items:center; gap:1.1rem;
+  }
+  .crit .num{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:420; font-size:1rem; color:var(--gold);
+    letter-spacing:.02em;
+  }
+  .crit .lab{ font-weight:600; font-size:1.02rem; color:var(--bone); line-height:1.3; }
+  .crit .sub{
+    display:block; font-weight:400; font-size:.9rem; color:var(--bone-2);
+    margin-top:.18rem; line-height:1.5;
+  }
+
+  /* The bar: length encodes assessed risk (short = low, long = high) */
+  .gauge{ width:100%; height:1.85rem; display:block; }
+  .gauge .track{ fill:var(--ground); }
+  .gauge .grid-tick{ stroke:var(--hair-2); stroke-width:1; opacity:.7; }
+  .gauge .bar{ transform-origin:left center; }
+  .gauge--low  .bar{ fill:var(--low); }
+  .gauge--elevated .bar{ fill:var(--elevated); }
+  .gauge--high .bar{ fill:var(--high); }
+
+  /* status LED — ringed, color matches level */
+  .led{
     justify-self:end;
-    width:.7rem; height:.7rem; border-radius:50%;
-    background:var(--label);
-    display:inline-block;
+    width:.72rem; height:.72rem; border-radius:50%;
+    background:var(--bone-3);
+    position:relative;
   }
-  .pip--ok{ background:var(--ok); }
-  .pip--warn{ background:var(--warn); }
-  .pip--risk{ background:var(--risk); }
+  .led::after{
+    content:""; position:absolute; inset:-4px; border-radius:50%;
+    border:1px solid currentColor; opacity:.45;
+  }
+  .led--low{ background:var(--low); color:var(--low); }
+  .led--elevated{ background:var(--elevated); color:var(--elevated); }
+  .led--high{ background:var(--high); color:var(--high); }
+
+  /* Fuller assessment prose beneath each bar row */
+  .crit__prose{
+    margin:.85rem 0 0;
+    padding-left:3.9rem;   /* align under the label column */
+    max-width:62ch;
+  }
+  .crit__prose p{ margin:0; color:var(--bone-2); font-size:.96rem; line-height:1.58; }
+  .flags{
+    list-style:none; margin:.7rem 0 0; padding:0;
+    display:flex; flex-direction:column; gap:.35rem;
+    font-size:.92rem; color:var(--bone-2); line-height:1.5;
+  }
+  .flags .tag{
+    font-family:var(--serif); font-optical-sizing:auto; font-weight:560;
+    font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
+    margin-right:.55rem;
+  }
+  .flags .tag--healthy{ color:var(--low); }
+  .flags .tag--flag{ color:var(--high); }
+
+  /* Nested AI-provenance criteria under dimension 01 */
+  .subcrit{
+    list-style:none; margin:.85rem 0 0; padding:.9rem 0 0;
+    border-top:1px solid var(--hair);
+    display:flex; flex-direction:column; gap:.5rem;
+    font-size:.94rem; color:var(--bone-2); line-height:1.5;
+  }
+  .subcrit > li{ position:relative; padding-left:1.05rem; }
+  .subcrit > li::before{
+    content:""; position:absolute; left:0; top:.62em;
+    width:.34rem; height:1px; background:var(--gold);
+  }
+  .subcrit b{
+    color:var(--bone); font-weight:600;
+  }
+
+  /* Closing block: process & deliverable */
+  .close-note{
+    margin-top:1.9rem;
+    display:grid; gap:1.4rem;
+  }
+  .close-note .cn{
+    padding-left:1.1rem;
+    border-left:1px solid var(--hair-2);
+  }
+  .close-note h3{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:560; font-size:.74rem; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 .45rem;
+  }
+  .close-note p{ margin:0; color:var(--bone-2); font-size:.96rem; line-height:1.58; max-width:60ch; }
+  @media (min-width: 641px){
+    .close-note{ grid-template-columns:1fr 1fr; gap:1.6rem 2.4rem; }
+  }
 
   .legend{
-    display:flex; flex-wrap:wrap; gap:1.2rem;
-    font-family:var(--font-mono); font-size:.74rem; color:var(--ink-2);
-    letter-spacing:.02em;
-    padding:.5rem 0 0;
+    display:flex; flex-wrap:wrap; gap:1.3rem;
+    font-size:.86rem; color:var(--bone-2);
+    letter-spacing:.01em;
+    padding:.4rem 0 0;
   }
-  .legend span{ display:inline-flex; align-items:center; gap:.5rem; }
-  .legend .pip{ position:relative; top:0; }
+  .legend span{ display:inline-flex; align-items:center; gap:.55rem; }
+  .legend .led{ width:.62rem; height:.62rem; justify-self:auto; }
+  .legend .led::after{ display:none; }
+  .legend .note{ color:var(--bone-3); }
 
   .placeholder{
-    border:1px dashed var(--label);
-    background:var(--paper-2);
-    padding:1.1rem 1.2rem;
-    margin-top:1.6rem;
-    font-family:var(--font-mono);
-    font-size:.82rem; line-height:1.6; color:var(--ink-2);
+    border:1px dashed var(--hair-2);
+    background:var(--panel);
+    border-radius:4px;
+    padding:1.25rem 1.35rem;
+    margin-top:1.8rem;
+    font-size:.92rem; line-height:1.62; color:var(--bone-2);
   }
-  .placeholder b{ color:var(--ink); text-transform:uppercase; letter-spacing:.1em; font-size:.72rem; }
+  .placeholder b{
+    display:inline-block; color:var(--gold);
+    font-family:var(--serif); font-weight:560;
+    text-transform:uppercase; letter-spacing:.18em; font-size:.74rem;
+    margin-bottom:.35rem;
+  }
 
   /* ---- Evidence + Background ---- */
-  .exhibit{ margin:0 0 1.6rem; }
+  .exhibit{ margin:0 0 1.8rem; }
   .exhibit:last-child{ margin-bottom:0; }
   .exhibit h3{
-    font-family:var(--font-display); font-weight:700; font-size:1.08rem;
-    margin:0 0 .3rem;
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:560; font-size:1.2rem; margin:0 0 .35rem; color:var(--bone);
   }
-  .exhibit p{ margin:0; color:var(--ink-2); }
+  .exhibit p{ margin:0; color:var(--bone-2); }
 
-  .bg{ color:var(--ink-2); }
-  .bg b{ color:var(--ink); font-weight:600; }
+  .bg{ color:var(--bone-2); max-width:60ch; }
+  .bg b{ color:var(--bone); font-weight:600; }
 
   /* ---- Contact ---- */
   .contact-lines{
-    display:flex; flex-direction:column; gap:.9rem;
-    font-size:1.15rem;
+    display:flex; flex-direction:column; gap:1rem;
+    font-size:1.22rem;
   }
-  .contact-lines .mono{ font-family:var(--font-mono); font-size:1rem; }
   .quiet{
-    margin-top:1.8rem;
-    font-size:.92rem; color:var(--label);
+    margin-top:2rem;
+    font-size:.94rem; color:var(--bone-3);
     max-width:48ch;
   }
-  .quiet a{ color:var(--ink-2); border-bottom:1px solid var(--rule); }
-  .quiet a:hover{ color:var(--pen); border-bottom-color:var(--pen); }
+  .quiet a{ color:var(--bone-2); border-bottom:1px solid var(--hair-2); }
+  .quiet a:hover{ color:var(--gold); border-bottom-color:var(--gold); }
 
   /* ---- Footer ---- */
   footer{
-    padding:2.5rem 0 3.5rem;
-    border-top:1px solid var(--rule);
-    font-family:var(--font-mono);
-    font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--label);
+    padding:2.75rem 0 3.5rem;
+    border-top:1px solid var(--hair);
+    position:relative;
+    font-size:.78rem; letter-spacing:.06em;
+    color:var(--bone-3);
     display:flex; flex-wrap:wrap; justify-content:space-between; gap:.6rem;
   }
-
-  /* ---- Ink-in motion for the register pips ---- */
-  @media (prefers-reduced-motion: no-preference){
-    .register .pip, .legend .pip{ opacity:0; animation:ink .5s ease forwards; }
-    .register .crit:nth-child(1) .pip{ animation-delay:.15s; }
-    .register .crit:nth-child(2) .pip{ animation-delay:.27s; }
-    .register .crit:nth-child(3) .pip{ animation-delay:.39s; }
-    .register .crit:nth-child(4) .pip{ animation-delay:.51s; }
-    .register .crit:nth-child(5) .pip{ animation-delay:.63s; }
-    @keyframes ink{
-      from{ opacity:0; transform:scale(.35); }
-      to{ opacity:1; transform:scale(1); }
-    }
+  footer::before{
+    content:""; position:absolute; top:-1px; left:0;
+    width:2.75rem; height:1px; background:var(--gold);
   }
 
-  /* ---- Mobile: rail folds into an inline eyebrow ---- */
-  @media (max-width: 800px){
-    .row{ grid-template-columns:1fr; gap:1rem; padding:2.5rem 0; }
-    .rail{ display:flex; align-items:baseline; gap:.75rem; }
-    .rail .ref{ display:inline; }
-    .rail .sec{ display:inline; margin-top:0; }
+  /* ---- Load motion: bone type settles, gold pips ink in, bars sweep ---- */
+  @media (prefers-reduced-motion: no-preference){
+    .fade{ opacity:0; transform:translateY(10px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
+    .hero .claim{ animation-delay:.05s; }
+    .hero .proof{ animation-delay:.16s; }
+    .hero .actions{ animation-delay:.26s; }
+    @keyframes rise{ to{ opacity:1; transform:none; } }
+
+    .gauge .bar{ transform:scaleX(0); animation:sweep .9s cubic-bezier(.22,.61,.36,1) forwards; }
+    .crit:nth-of-type(1) .bar{ animation-delay:.10s; }
+    .crit:nth-of-type(2) .bar{ animation-delay:.22s; }
+    .crit:nth-of-type(3) .bar{ animation-delay:.34s; }
+    .crit:nth-of-type(4) .bar{ animation-delay:.46s; }
+    .crit:nth-of-type(5) .bar{ animation-delay:.58s; }
+    .crit:nth-of-type(6) .bar{ animation-delay:.70s; }
+    @keyframes sweep{ to{ transform:scaleX(1); } }
+
+    .led{ opacity:0; animation:ink .5s ease forwards; }
+    .crit:nth-of-type(1) .led{ animation-delay:.55s; }
+    .crit:nth-of-type(2) .led{ animation-delay:.67s; }
+    .crit:nth-of-type(3) .led{ animation-delay:.79s; }
+    .crit:nth-of-type(4) .led{ animation-delay:.91s; }
+    .crit:nth-of-type(5) .led{ animation-delay:1.03s; }
+    .crit:nth-of-type(6) .led{ animation-delay:1.15s; }
+    @keyframes ink{ from{ opacity:0; transform:scale(.3); } to{ opacity:1; transform:scale(1); } }
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 640px){
+    section{ padding:3.25rem 0; }
     .masthead .meta{ text-align:left; }
-    .register .crit{ grid-template-columns:2.2rem 1fr 1.4rem; gap:.7rem; }
+    .axis, .crit__row{ grid-template-columns:2.3rem minmax(0,1fr) 1.2rem; gap:.8rem; }
+    .axis .gcol, .crit__row .gauge-cell{ display:none; }
+    .crit{ padding:.95rem 1rem; }
+    .readout__head, .axis{ padding-left:1rem; padding-right:1rem; }
+    .crit__prose{ padding-left:0; }
   }
 </style>
 </head>
@@ -316,33 +450,33 @@
 <div class="sheet">
 
   <header class="masthead">
-    <div>
-      <h1 class="name">Andrew Edmond</h1>
-      <p class="kicker">Independent buy-side technical due diligence</p>
+    <div class="brand">
+      <span class="monogram" aria-hidden="true">AE</span>
+      <div class="wordmark">
+        <h1>Andrew Edmond</h1>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
     </div>
     <p class="meta">Southern Spain · Remote<br>On your deal timeline</p>
   </header>
 
-  <!-- §1 SUMMARY -->
-  <section class="row" id="summary">
-    <div class="rail"><span class="ref">§1</span><span class="sec">Summary</span></div>
+  <!-- SUMMARY -->
+  <section class="hero" id="summary">
     <div class="body">
-      <h2 class="claim">Technical diligence for the AI era.</h2>
-      <p class="proof">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — five AI-capability acquisitions at Amazon, and production software shipped solo this year.</p>
-      <div class="actions">
+      <h2 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h2>
+      <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I've done <b>both</b> — five AI-capability acquisitions at Amazon, and production software shipped solo this year.</p>
+      <div class="actions fade">
         <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
         <span class="sep">·</span>
-        <!-- TODO: replace # with the real scheduling link -->
-        <a class="link" href="#contact">Book a call</a>
+        <a target="_blank" rel="noopener" class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7">Book a call</a>
       </div>
     </div>
   </section>
 
-  <!-- §2 SCOPE -->
-  <section class="row" id="scope">
-    <div class="rail"><span class="ref">§2</span><span class="sec">Scope</span></div>
+  <!-- SCOPE -->
+  <section id="scope">
+    <p class="eyebrow">What I do</p>
     <div class="body">
-      <h2 class="h">What I do</h2>
       <div class="svc">
         <h3>Buy-side diligence</h3>
         <p>Typically two to four weeks, run on your deal timeline. One assessor, close to the code.</p>
@@ -351,7 +485,9 @@
           <li>SDLC &amp; engineering practice</li>
           <li>Security posture</li>
           <li>Org capability &amp; key-person risk</li>
+          <li>Product &amp; engineering maturity</li>
           <li>AI provenance &amp; maintainability</li>
+          <li>Fit with the acquirer</li>
           <li>Risk register for the IC</li>
         </ul>
       </div>
@@ -366,61 +502,206 @@
     </div>
   </section>
 
-  <!-- §3 METHOD — the framework (signature) -->
-  <section class="row" id="framework">
-    <div class="rail"><span class="ref">§3</span><span class="sec">Method</span></div>
+  <!-- METHOD — the framework (signature) -->
+  <section id="framework">
+    <p class="eyebrow">The Framework</p>
     <div class="body">
-      <p class="fw-eyebrow">The Framework</p>
-      <h2 class="h">Assessing a codebase the AI wrote.</h2>
-      <p class="lead">A public rubric for AI-assisted codebases. Each criterion becomes a rated finding in the register you hand your investment committee.</p>
+      <h2 class="h">How I assess a target.</h2>
+      <p class="lead">The job is to know all the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across six dimensions. Each becomes a rated finding in the plain-English risk register I hand the investment committee. Being current on AI-built code is one dimension of this, not the whole of it — it's what a large firm can't do, sitting inside a full-scope assessment they can.</p>
 
-      <div class="register" role="table" aria-label="Framework criteria and register grammar">
-        <div class="crit" role="row">
-          <span class="num" role="cell">01</span>
-          <span class="crit-label" role="cell">Test coverage relative to generated volume<span class="crit-note">Is the safety net keeping pace with how fast code was produced?</span></span>
-          <span class="pip pip--ok" role="cell" aria-label="rated: pass"></span>
+      <div class="readout" role="table" aria-label="The six diligence dimensions, assessed risk, and register grammar">
+        <div class="readout__head" aria-hidden="true">
+          <span>Risk readout — six dimensions</span>
+          <span class="unit">low risk → high risk</span>
         </div>
-        <div class="crit" role="row">
-          <span class="num" role="cell">02</span>
-          <span class="crit-label" role="cell">Architectural coherence<span class="crit-note">One considered design, or many local answers stitched together?</span></span>
-          <span class="pip pip--warn" role="cell" aria-label="rated: caution"></span>
+        <div class="axis" aria-hidden="true">
+          <span>No.</span>
+          <span>Dimension</span>
+          <span class="gcol axis-scale"><span>Low risk</span><span>High risk</span></span>
+          <span style="text-align:right">Level</span>
         </div>
+
+        <!-- 01 — elevated / medium bar -->
         <div class="crit" role="row">
-          <span class="num" role="cell">03</span>
-          <span class="crit-label" role="cell">Dependency sprawl<span class="crit-note">What was pulled in, and who understands it now?</span></span>
-          <span class="pip pip--ok" role="cell" aria-label="rated: pass"></span>
+          <div class="crit__row">
+            <span class="num" role="cell">01</span>
+            <span class="lab" role="cell">Architecture &amp; codebase — incl. AI provenance<span class="sub">Was it engineered, or merely generated?</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="66" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+          </div>
+          <div class="crit__prose">
+            <p>Is the architecture coherent, scalable, and maintainable — and in the AI era, was it actually engineered or merely generated? This is where my hands-on edge lives: I read the code the way the next engineer will have to. I assess the AI-provenance signals specifically —</p>
+            <ul class="subcrit">
+              <li><b>Test coverage relative to generated volume</b> — did the safety net grow with the code, or get left behind?</li>
+              <li><b>Architectural coherence</b> — one design mind, or many local answers stitched together?</li>
+              <li><b>Dependency sprawl</b> — what got pulled in, and who understands it now?</li>
+              <li><b>Commit &amp; review patterns</b> — does the history show judgment, or accepted output?</li>
+              <li><b>Maintainability</b> — can the team change what the tooling produced, or only regenerate it?</li>
+            </ul>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>the codebase looks mature but no one can safely change it — volume without understanding.</li>
+            </ul>
+          </div>
         </div>
+
+        <!-- 02 — low risk / short bar -->
         <div class="crit" role="row">
-          <span class="num" role="cell">04</span>
-          <span class="crit-label" role="cell">Commit &amp; review patterns<span class="crit-note">Does the history show engineering judgment, or accepted output?</span></span>
-          <span class="pip pip--warn" role="cell" aria-label="rated: caution"></span>
+          <div class="crit__row">
+            <span class="num" role="cell">02</span>
+            <span class="lab" role="cell">Engineering process &amp; SDLC maturity<span class="sub">Repeatable and measured, or heroic and individual?</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="32" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
+          </div>
+          <div class="crit__prose">
+            <p>How the team plans, builds, reviews, tests, and ships. Is delivery repeatable and measured, or heroic and dependent on individuals? I look across the whole software development lifecycle: planning and estimation, branching and review discipline, CI/CD, testing strategy, and how predictably work moves from idea to production — including release and incident response.</p>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>process lives in people's heads, releases are risky events, and there's no repeatable path to production.</li>
+            </ul>
+          </div>
         </div>
+
+        <!-- 03 — high risk / long bar -->
         <div class="crit" role="row">
-          <span class="num" role="cell">05</span>
-          <span class="crit-label" role="cell">Can the team maintain what the tooling produced?<span class="crit-note">The question the whole assessment resolves to.</span></span>
-          <span class="pip pip--risk" role="cell" aria-label="rated: risk"></span>
+          <div class="crit__row">
+            <span class="num" role="cell">03</span>
+            <span class="lab" role="cell">Organization &amp; key-person risk<span class="sub">Where does the critical knowledge actually live?</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--high" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="106" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--high" role="cell" aria-label="assessed risk: high"></span>
+          </div>
+          <div class="crit__prose">
+            <p>The team behind the code: structure, depth, and where the knowledge actually lives. Bus-factor is the quiet deal-killer. I map who holds what, how concentrated critical knowledge is, and whether the organization can absorb a departure. I've seen a deal hinge on a single key person — a risk that had to be resolved before close. Finding that early, and naming what it takes to fix it, is the point.</p>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and ownership is undocumented.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 04 — elevated / medium bar -->
+        <div class="crit" role="row">
+          <div class="crit__row">
+            <span class="num" role="cell">04</span>
+            <span class="lab" role="cell">Product &amp; engineering maturity<span class="sub">Built for where the business is going, or barely keeping up?</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="64" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+          </div>
+          <div class="crit__prose">
+            <p>How mature the product and engineering function are relative to the company's stage and the investment thesis. Is the organization building for where the business is going, or barely keeping up with where it is? I assess roadmap credibility, technical debt and its trajectory, scalability headroom, and whether engineering investment matches the growth the deal assumes.</p>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>maturity lags the stage, and debt is compounding faster than it's paid down.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 05 — low risk / short bar -->
+        <div class="crit" role="row">
+          <div class="crit__row">
+            <span class="num" role="cell">05</span>
+            <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they're existential.</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="30" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
+          </div>
+          <div class="crit__prose">
+            <p>The risks that stay invisible until they become existential. I assess security practice and exposure, data handling, and the operational and reliability posture — the failure modes that turn into a headline, an outage, or a liability after close.</p>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>security is an afterthought, single points of failure go unmanaged, and there's no operational discipline.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 06 — elevated / medium bar -->
+        <div class="crit" role="row">
+          <div class="crit__row">
+            <span class="num" role="cell">06</span>
+            <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
+            <span class="gauge-cell" role="cell" aria-hidden="true">
+              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                <rect class="bar" x="0" y="6" width="62" height="12" rx="2"/>
+              </svg>
+            </span>
+            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+          </div>
+          <div class="crit__prose">
+            <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
+            <ul class="flags">
+              <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
+            </ul>
+          </div>
         </div>
       </div>
 
       <div class="legend" aria-hidden="true">
-        <span><i class="pip pip--ok"></i> Pass</span>
-        <span><i class="pip pip--warn"></i> Caution</span>
-        <span><i class="pip pip--risk"></i> Risk</span>
-        <span style="color:var(--label)">— how each finding is rated in the register</span>
+        <span><i class="led led--low"></i> Low</span>
+        <span><i class="led led--elevated"></i> Elevated</span>
+        <span><i class="led led--high"></i> High risk</span>
+        <span class="note">— a longer bar means more assessed risk</span>
       </div>
 
       <div class="placeholder">
-        <b>Framework — draft in place</b><br>
-        Andrew to write the assessment guidance under each criterion. The five rows above are the brief's own enumerated signals; the prose that turns each into a rating is yours to write. The ratings shown are illustrative of the register grammar, not a live assessment.
+        <b>Illustrative, not a live assessment</b><br>
+        The levels and bar lengths above illustrate the register grammar — how each finding is scored and handed to your investment committee — not the result of assessing any particular company.
+      </div>
+
+      <div class="close-note">
+        <div class="cn">
+          <h3>The process</h3>
+          <p>Diligence runs remote and onsite — I'm available to go onsite with the target, and with the buyer, as the process requires.</p>
+        </div>
+        <div class="cn">
+          <h3>The deliverable</h3>
+          <p>A plain-English risk register for the investment committee: every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- §4 EVIDENCE -->
-  <section class="row" id="evidence">
-    <div class="rail"><span class="ref">§4</span><span class="sec">Evidence</span></div>
+  <!-- EVIDENCE -->
+  <section id="evidence">
+    <p class="eyebrow">Current hands-on practice</p>
     <div class="body">
-      <h2 class="h">Current hands-on practice</h2>
       <div class="exhibit">
         <h3>Get Camino</h3>
         <p>A Spain relocation planner — <a class="link" href="https://getcamino.app">getcamino.app</a>. Empty repo to live product in under a week: ~13,700 lines of TypeScript, five languages, iOS shipped. The <a class="link" href="https://getcamino.app/how-i-was-built">build log</a> documents how it was engineered.</p>
@@ -433,26 +714,23 @@
     </div>
   </section>
 
-  <!-- §5 BACKGROUND -->
-  <section class="row" id="background">
-    <div class="rail"><span class="ref">§5</span><span class="sec">Background</span></div>
+  <!-- BACKGROUND -->
+  <section id="background">
+    <p class="eyebrow">Background</p>
     <div class="body">
-      <h2 class="h">Background</h2>
       <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. <b>Principal, M&amp;A Technology and Engineering Integration at Amazon</b>, leading five strategic AI-capability acquisitions for AWS, buy-side. CTO at Woot.com. Engineering leadership at Twitch. AI-first SaaS transformation at Valdera. Computer Engineering, USC. Based in southern Spain; work is remote — deal timelines are the constraint, not geography.</p>
     </div>
   </section>
 
-  <!-- §6 CONTACT -->
-  <section class="row" id="contact">
-    <div class="rail"><span class="ref">§6</span><span class="sec">Contact</span></div>
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="eyebrow">Reach a person</p>
     <div class="body">
-      <h2 class="h">Reach a person</h2>
       <div class="contact-lines">
         <a class="link" href="mailto:andrew@andrewedmond.com">andrew@andrewedmond.com</a>
-        <!-- TODO: replace # with the real scheduling link -->
-        <a class="link mono" href="#">Book a call →</a>
+        <a target="_blank" rel="noopener" class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7">Book a call →</a>
       </div>
-      <p class="quiet">Selective <a href="mailto:andrew@andrewedmond.com?subject=Advisory%20enquiry">advisory</a> and <a href="mailto:andrew@andrewedmond.com?subject=Fractional%20enquiry">fractional</a> engagements are taken by referral.</p>
+      <p class="quiet">Selective <a href="https://andrewedmond.com/advisory">advisory</a> and <a href="https://andrewedmond.com/fractional">fractional</a> engagements are taken by referral.</p>
     </div>
   </section>
 
