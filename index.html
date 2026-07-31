@@ -139,7 +139,8 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   #scope > .eyebrow, #evidence > .eyebrow,
   #background > .eyebrow, #contact > .eyebrow, .fw-head > .eyebrow{ margin:0; padding-top:.4rem; }
   #scope > .body, #evidence > .body,
-  #background > .body, #contact > .body, .fw-head > .body{ max-width:74ch; }
+  #background > .body, #contact > .body{ max-width:66ch; }
+  .fw-head > .body{ max-width:74ch; }
   @media (max-width: 820px){
     #scope, #evidence, #background, #contact, .fw-head{ grid-template-columns:1fr; gap:.3rem; }
     #scope > .eyebrow, #evidence > .eyebrow,
@@ -161,10 +162,11 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     font-family:var(--serif); font-weight:420; font-size:1.15rem;
     letter-spacing:.02em; color:var(--gold);
   }
-  .wordmark h1{
+  .wordmark .name{
     font-family:var(--serif); font-optical-sizing:auto;
     font-weight:420; font-size:1.5rem; letter-spacing:.005em;
-    margin:0; line-height:1.1;
+    margin:0; line-height:1.1; color:var(--bone);
+    display:block;
   }
   .wordmark .kicker{
     font-size:.82rem; letter-spacing:.04em; color:var(--bone-3);
@@ -486,7 +488,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   }
   .exhibit p{ margin:0; color:var(--bone-2); }
 
-  .bg{ color:var(--bone-2); max-width:60ch; }
+  .bg{ color:var(--bone-2); }
   .bg b{ color:var(--bone); font-weight:600; }
 
   /* ---- Contact ---- */
@@ -556,6 +558,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     section{ padding:3.25rem 0; }
     .masthead .meta{ text-align:left; }
     .creds .cred{ white-space:normal; }
+    /* stack the hero CTAs so the separator never strands on its own line */
+    .actions{ flex-direction:column; align-items:flex-start; gap:.6rem; }
+    .actions .sep{ display:none; }
     /* single column: meter (bar + LED) sits directly under the title, before the
        prose — so each dimension still leads with its risk read on a phone */
     .crit__row{ display:flex; flex-direction:column; gap:.9rem; }
@@ -583,7 +588,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <div class="brand">
       <span class="monogram" aria-hidden="true">AE</span>
       <div class="wordmark">
-        <h1>Andrew Edmond</h1>
+        <span class="name">Andrew Edmond</span>
         <p class="kicker">Independent buy-side technical due diligence</p>
       </div>
     </div>
@@ -592,7 +597,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
 
   <!-- SUMMARY -->
   <section class="hero" id="summary">
-    <h2 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h2>
+    <h1 class="claim fade">Technical diligence for the <span class="em">AI era.</span></h1>
     <div class="hero-cols">
       <div class="hero-main">
         <p class="proof fade">Most engineers who can assess an AI-built codebase have never sat on the buy side. I’ve done <b>both</b> — I led the buy-side technical diligence on five AI-capability acquisitions at Amazon, and, decades in, I still build production software myself. This year, solo: distributed, encrypted systems and the hard parts of scaling them — and a shipped consumer AI app.</p>
