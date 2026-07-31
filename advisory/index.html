@@ -309,17 +309,17 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
       <span class="monogram" aria-hidden="true">AE</span>
       <div class="wordmark">
         <p class="name">Andrew Edmond</p>
-        <p class="kicker">Advisory &amp; technical counsel</p>
+        <p class="kicker">Advisory &amp; Technical Counsel</p>
       </div>
     </div>
-    <p class="meta"><a class="link" href="https://www.andrewedmond.com">andrewedmond.com ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+    <p class="meta"><a href="https://www.andrewedmond.com">andrewedmond.com ↗</a><br><a href="https://www.linkedin.com/in/nerolabs">linkedin.com/in/nerolabs ↗</a><br>Southern Spain · Remote &amp; onsite</p>
   </header>
 
   <main id="main">
 
     <!-- HERO -->
     <section class="hero">
-      <p class="eyebrow">Advisory &amp; Counsel</p>
+      <p class="eyebrow">Advisory &amp; Technical Counsel</p>
       <h1 class="claim fade">Senior technical counsel — for the decision that's <span class="em">too big to get wrong.</span></h1>
       <div class="hero-cols">
         <div class="hero-main">
@@ -390,5 +390,18 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
   </footer>
 
 </div>
+
+<!-- Lightweight conversion signals: CTA clicks -->
+<script>
+  (function(){
+    function cap(name, props){ if(window.posthog && posthog.capture) posthog.capture(name, props); }
+    document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
+      a.addEventListener('click', function(){ cap('cta_click', {cta:'email', page:'advisory'}); });
+    });
+    document.querySelectorAll('a[href*="calendar.app.google"]').forEach(function(a){
+      a.addEventListener('click', function(){ cap('cta_click', {cta:'book_call', page:'advisory'}); });
+    });
+  })();
+</script>
 </body>
 </html>
