@@ -20,9 +20,17 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 
-<!-- Analytics: pending decision. Recommended = PostHog (EU cloud) in COOKIELESS mode
-     (persistence:'memory', session recording off) so no consent banner is required.
-     Paste the posthog.init snippet with the project key here to activate. -->
+<!-- PostHog (EU cloud) — cookieless: memory persistence, session recording off; no consent banner needed -->
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="an ln init xn Cn Br kn In capture Fn nn calculateEventProperties On register register_once register_for_session unregister unregister_for_session Ln getFeatureFlag getFeatureFlagPayload getFeatureFlagResult getAllFeatureFlags isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync Dn identify setPersonProperties unsetPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset shutdown setIdentity clearIdentity get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException addExceptionStep captureLog startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty An Rn createPersonProfile setInternalOrTestUser $n yn jn opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing Tn debug Ur Rt getPageViewId captureTraceFeedback captureTraceMetric pn".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_n8hxLj38jYdhFbYVYgkcrstUsxU9Taey7xPQoXwhkD76', {
+  api_host: 'https://eu.i.posthog.com',
+  defaults: '2026-05-30',
+  persistence: 'memory',
+  disable_session_recording: true,
+  person_profiles: 'identified_only'
+})
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -212,6 +220,23 @@
   }
 
   /* ---- The Framework: the risk readout (signature block) ---- */
+  /* Breakout: the readout, legend, note and closing block escape the narrow
+     reading measure and center at a wider ~72rem measure — while the eyebrow,
+     heading and lead above stay at the normal .body measure. The breakout is
+     capped by the viewport (min with 100vw minus a gutter) so it can never
+     force horizontal scroll on small screens. */
+  .readout-break{
+    /* The readout escapes the narrow .body reading measure and re-centers at a
+       wider ~72rem measure. It is a direct child of the centered .sheet section,
+       so left:50% + translateX(-50%) centers it on the VIEWPORT; width is capped
+       at 100vw - 2rem so it collapses to full width with no horizontal scroll
+       on small screens. The eyebrow/heading/lead above stay at reading measure. */
+    position:relative;
+    width:min(72rem, 100vw - 2rem);
+    max-width:none;
+    left:50%;
+    transform:translateX(-50%);
+  }
   .readout{
     border:1px solid var(--hair-2);
     background:var(--panel);
@@ -231,27 +256,48 @@
   }
   .readout__head .unit{ color:var(--gold); }
 
-  /* Axis header: LOW RISK → HIGH RISK across the bar channel */
+  /* Axis header: LOW RISK → HIGH RISK across the bar channel.
+     Two macro-columns match the crit rows below: LEFT text measure, RIGHT meter. */
   .axis{
     display:grid;
-    grid-template-columns:2.8rem minmax(0,1fr) 9rem 1.4rem;
-    align-items:center; gap:1.1rem;
-    padding:.6rem 1.3rem;
+    grid-template-columns:minmax(0,1fr) 15rem;
+    align-items:center; gap:1.1rem 2.6rem;
+    padding:.6rem 1.5rem;
     border-bottom:1px solid var(--hair);
     font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
     color:var(--bone-3);
   }
+  .axis .axis-left{
+    display:grid; grid-template-columns:2.8rem minmax(0,1fr); gap:1.1rem;
+  }
+  .axis .axis-meter{
+    display:grid; grid-template-columns:minmax(0,1fr) 1.4rem; gap:1.1rem;
+    align-items:center;
+  }
   .axis .axis-scale{ display:flex; justify-content:space-between; }
+  .axis .axis-level{ text-align:right; }
 
   .crit{
-    padding:1.05rem 1.3rem;
+    padding:1.5rem 1.5rem;
     border-top:1px solid var(--hair);
   }
   .crit:first-of-type{ border-top:0; }
+  /* Two-column row: LEFT text column at a comfortable measure, RIGHT meter column
+     (bar + level LED) with its own space beside the text. */
   .crit__row{
     display:grid;
-    grid-template-columns:2.8rem minmax(0,1fr) 9rem 1.4rem;
-    align-items:center; gap:1.1rem;
+    grid-template-columns:minmax(0,1fr) 15rem;
+    align-items:start; gap:1.1rem 2.6rem;
+  }
+  .crit__text{ min-width:0; }
+  .crit__head{
+    display:grid; grid-template-columns:2.8rem minmax(0,1fr); gap:1.1rem;
+    align-items:baseline;
+  }
+  /* RIGHT column: bar spans the meter channel, LED pinned to the far right */
+  .crit__meter{
+    display:grid; grid-template-columns:minmax(0,1fr) 1.4rem; gap:1.1rem;
+    align-items:center;
   }
   .crit .num{
     font-family:var(--serif); font-optical-sizing:auto;
@@ -288,7 +334,8 @@
   .led--elevated{ background:var(--elevated); color:var(--elevated); }
   .led--high{ background:var(--high); color:var(--high); }
 
-  /* Fuller assessment prose beneath each bar row */
+  /* Fuller assessment prose — sits in the LEFT text column, aligned under the
+     label (past the number index) at a comfortable reading measure. */
   .crit__prose{
     margin:.85rem 0 0;
     padding-left:3.9rem;   /* align under the label column */
@@ -435,15 +482,26 @@
     @keyframes ink{ from{ opacity:0; transform:scale(.3); } to{ opacity:1; transform:scale(1); } }
   }
 
-  /* ---- Mobile ---- */
+  /* ---- Tablet: keep two columns but tighten the meter channel ---- */
+  @media (max-width: 900px) and (min-width: 641px){
+    .axis, .crit__row{ grid-template-columns:minmax(0,1fr) 11rem; gap:1rem 1.8rem; }
+  }
+
+  /* ---- Mobile: collapse to a single column — bar/level drop under the title ---- */
   @media (max-width: 640px){
     section{ padding:3.25rem 0; }
     .masthead .meta{ text-align:left; }
-    .axis, .crit__row{ grid-template-columns:2.3rem minmax(0,1fr) 1.2rem; gap:.8rem; }
-    .axis .gcol, .crit__row .gauge-cell{ display:none; }
-    .crit{ padding:.95rem 1rem; }
+    /* single column: the meter (bar + level) stacks below the text */
+    .crit__row{ grid-template-columns:1fr; gap:.9rem; }
+    .crit__meter{ grid-template-columns:minmax(0,1fr) 1.2rem; gap:.8rem; }
+    /* axis: keep only the No./Dimension labels; the scale/level move into rows */
+    .axis{ grid-template-columns:2.3rem minmax(0,1fr); gap:.8rem; }
+    .axis .axis-left{ display:contents; }
+    .axis .axis-meter{ display:none; }
+    .crit{ padding:1.1rem 1rem; }
     .readout__head, .axis{ padding-left:1rem; padding-right:1rem; }
-    .crit__prose{ padding-left:0; }
+    /* on mobile the meter aligns under the title text, past the number */
+    .crit__meter{ padding-left:3.9rem; }
   }
 </style>
 </head>
@@ -511,167 +569,203 @@
     <div class="body">
       <h2 class="h">How I assess a target.</h2>
       <p class="lead">The job is to know all the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across six dimensions. Each becomes a rated finding in the plain-English risk register I hand the investment committee. Being current on AI-built code is one dimension of this, not the whole of it — it's what a large firm can't do, sitting inside a full-scope assessment they can.</p>
+    </div>
 
+    <div class="readout-break">
       <div class="readout" role="table" aria-label="The six diligence dimensions, assessed risk, and register grammar">
         <div class="readout__head" aria-hidden="true">
           <span>Risk readout — six dimensions</span>
           <span class="unit">low risk → high risk</span>
         </div>
         <div class="axis" aria-hidden="true">
-          <span>No.</span>
-          <span>Dimension</span>
-          <span class="gcol axis-scale"><span>Low risk</span><span>High risk</span></span>
-          <span style="text-align:right">Level</span>
+          <span class="axis-left"><span>No.</span><span>Dimension</span></span>
+          <span class="axis-meter"><span class="axis-scale"><span>Low risk</span><span>High risk</span></span><span class="axis-level">Level</span></span>
         </div>
 
         <!-- 01 — elevated / medium bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">01</span>
-            <span class="lab" role="cell">Architecture &amp; codebase — incl. AI provenance<span class="sub">Was it engineered, or merely generated?</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="66" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
-          </div>
-          <div class="crit__prose">
-            <p>Is the architecture coherent, scalable, and maintainable — and in the AI era, was it actually engineered or merely generated? This is where my hands-on edge lives: I read the code the way the next engineer will have to. I assess the AI-provenance signals specifically —</p>
-            <ul class="subcrit">
-              <li><b>Test coverage relative to generated volume</b> — did the safety net grow with the code, or get left behind?</li>
-              <li><b>Architectural coherence</b> — one design mind, or many local answers stitched together?</li>
-              <li><b>Dependency sprawl</b> — what got pulled in, and who understands it now?</li>
-              <li><b>Commit &amp; review patterns</b> — does the history show judgment, or accepted output?</li>
-              <li><b>Maintainability</b> — can the team change what the tooling produced, or only regenerate it?</li>
-            </ul>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>the codebase looks mature but no one can safely change it — volume without understanding.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">01</span>
+                <span class="lab" role="cell">Architecture &amp; codebase — incl. AI provenance<span class="sub">Was it engineered, or merely generated?</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>Is the architecture coherent, scalable, and maintainable — and in the AI era, was it actually engineered or merely generated? This is where my hands-on edge lives: I read the code the way the next engineer will have to. I assess the AI-provenance signals specifically —</p>
+                <ul class="subcrit">
+                  <li><b>Test coverage relative to generated volume</b> — did the safety net grow with the code, or get left behind?</li>
+                  <li><b>Architectural coherence</b> — one design mind, or many local answers stitched together?</li>
+                  <li><b>Dependency sprawl</b> — what got pulled in, and who understands it now?</li>
+                  <li><b>Commit &amp; review patterns</b> — does the history show judgment, or accepted output?</li>
+                  <li><b>Maintainability</b> — can the team change what the tooling produced, or only regenerate it?</li>
+                </ul>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>the codebase looks mature but no one can safely change it — volume without understanding.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="66" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+            </div>
           </div>
         </div>
 
         <!-- 02 — low risk / short bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">02</span>
-            <span class="lab" role="cell">Engineering process &amp; SDLC maturity<span class="sub">Repeatable and measured, or heroic and individual?</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="32" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
-          </div>
-          <div class="crit__prose">
-            <p>How the team plans, builds, reviews, tests, and ships. Is delivery repeatable and measured, or heroic and dependent on individuals? I look across the whole software development lifecycle: planning and estimation, branching and review discipline, CI/CD, testing strategy, and how predictably work moves from idea to production — including release and incident response.</p>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>process lives in people's heads, releases are risky events, and there's no repeatable path to production.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">02</span>
+                <span class="lab" role="cell">Engineering process &amp; SDLC maturity<span class="sub">Repeatable and measured, or heroic and individual?</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>How the team plans, builds, reviews, tests, and ships. Is delivery repeatable and measured, or heroic and dependent on individuals? I look across the whole software development lifecycle: planning and estimation, branching and review discipline, CI/CD, testing strategy, and how predictably work moves from idea to production — including release and incident response.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>process lives in people's heads, releases are risky events, and there's no repeatable path to production.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="32" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
+            </div>
           </div>
         </div>
 
         <!-- 03 — high risk / long bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">03</span>
-            <span class="lab" role="cell">Organization &amp; key-person risk<span class="sub">Where does the critical knowledge actually live?</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--high" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="106" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--high" role="cell" aria-label="assessed risk: high"></span>
-          </div>
-          <div class="crit__prose">
-            <p>The team behind the code: structure, depth, and where the knowledge actually lives. Bus-factor is the quiet deal-killer. I map who holds what, how concentrated critical knowledge is, and whether the organization can absorb a departure. I've seen a deal hinge on a single key person — a risk that had to be resolved before close. Finding that early, and naming what it takes to fix it, is the point.</p>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and ownership is undocumented.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">03</span>
+                <span class="lab" role="cell">Organization &amp; key-person risk<span class="sub">Where does the critical knowledge actually live?</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>The team behind the code: structure, depth, and where the knowledge actually lives. Bus-factor is the quiet deal-killer. I map who holds what, how concentrated critical knowledge is, and whether the organization can absorb a departure. I've seen a deal hinge on a single key person — a risk that had to be resolved before close. Finding that early, and naming what it takes to fix it, is the point.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and ownership is undocumented.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--high" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="106" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--high" role="cell" aria-label="assessed risk: high"></span>
+            </div>
           </div>
         </div>
 
         <!-- 04 — elevated / medium bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">04</span>
-            <span class="lab" role="cell">Product &amp; engineering maturity<span class="sub">Built for where the business is going, or barely keeping up?</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="64" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
-          </div>
-          <div class="crit__prose">
-            <p>How mature the product and engineering function are relative to the company's stage and the investment thesis. Is the organization building for where the business is going, or barely keeping up with where it is? I assess roadmap credibility, technical debt and its trajectory, scalability headroom, and whether engineering investment matches the growth the deal assumes.</p>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>maturity lags the stage, and debt is compounding faster than it's paid down.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">04</span>
+                <span class="lab" role="cell">Product &amp; engineering maturity<span class="sub">Built for where the business is going, or barely keeping up?</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>How mature the product and engineering function are relative to the company's stage and the investment thesis. Is the organization building for where the business is going, or barely keeping up with where it is? I assess roadmap credibility, technical debt and its trajectory, scalability headroom, and whether engineering investment matches the growth the deal assumes.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>maturity lags the stage, and debt is compounding faster than it's paid down.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="64" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+            </div>
           </div>
         </div>
 
         <!-- 05 — low risk / short bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">05</span>
-            <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they're existential.</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="30" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
-          </div>
-          <div class="crit__prose">
-            <p>The risks that stay invisible until they become existential. I assess security practice and exposure, data handling, and the operational and reliability posture — the failure modes that turn into a headline, an outage, or a liability after close.</p>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>security is an afterthought, single points of failure go unmanaged, and there's no operational discipline.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">05</span>
+                <span class="lab" role="cell">Security &amp; reliability posture<span class="sub">The risks that stay invisible until they're existential.</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>The risks that stay invisible until they become existential. I assess security practice and exposure, data handling, and the operational and reliability posture — the failure modes that turn into a headline, an outage, or a liability after close.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>security is an afterthought, single points of failure go unmanaged, and there's no operational discipline.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--low" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="30" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--low" role="cell" aria-label="assessed risk: low"></span>
+            </div>
           </div>
         </div>
 
         <!-- 06 — elevated / medium bar -->
         <div class="crit" role="row">
           <div class="crit__row">
-            <span class="num" role="cell">06</span>
-            <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
-            <span class="gauge-cell" role="cell" aria-hidden="true">
-              <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
-                <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
-                <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
-                <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
-                <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
-                <rect class="bar" x="0" y="6" width="62" height="12" rx="2"/>
-              </svg>
-            </span>
-            <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
-          </div>
-          <div class="crit__prose">
-            <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
-            <ul class="flags">
-              <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
-            </ul>
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">06</span>
+                <span class="lab" role="cell">Fit with the acquirer<span class="sub">What it will actually take to combine the two.</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>Buy-side specific, and where value is won or lost: how well the target's engineering organization and technology fit the acquirer's. I assess org and cultural compatibility, technology and platform alignment, and the real cost and risk of integration — so the committee understands what it will actually take to combine the two, not just what it takes to buy.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>stacks, cultures, or operating models are incompatible enough to make integration far costlier than modeled.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="62" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+            </div>
           </div>
         </div>
       </div>
