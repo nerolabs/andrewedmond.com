@@ -470,6 +470,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     .crit:nth-of-type(4) .bar{ animation-delay:.46s; }
     .crit:nth-of-type(5) .bar{ animation-delay:.58s; }
     .crit:nth-of-type(6) .bar{ animation-delay:.70s; }
+    .crit:nth-of-type(7) .bar{ animation-delay:.82s; }
     @keyframes sweep{ to{ transform:scaleX(1); } }
 
     .led{ opacity:0; animation:ink .5s ease forwards; }
@@ -479,6 +480,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     .crit:nth-of-type(4) .led{ animation-delay:.91s; }
     .crit:nth-of-type(5) .led{ animation-delay:1.03s; }
     .crit:nth-of-type(6) .led{ animation-delay:1.15s; }
+    .crit:nth-of-type(7) .led{ animation-delay:1.27s; }
     @keyframes ink{ from{ opacity:0; transform:scale(.3); } to{ opacity:1; transform:scale(1); } }
   }
 
@@ -568,13 +570,13 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <p class="eyebrow">The Framework</p>
     <div class="body">
       <h2 class="h">How I assess a target.</h2>
-      <p class="lead">The job is to know all the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across six dimensions. Each becomes a detailed, rated finding in a plain-English risk register — written so the whole cross-functional investment committee, not just its engineers, can act on it. Being fluent in AI-built code is one of those dimensions — the part most large firms can't cover — but it sits inside the full-scope assessment, never stands in for it.</p>
+      <p class="lead">The job is to know all the risks — technical, organizational, and human — and to surface any material issues that must be fixed before the deal closes. Below is how I assess a target, across seven dimensions. Each becomes a detailed, rated finding in a plain-English risk register — written so the whole cross-functional investment committee, not just its engineers, can act on it. Being fluent in AI-built code is one of those dimensions — the part most large firms can't cover — but it sits inside the full-scope assessment, never stands in for it.</p>
     </div>
 
     <div class="readout-break">
-      <div class="readout" role="table" aria-label="The six diligence dimensions, assessed risk, and register grammar">
+      <div class="readout" role="table" aria-label="The seven diligence dimensions, assessed risk, and register grammar">
         <div class="readout__head" aria-hidden="true">
-          <span>Risk readout — six dimensions</span>
+          <span>Risk readout — seven dimensions</span>
           <span class="unit">low risk → high risk</span>
         </div>
         <div class="axis" aria-hidden="true">
@@ -658,9 +660,9 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
                 <span class="lab" role="cell">Organization &amp; key-person risk<span class="sub">Where does the critical knowledge actually live?</span></span>
               </div>
               <div class="crit__prose">
-                <p>The team behind the code: structure, depth, and where the knowledge actually lives. Bus-factor is the quiet deal-killer. I map who holds what, how concentrated critical knowledge is, and whether the organization can absorb a departure. I've seen a deal hinge on a single key person — a risk that had to be resolved before close. Finding that early, and naming what it takes to fix it, is the point.</p>
+                <p>The team behind the code — its structure, depth, and where the knowledge actually lives. Single points of knowledge are the quiet deal-killer, but organizational risk runs broader than any one person: I assess how the org hires, develops, manages, and exits people, how it onboards and trains, and whether it can absorb a departure or scale with the plan. I've seen deals hinge on a single key person — a risk that has to be resolved before close. Finding organizational issues early, and naming what it takes to fix them, is the point.</p>
                 <ul class="flags">
-                  <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and ownership is undocumented.</li>
+                  <li><span class="tag tag--flag">Risk rises when</span>critical systems depend on one or two people, the bench is thin, and the organization has no repeatable way to hire, develop, and retain the engineers it needs.</li>
                 </ul>
               </div>
             </div>
@@ -768,6 +770,36 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
             </div>
           </div>
         </div>
+
+        <!-- 07 — elevated / medium bar -->
+        <div class="crit" role="row">
+          <div class="crit__row">
+            <div class="crit__text">
+              <div class="crit__head">
+                <span class="num" role="cell">07</span>
+                <span class="lab" role="cell">Observability &amp; operations<span class="sub">Can the team see production — and act when it breaks?</span></span>
+              </div>
+              <div class="crit__prose">
+                <p>Good software has to run in production, not just pass review. I assess the operational picture: live telemetry and monitoring, error tracking and logging, on-call and incident response when things turn bad, and the operational review processes that keep a system healthy over time. AI-built products often ship fast and instrument late — so this is where velocity quietly borrows against reliability.</p>
+                <ul class="flags">
+                  <li><span class="tag tag--flag">Risk rises when</span>there's little visibility into production, incidents are handled ad hoc, on-call is informal, and no one owns operational health.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="crit__meter">
+              <span class="gauge-cell" role="cell" aria-hidden="true">
+                <svg class="gauge gauge--elevated" viewBox="0 0 120 24" preserveAspectRatio="none">
+                  <rect class="track" x="0" y="0" width="120" height="24" rx="2"/>
+                  <line class="grid-tick" x1="30" y1="0" x2="30" y2="24"/>
+                  <line class="grid-tick" x1="60" y1="0" x2="60" y2="24"/>
+                  <line class="grid-tick" x1="90" y1="0" x2="90" y2="24"/>
+                  <rect class="bar" x="0" y="6" width="64" height="12" rx="2"/>
+                </svg>
+              </span>
+              <span class="led led--elevated" role="cell" aria-label="assessed risk: elevated"></span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="legend" aria-hidden="true">
@@ -789,7 +821,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
         </div>
         <div class="cn">
           <h3>The deliverable</h3>
-          <p>A plain-English risk register for the investment committee: every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take.</p>
+          <p>A plain-English risk register the whole committee can read — every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take. Behind it sits the full report: a detailed write-up of all seven dimensions to double-click into, raw notes and evidence included. I show my work.</p>
         </div>
       </div>
     </div>
@@ -805,7 +837,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
       </div>
       <div class="exhibit">
         <h3>SiltHQ</h3>
-        <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>.</p>
+        <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>. Where I practice AI-assisted development against genuinely hard problems: distributed-systems logic, scaling, encryption, and networking.</p>
       </div>
       <p class="quiet">Source available for the projects above on request, or on <a href="https://github.com/">GitHub</a> — engineered to the standard the framework describes.</p>
     </div>
