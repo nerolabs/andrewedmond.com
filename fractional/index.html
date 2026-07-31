@@ -6,109 +6,323 @@
 <meta name="robots" content="noindex">
 <title>Andrew Edmond — Fractional CTO</title>
 <meta name="description" content="Senior engineering leadership, part-time. Technical direction, the team, and delivery owned end to end — for founders and portfolio-company CEOs.">
+<meta name="theme-color" content="#211C18">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --bg:#fbfbfa; --ink:#181818; --dim:#565654; --line:#e4e3df; --panel:#f3f2ef;
-    --accent:#6E1D24; --accent-2:#8a2530;
-    --sans: "Helvetica Neue", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    /* Palette — "Private Office": deep espresso, warm bone type, antique gold */
+    --ground:  #211C18;   /* espresso ground */
+    --panel:   #29231E;   /* recessed panels */
+    --panel-2: #2F2822;   /* lifted card */
+    --bone:    #EDE7DC;   /* primary type */
+    --bone-2:  #C4B9AA;   /* secondary type */
+    --bone-3:  #8E8477;   /* labels / marginalia */
+    --hair:    #43392F;   /* hairlines */
+    --hair-2:  #574B3E;   /* lifted hairlines */
+    --gold:    #C2A15A;   /* the one accent */
+    --gold-2:  #D8BC7E;   /* hover */
+
+    --measure: 60ch;
+    --sheet: 58rem;
+
+    --serif: "Fraunces", "Hoefler Text", "Georgia", "Times New Roman", serif;
+    --sans:  "Mulish", "Avenir Next", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:44rem;margin:0 auto;padding:0 1.5rem;}
-  a{color:var(--accent);text-decoration:none;}
-  .link{border-bottom:1px solid rgba(110,29,36,.3);padding-bottom:1px;transition:.15s;}
-  .link:hover{color:var(--accent-2);border-bottom-color:var(--accent-2);}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-  .skip{position:absolute;left:-999px;}.skip:focus{left:1rem;top:1rem;background:var(--ink);color:#fff;padding:.5rem .8rem;}
 
-  header.top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:2.2rem 0 1.4rem;border-bottom:1px solid var(--line);flex-wrap:wrap;}
-  .name{font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:1.05rem;}
-  .backlink{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--dim);}
-  .backlink:hover{color:var(--accent);}
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--bone);
+    font-family:var(--sans);
+    font-size:1.0625rem;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  /* faint warm vignette so the ground reads like paper under a desk lamp */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% -10%, #2B241E 0%, #211C18 55%, #1C1814 100%);
+  }
 
-  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 .8rem;}
-  h1{font-size:clamp(2.1rem,5.5vw,3.1rem);line-height:1.06;letter-spacing:-.02em;font-weight:700;margin:0 0 1.2rem;text-wrap:balance;}
-  .lede{font-size:clamp(1.1rem,2.2vw,1.28rem);color:var(--ink);max-width:38ch;margin:0 0 1.8rem;}
-  .actions{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;font-family:var(--mono);font-size:.9rem;align-items:center;}
-  .actions .sep{color:var(--line);}
+  /* ---- Links ---- */
+  a{ color:var(--gold); text-decoration:none; }
+  .link{
+    color:var(--gold);
+    background-image:linear-gradient(currentColor,currentColor);
+    background-size:100% 1px; background-repeat:no-repeat;
+    background-position:0 1.18em;
+    padding-bottom:1px;
+    transition:color .18s ease, background-size .18s ease;
+  }
+  .link:hover{ color:var(--gold-2); }
 
-  section{padding:2.6rem 0;border-top:1px solid var(--line);}
-  .hero{padding:3rem 0 2.6rem;border-top:0;}
-  h2{font-size:1.4rem;letter-spacing:-.01em;margin:0 0 1.3rem;font-weight:700;}
-  .own{list-style:none;margin:0;padding:0;display:grid;gap:1.05rem;}
-  .own li{padding-left:1.1rem;position:relative;}
-  .own li::before{content:"";position:absolute;left:0;top:.62em;width:.45rem;height:.45rem;background:var(--accent);border-radius:50%;}
-  .own b{font-weight:700;}
-  .fit{list-style:none;margin:0;padding:0;display:grid;gap:.7rem;color:var(--dim);}
-  .fit li{padding-left:1.4rem;position:relative;}
-  .fit li::before{content:"→";position:absolute;left:0;color:var(--accent);}
-  .how{color:var(--dim);max-width:52ch;}
-  .bg{color:var(--dim);}.bg b{color:var(--ink);font-weight:600;}
-  .contact-lines{display:flex;flex-direction:column;gap:.8rem;font-size:1.1rem;}
-  footer{padding:2.4rem 0 3rem;border-top:1px solid var(--line);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
-  .note{background:var(--panel);border:1px dashed var(--line);padding:.7rem .9rem;font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:1.5rem;}
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
+
+  .skip{
+    position:absolute; left:-999px; top:0;
+    background:var(--gold); color:var(--ground);
+    padding:.6rem 1rem; z-index:10; font:600 .9rem/1 var(--sans);
+  }
+  .skip:focus{ left:.75rem; top:.75rem; }
+
+  /* ---- Sheet + rhythm ---- */
+  .sheet{ max-width:var(--sheet); margin:0 auto; padding:0 1.6rem; }
+  .body{ max-width:var(--measure); }
+
+  section{ padding:4.25rem 0; }
+  /* Signature rule: a hairline capped at its left by a short gold tick */
+  section + section, .divider-top{
+    position:relative;
+    border-top:1px solid var(--hair);
+  }
+  section + section::before, .divider-top::before{
+    content:""; position:absolute; top:-1px; left:0;
+    width:2.75rem; height:1px; background:var(--gold);
+  }
+
+  /* ---- Eyebrow (gold small-caps) — the section signposting ---- */
+  .eyebrow{
+    font-family:var(--serif);
+    font-optical-sizing:auto;
+    font-weight:560;
+    font-size:.82rem;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 1.5rem;
+  }
+
+  /* ---- Masthead + monogram ---- */
+  .masthead{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:1.2rem 2rem;
+    padding:2.75rem 0 2.5rem;
+  }
+  .brand{ display:flex; align-items:center; gap:1rem; }
+  .monogram{
+    flex:0 0 auto;
+    width:3.1rem; height:3.1rem; border-radius:50%;
+    border:1px solid var(--gold);
+    display:grid; place-items:center;
+    font-family:var(--serif); font-weight:420; font-size:1.15rem;
+    letter-spacing:.02em; color:var(--gold);
+  }
+  .wordmark .name{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:420; font-size:1.5rem; letter-spacing:.005em;
+    margin:0; line-height:1.1; color:var(--bone);
+    display:block;
+  }
+  .wordmark .kicker{
+    font-size:.82rem; letter-spacing:.04em; color:var(--bone-3);
+    margin:.2rem 0 0;
+  }
+  .masthead .meta{
+    font-size:.8rem; letter-spacing:.05em; color:var(--bone-3);
+    text-align:right; line-height:1.5;
+  }
+  .masthead .meta a{ color:var(--bone-3); }
+  .masthead .meta a:hover{ color:var(--gold); }
+
+  /* ---- Hero / Summary ---- */
+  .hero{ padding-top:1.5rem; }
+  .claim{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:340;
+    font-size:clamp(2.6rem, 6.4vw, 4.6rem);
+    line-height:1.02;
+    letter-spacing:-.012em;
+    margin:.2rem 0 1.6rem;
+    text-wrap:balance;
+    color:var(--bone);
+  }
+  .claim .em{ font-style:italic; font-weight:340; color:var(--gold); }
+  .proof{
+    font-size:clamp(1.12rem,2.3vw,1.32rem);
+    line-height:1.55;
+    color:var(--bone-2);
+    max-width:46ch;
+    margin:0 0 2.2rem;
+  }
+  .proof b{ font-weight:600; color:var(--bone); }
+  .actions{
+    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem 1.6rem;
+    font-size:.98rem;
+  }
+  .actions .sep{ color:var(--hair-2); }
+
+  /* ---- Section headings ---- */
+  .h{
+    font-family:var(--serif); font-optical-sizing:auto;
+    font-weight:420;
+    font-size:clamp(1.7rem,3.3vw,2.35rem);
+    letter-spacing:-.006em;
+    line-height:1.12;
+    margin:0 0 1.3rem;
+    color:var(--bone);
+  }
+  .lead{ color:var(--bone-2); margin:0 0 1.4rem; max-width:56ch; }
+  .lead:last-of-type{ margin-bottom:2rem; }
+  .lead b{ color:var(--bone); font-weight:600; }
+
+  /* ---- "What I own" — gold-tick list (framework sub-list grammar) ---- */
+  .own{
+    list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:1.05rem;
+    max-width:60ch;
+  }
+  .own li{ position:relative; padding-left:1.15rem; color:var(--bone-2); }
+  .own li::before{
+    content:""; position:absolute; left:0; top:.62em;
+    width:.4rem; height:1px; background:var(--gold);
+  }
+  .own b{ color:var(--bone); font-weight:600; }
+
+  /* ---- "When a fractional CTO fits" — arrowed list ---- */
+  .fit{
+    list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:.7rem;
+    color:var(--bone-2); max-width:60ch;
+  }
+  .fit li{ position:relative; padding-left:1.5rem; }
+  .fit li::before{ content:"→"; position:absolute; left:0; color:var(--gold); }
+
+  /* ---- Prose blocks ---- */
+  .how{ color:var(--bone-2); max-width:56ch; margin:0; }
+  .bg{ color:var(--bone-2); max-width:60ch; margin:0; }
+  .bg b{ color:var(--bone); font-weight:600; }
+
+  /* ---- Contact ---- */
+  .contact-lines{
+    display:flex; flex-direction:column; gap:1rem;
+    font-size:1.22rem;
+  }
+
+  /* ---- Footer ---- */
+  footer{
+    padding:2.75rem 0 3.5rem;
+    border-top:1px solid var(--hair);
+    position:relative;
+    font-size:.78rem; letter-spacing:.06em;
+    color:var(--bone-3);
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:.6rem;
+  }
+  footer::before{
+    content:""; position:absolute; top:-1px; left:0;
+    width:2.75rem; height:1px; background:var(--gold);
+  }
+
+  /* ---- Load motion: bone type settles ---- */
+  @media (prefers-reduced-motion: no-preference){
+    .fade{ opacity:0; transform:translateY(10px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
+    .hero .claim{ animation-delay:.05s; }
+    .hero .proof{ animation-delay:.16s; }
+    .hero .actions{ animation-delay:.26s; }
+    @keyframes rise{ to{ opacity:1; transform:none; } }
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 640px){
+    section{ padding:3.25rem 0; }
+    .masthead .meta{ text-align:left; }
+  }
 </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="wrap">
-  <header class="top">
-    <span class="name">Andrew Edmond</span>
-    <a class="backlink" href="https://andrewedmond.com">andrewedmond.com ↗</a>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="brand">
+      <span class="monogram" aria-hidden="true">AE</span>
+      <div class="wordmark">
+        <span class="name">Andrew Edmond</span>
+        <p class="kicker">Fractional CTO</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.andrewedmond.com">andrewedmond.com ↗</a><br>Southern Spain · Remote</p>
   </header>
 
   <main id="main">
-    <div class="note">DRAFT — provisional skin. Copy &amp; structure for review; final look will match the chosen site design.</div>
 
+    <!-- HERO -->
     <section class="hero">
-      <p class="eyebrow">Fractional CTO</p>
-      <h1>A CTO in the room — part-time, and on the hook.</h1>
-      <p class="lede">For founders and CEOs who need senior engineering leadership now — not a nine-month search. I own the technical direction, the team, and the outcomes, at the fraction you actually need.</p>
-      <div class="actions">
-        <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
-        <span class="sep">·</span>
-        <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call</a>
+      <p class="eyebrow fade">Fractional CTO</p>
+      <div class="body">
+        <h1 class="claim fade">A CTO in the room — <span class="em">part-time, and on the hook.</span></h1>
+        <p class="proof fade">For founders and CEOs who need senior engineering leadership now — not a nine-month search. I own the technical direction, the team, and the outcomes, at the fraction you actually need.</p>
+        <div class="actions fade">
+          <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
+          <span class="sep">·</span>
+          <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call</a>
+        </div>
       </div>
     </section>
 
-    <section>
-      <h2>What I own</h2>
-      <ul class="own">
-        <li><b>Technical strategy &amp; architecture.</b> The roadmap, the hard build-vs-buy calls, and the direction the whole team builds toward.</li>
-        <li><b>The engineering team.</b> Hiring, structure, mentoring, and the standards that make delivery predictable instead of heroic.</li>
-        <li><b>Delivery &amp; velocity.</b> Shipping on a cadence your customers and investors can count on.</li>
-        <li><b>Security &amp; reliability posture.</b> The risks that stay invisible until they become existential.</li>
-        <li><b>The board conversation.</b> Translating engineering into terms your directors and investors can act on.</li>
-        <li><b>AI as an advantage, not a liability.</b> Using modern tooling to move fast — without building something no one on the team can maintain.</li>
-      </ul>
+    <!-- WHAT I OWN -->
+    <section id="own">
+      <p class="eyebrow">What I own</p>
+      <div class="body">
+        <ul class="own">
+          <li><b>Technical strategy &amp; architecture.</b> The roadmap, the hard build-vs-buy calls, and the direction the whole team builds toward.</li>
+          <li><b>The engineering team.</b> Hiring, structure, mentoring, and the standards that make delivery predictable instead of heroic.</li>
+          <li><b>Delivery &amp; velocity.</b> Shipping on a cadence your customers and investors can count on.</li>
+          <li><b>Security &amp; reliability posture.</b> The risks that stay invisible until they become existential.</li>
+          <li><b>The board conversation.</b> Translating engineering into terms your directors and investors can act on.</li>
+          <li><b>AI as an advantage, not a liability.</b> Using modern tooling to move fast — without building something no one on the team can maintain.</li>
+        </ul>
+      </div>
     </section>
 
-    <section>
-      <h2>When a fractional CTO fits</h2>
-      <ul class="fit">
-        <li>You have engineers, but no senior leader to point them.</li>
-        <li>You're between CTOs and can't afford the gap.</li>
-        <li>You're a technical founder who needs to get back to product and customers.</li>
-        <li>You're a portfolio company that needs a steady technical hand after investment.</li>
-      </ul>
+    <!-- WHEN A FRACTIONAL CTO FITS -->
+    <section id="fit">
+      <p class="eyebrow">When a fractional CTO fits</p>
+      <div class="body">
+        <ul class="fit">
+          <li>You have engineers, but no senior leader to point them.</li>
+          <li>You're between CTOs and can't afford the gap.</li>
+          <li>You're a technical founder who needs to get back to product and customers.</li>
+          <li>You're a portfolio company that needs a steady technical hand after investment.</li>
+        </ul>
+      </div>
     </section>
 
-    <section>
-      <h2>How it works</h2>
-      <p class="how">An ongoing engagement, structured around what you need — typically a set commitment each week, fully remote. I'm accountable, not advisory: in the room, owning outcomes. Terms by conversation.</p>
+    <!-- HOW IT WORKS -->
+    <section id="how">
+      <p class="eyebrow">How it works</p>
+      <div class="body">
+        <h2 class="h">How it works.</h2>
+        <p class="how">An ongoing engagement, structured around what you need — typically a set commitment each week, fully remote. I'm accountable, not advisory: in the room, owning outcomes. Terms by conversation.</p>
+      </div>
     </section>
 
-    <section>
-      <h2>Who I am</h2>
-      <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. <b>CTO at Woot.com</b> (Amazon), engineering leadership at Twitch, and Principal, M&amp;A Technology and Engineering Integration at Amazon, leading five AI-capability acquisitions for AWS. AI-first SaaS transformation at Valdera. Currently building production software solo with AI tooling — <a class="link" href="https://getcamino.app">Get Camino</a>, empty repo to shipped product in under a week. Computer Engineering, USC. Southern Spain; fully remote.</p>
+    <!-- WHO I AM -->
+    <section id="who">
+      <p class="eyebrow">Who I am</p>
+      <div class="body">
+        <p class="bg">Nearly thirty years in engineering leadership — CTO, VP Engineering, and principal-level roles. <b>CTO at Woot.com</b> (Amazon), engineering leadership at Twitch, and Principal, M&amp;A Technology and Engineering Integration at Amazon, leading five AI-capability acquisitions for AWS. AI-first SaaS transformation at Valdera. Currently building production software solo with AI tooling — <a class="link" href="https://getcamino.app">Get Camino</a>, empty repo to shipped product in under a week. Computer Engineering, USC. Southern Spain; fully remote.</p>
+      </div>
     </section>
 
-    <section>
-      <h2>Start a conversation</h2>
-      <div class="contact-lines">
-        <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
-        <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call →</a>
+    <!-- CONTACT -->
+    <section id="contact">
+      <p class="eyebrow">Start a conversation</p>
+      <div class="body">
+        <div class="contact-lines">
+          <a class="link" href="mailto:andrew@andrewedmond.com?subject=Fractional%20CTO">andrew@andrewedmond.com</a>
+          <a class="link" href="https://calendar.app.google/YZXEWnueJPbcj1Kw7" target="_blank" rel="noopener">Book a call →</a>
+        </div>
       </div>
     </section>
   </main>
@@ -118,6 +332,7 @@
     <span>Fractional CTO</span>
     <span>Southern Spain · Remote</span>
   </footer>
+
 </div>
 </body>
 </html>
