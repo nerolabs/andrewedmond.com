@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tests encode beliefs, and beliefs can be wrong at scale — Andrew Edmond</title>
+<meta name="description" content="The robots test the app — real magic-link sign-in, a 181-profile matrix in CI — and the night an audit found tests loyally protecting the wrong answers.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/tests-encode-beliefs/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/tests-encode-beliefs/">
+<meta property="og:title" content="Tests encode beliefs, and beliefs can be wrong at scale — Andrew Edmond">
+<meta property="og:description" content="The robots test the app — real magic-link sign-in, a 181-profile matrix in CI — and the night an audit found tests loyally protecting the wrong answers.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 7 of 10</p>
+      <h1 class="article-title">Tests encode beliefs, and beliefs can be wrong at scale</h1>
+    </div>
+    <p class="article-dek">Everyone brags that the robots test their app. The part that matters more: a test suite can be perfectly green and loyal to the wrong answer — and four of mine were.</p>
+    <p class="article-meta"><span>Jul 22, 2026</span><span class="dot">·</span><span>2 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">Tests encode beliefs</span><span class="fc-sub">One family bug report. Then the whole rule engine got audited.</span></figcaption>
+<div class="fc-stats">
+<div class="fc-stat"><span class="fc-figure">181 × 16</span><span class="fc-label">generated profiles × classes of expectation, checked against realistic households</span></div>
+<div class="fc-stat"><span class="fc-figure">15</span><span class="fc-label">findings in one night — ten fixed and deployed before morning</span></div>
+<div class="fc-stat"><span class="fc-figure">4</span><span class="fc-label">existing tests were asserting bugs as correct behavior — green, and loyal to the wrong answer</span></div>
+</div>
+</figure>
+<p>The robots test my app: sixteen end-to-end journeys against the live staging site on every deploy — “twelve tests, twelve seconds” when the suite first landed. It grew. That’s what test suites are supposed to do.</p>
+<p>Sign-in runs through the real magic-link machinery — no test backdoor, because a test-only backdoor would be testing the backdoor. The suite’s very first run caught a React hydration error firing on every page load. Humans had scrolled past it for days.</p>
+<p>That’s the part every AI-build post brags about. Here’s the part that matters more: tests encode beliefs, and beliefs can be wrong at scale.</p>
+<p>When a family tester found the engine giving a Spanish citizen the foreign-national registration form, we didn’t just fix the bug. We audited every rule in the catalog against 181 generated profiles and 16 classes of expectation. Fifteen findings in one night.</p>
+<p>The uncomfortable four: four existing tests were <em>asserting</em> bugs as correct behavior — green checkmarks faithfully protecting the wrong answer. One test persona, modeled on the exact household that reported the bug, had the bug baked into its expectations. The suite wasn’t lying. It was loyal to what we’d believed when we wrote it.</p>
+<p>So the audit became infrastructure: the 181-profile matrix now runs in CI on every push, and any fix that changes behavior starts by grepping the tests for assertions that encode the old behavior.</p>
+<p>Today: roughly 4,100 lines of test code against 14,500 of application code. The AI wrote most of both, in minutes each. Deciding what the tests should believe — and re-interrogating those beliefs when reality disagreed — that stayed human.</p>
+<p>Hand-testing stops scaling exactly when the product starts working. So does trusting your own test suite.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/the-funnel-outranked-us/"><span class="np-label">← Earlier</span><span class="np-title">The funnel filed the complaints</span></a>
+    <a class="next" href="/blog/the-bug-my-wife-found/"><span class="np-label">Next →</span><span class="np-title">The bug my wife found</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>

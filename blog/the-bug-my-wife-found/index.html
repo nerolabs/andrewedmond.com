@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The bug my wife found — Andrew Edmond</title>
+<meta name="description" content="A ducked-audio bug that survived multiple builds, the turn-taking fix, and the harder decision — retiring Lola&#39;s voice because the observed experience never fit.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/the-bug-my-wife-found/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/the-bug-my-wife-found/">
+<meta property="og:title" content="The bug my wife found — Andrew Edmond">
+<meta property="og:description" content="A ducked-audio bug that survived multiple builds, the turn-taking fix, and the harder decision — retiring Lola&#39;s voice because the observed experience never fit.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 8 of 10</p>
+      <h1 class="article-title">The bug my wife found</h1>
+    </div>
+    <p class="article-dek">A ducked-audio bug that three builds had survived, the smallest turn-taking fix — and the far harder call to delete the feature it lived in.</p>
+    <p class="article-meta"><span>Jul 28, 2026</span><span class="dot">·</span><span>1 min read</span></p>
+    
+    <div class="prose">
+<figure class="fc-quote">
+<p>Sunk cost is not a product argument. The verdict was in the watching, not in the effort.</p>
+<p class="fc-attrib">Three weeks in, we retired Lola's voice entirely</p>
+</figure>
+<p>The most precise bug report of the build didn’t come from the AI, the tests, or the simulator. It came from my wife.</p>
+<p>Five rounds of family testing — real relatives, real phones — and round four produced a diagnosis worthy of a QA veteran (she is one): Lola’s voice wasn’t broken, it was <em>ducked</em>. Opening the microphone lowered her volume, and the duck was never released — so everything after went quiet. The bug had survived multiple builds, because in a simulator with no real microphone session, it doesn’t exist.</p>
+<p>The fix was explicit turn-taking: opening the mic cuts Lola’s line outright; every later line plays at full volume. Round five added the companion rule I now apply everywhere — every waiting state needs an exit. No spinner lives past 35 seconds. The mic cue appears only when the mic is actually hot, because fast talkers were losing their first words to a cue that lied.</p>
+<p>And then the honest ending: three weeks in, we retired Lola’s voice entirely.</p>
+<p>Not because the engineering failed — the server proxying, the caching, the turn-taking all worked. Because the <em>observed</em> experience never fit. Watching real people tap briskly through a three-minute interview, the spoken voice was theater: charming in the demo, skipped in reality. Dictation stayed; performance went.</p>
+<p>Killing it stung. The sunk engineering argued loudly for keeping it. Sunk cost is not a product argument — the verdict was in the watching, not in the effort.</p>
+<p>AI made the feature cheap to build. It made it exactly zero percent easier to admit the feature shouldn’t exist.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/tests-encode-beliefs/"><span class="np-label">← Earlier</span><span class="np-title">Tests encode beliefs, and beliefs can be wrong at scale</span></a>
+    <a class="next" href="/blog/twelve-days-with-apple/"><span class="np-label">Next →</span><span class="np-title">Twelve days with Apple's reviewers</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>

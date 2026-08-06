@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twelve days with Apple's reviewers — Andrew Edmond</title>
+<meta name="description" content="The App Store review gauntlet round by round — a real defect, three AI questions answered by design, a caption edit — and why the standards, not the tooling, were the reason it survived.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/twelve-days-with-apple/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/twelve-days-with-apple/">
+<meta property="og:title" content="Twelve days with Apple&#39;s reviewers — Andrew Edmond">
+<meta property="og:description" content="The App Store review gauntlet round by round — a real defect, three AI questions answered by design, a caption edit — and why the standards, not the tooling, were the reason it survived.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 9 of 10</p>
+      <h1 class="article-title">Twelve days with Apple's reviewers</h1>
+    </div>
+    <p class="article-dek">The strictest external review most software ever gets, against a codebase largely written by AI. What four rounds actually caught — and what they didn’t.</p>
+    <p class="article-meta"><span>Jul 31, 2026</span><span class="dot">·</span><span>2 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">Twelve days, four rounds</span><span class="fc-sub">The only code-adjacent change: one word, in one caption</span></figcaption>
+<ol class="fc-steplist">
+<li><span class="fc-num">01</span><div><h4>A real defect</h4><p>A "coming soon to Google Play" pill rendered inside the iOS binary. Now gated web-only, with a regression test.</p></div></li>
+<li><span class="fc-num">02</span><div><h4>Three AI questions</h4><p>In-house? Third-party models? Where's consent? Answered in writing — nothing to change, designed in on day one.</p></div></li>
+<li><span class="fc-num">03</span><div><h4>One word</h4><p>"Free" in a caption was ruled a price reference. One caption edit.</p></div></li>
+<li><span class="fc-num">04</span><div><h4>Silence — then approval</h4></div></li>
+</ol>
+</figure>
+<p>Apple’s reviewers spent twelve days going through the app I built in a week. Across four rounds, the only code-adjacent change they demanded was one word, in one screenshot caption.</p>
+<p>Get Camino is live on the App Store. Here’s what the gauntlet actually looked like — because “we shipped” is the least useful part of the story.</p>
+<p><strong>Round 1 — a real defect, and mine.</strong> The home page’s “coming soon to Google Play” pill was rendering inside the iOS binary. Fair rejection. The fix wasn’t to delete the pill: the whole band is now gated web-only, with a regression test so rival-store copy can never re-enter a native build again. Fix the class, not the instance.</p>
+<p><strong>Round 2 — no defect.</strong> Three written questions about the AI: is it in-house, does user data reach third-party models, where exactly do users consent? Answered in writing — hybrid architecture, conversation text only (no names, no emails), consent disclosed in Lola’s first message. Nothing to change, because those answers were designed in on day one, not assembled for the reviewer.</p>
+<p><strong>Round 3 — one word.</strong> The word “free” in a screenshot caption was ruled a price reference, plus a questionnaire about paid subscriptions the app doesn’t have. One caption edit.</p>
+<p><strong>Round 4 — silence.</strong> Then approval.</p>
+<p>The detail I keep thinking about: the reviewer is a user too. Our monitoring flagged a sign-in failure on their device (review devices aren’t signed into iCloud), and we triaged it exactly like any other user’s — recognized, ruled harmless, left on watch. No special case, because there shouldn’t be one.</p>
+<p>Twelve days of the strictest external review most software ever gets, against a codebase largely written by AI. One caption.</p>
+<p>The tooling wrote the code. The standards were the reason it survived contact.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/the-bug-my-wife-found/"><span class="np-label">← Earlier</span><span class="np-title">The bug my wife found</span></a>
+    <a class="next" href="/blog/what-shipping-it-taught-me/"><span class="np-label">Next →</span><span class="np-title">What shipping it taught me</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>

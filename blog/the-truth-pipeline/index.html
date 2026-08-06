@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The truth pipeline — Andrew Edmond</title>
+<meta name="description" content="How a three-step pipeline — source at scale, ground in primary sources, gate the build — turns hallucination from a prompt problem into a systems problem.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/the-truth-pipeline/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/the-truth-pipeline/">
+<meta property="og:title" content="The truth pipeline — Andrew Edmond">
+<meta property="og:description" content="How a three-step pipeline — source at scale, ground in primary sources, gate the build — turns hallucination from a prompt problem into a systems problem.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 4 of 10</p>
+      <h1 class="article-title">The truth pipeline</h1>
+    </div>
+    <p class="article-dek">For an app that tells people what the law requires of them, being right can’t be a value on a poster. It has to be a system that refuses to ship the alternative.</p>
+    <p class="article-meta"><span>Jul 12, 2026</span><span class="dot">·</span><span>2 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">Right is a process</span><span class="fc-sub">How a fact earns its way into Get Camino</span></figcaption>
+<ol class="fc-steplist">
+<li><span class="fc-num">01</span><div><h4>Source at scale</h4><p>15 hours of expert webinar transcripts, mined by parallel agents. The catalog grows to 60 obligations.</p><p class="fc-note">Fast and broad — but not yet trustworthy.</p></div></li>
+<li><span class="fc-num">02</span><div><h4>Ground in primary sources</h4><p>28 uncited obligations re-verified against the law itself: the BOE, the tax agency, the DGT.</p><p class="fc-note">Caught: a penalty the courts had struck down. A form that no longer exists.</p></div></li>
+<li><span class="fc-num">03</span><div><h4>Gate the build</h4><p>No page may state a number its cited source doesn't carry. The lint fails the deploy.</p><p class="fc-note">First run: caught a violation before any user saw it.</p></div></li>
+</ol>
+</figure>
+<p>My app tells people what the Spanish government requires of them. “Mostly right” isn’t a quality bar here — a wrong fact is someone missing a residency deadline.</p>
+<p>So the most important system in Get Camino isn’t a feature. It’s the process that decides what’s true.</p>
+<p><strong>Step 1 — Source at scale.</strong> Claude mined 15 hours of expert webinar transcripts with parallel agents, growing the catalog to 60 obligations. Fast, broad — and not yet trustworthy.</p>
+<p><strong>Step 2 — Ground everything.</strong> 28 of those obligations arrived without primary citations. Every single one got re-verified against the actual source: the BOE, the tax agency, the DGT. Not blogs quoting blogs. The law itself.</p>
+<p>That pass caught two things no prompt would have: a penalty that a court had struck down (still cited all over the expat internet), and a form that had been abolished. The web remembers rules that no longer exist. An AI trained on the web remembers them too.</p>
+<p><strong>Step 3 — Make truth a build gate.</strong> The honesty rule — no page may state a number its cited source doesn’t carry — stopped being a value and became a lint that fails the deploy. On its first run it caught a violation before any user ever saw it.</p>
+<p>Here’s the lesson I’d offer every leader shipping LLM products: hallucination is not a prompt-engineering problem. It’s a systems-design problem. You don’t ask the model to be honest. You build a pipeline where dishonesty can’t ship.</p>
+<p>AI collapsed the cost of drafting 60 obligations. It did nothing to collapse the cost of one of them being wrong.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/the-walking-skeleton/"><span class="np-label">← Earlier</span><span class="np-title">The walking skeleton</span></a>
+    <a class="next" href="/blog/operational-excellence-with-ai/"><span class="np-label">Next →</span><span class="np-title">The code was correct. The platform didn't care.</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>

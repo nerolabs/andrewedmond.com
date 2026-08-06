@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Andrew Edmond — Blog</title>
+    <link>https://www.andrewedmond.com/blog/</link>
+    <atom:link href="https://www.andrewedmond.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Notes on building and assessing AI-era software.</description>
+    <language>en</language>
+    <lastBuildDate>Wed, 05 Aug 2026 09:00:00 +0000</lastBuildDate>
+    <item>
+      <title>What shipping it taught me</title>
+      <link>https://www.andrewedmond.com/blog/what-shipping-it-taught-me/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/what-shipping-it-taught-me/</guid>
+      <pubDate>Wed, 05 Aug 2026 09:00:00 +0000</pubDate>
+      <description>The last note in the series — what held up (skills, invariants, truth as a build gate), what I'd do differently (instrument sooner, kill features faster), and the honest headline.</description>
+    </item>
+    <item>
+      <title>Twelve days with Apple's reviewers</title>
+      <link>https://www.andrewedmond.com/blog/twelve-days-with-apple/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/twelve-days-with-apple/</guid>
+      <pubDate>Fri, 31 Jul 2026 09:00:00 +0000</pubDate>
+      <description>The App Store review gauntlet round by round — a real defect, three AI questions answered by design, a caption edit — and why the standards, not the tooling, were the reason it survived.</description>
+    </item>
+    <item>
+      <title>The bug my wife found</title>
+      <link>https://www.andrewedmond.com/blog/the-bug-my-wife-found/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/the-bug-my-wife-found/</guid>
+      <pubDate>Tue, 28 Jul 2026 09:00:00 +0000</pubDate>
+      <description>A ducked-audio bug that survived multiple builds, the turn-taking fix, and the harder decision — retiring Lola's voice because the observed experience never fit.</description>
+    </item>
+    <item>
+      <title>Tests encode beliefs, and beliefs can be wrong at scale</title>
+      <link>https://www.andrewedmond.com/blog/tests-encode-beliefs/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/tests-encode-beliefs/</guid>
+      <pubDate>Wed, 22 Jul 2026 09:00:00 +0000</pubDate>
+      <description>The robots test the app — real magic-link sign-in, a 181-profile matrix in CI — and the night an audit found tests loyally protecting the wrong answers.</description>
+    </item>
+    <item>
+      <title>The funnel filed the complaints</title>
+      <link>https://www.andrewedmond.com/blog/the-funnel-outranked-us/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/the-funnel-outranked-us/</guid>
+      <pubDate>Mon, 20 Jul 2026 09:00:00 +0000</pubDate>
+      <description>First contact with real users — 1,200 views, two complete journeys, zero errors — and the funnel data that rebuilt the interview around one rule.</description>
+    </item>
+    <item>
+      <title>The code was correct. The platform didn't care.</title>
+      <link>https://www.andrewedmond.com/blog/operational-excellence-with-ai/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/operational-excellence-with-ai/</guid>
+      <pubDate>Wed, 15 Jul 2026 09:00:00 +0000</pubDate>
+      <description>Four production ops lessons from an AI build — in-memory counters on serverless, wide-open CORS defaults, a staging DB baked into prod, and dead source links.</description>
+    </item>
+    <item>
+      <title>The truth pipeline</title>
+      <link>https://www.andrewedmond.com/blog/the-truth-pipeline/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/the-truth-pipeline/</guid>
+      <pubDate>Sun, 12 Jul 2026 09:00:00 +0000</pubDate>
+      <description>How a three-step pipeline — source at scale, ground in primary sources, gate the build — turns hallucination from a prompt problem into a systems problem.</description>
+    </item>
+    <item>
+      <title>The walking skeleton</title>
+      <link>https://www.andrewedmond.com/blog/the-walking-skeleton/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/the-walking-skeleton/</guid>
+      <pubDate>Sat, 11 Jul 2026 09:00:00 +0000</pubDate>
+      <description>Why an ugly end-to-end walking skeleton beats polished fragments, and matters more with AI, not less — featuring the kitten Claude labeled &quot;Madrid.&quot;</description>
+    </item>
+    <item>
+      <title>The most productive day was the day nothing got built</title>
+      <link>https://www.andrewedmond.com/blog/invariants-before-features/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/invariants-before-features/</guid>
+      <pubDate>Wed, 08 Jul 2026 09:00:00 +0000</pubDate>
+      <description>The four invariants behind Get Camino, set before any code was written, and how each one kept absorbing new surfaces as the product grew.</description>
+    </item>
+    <item>
+      <title>What makes an AI-built app &quot;real&quot;</title>
+      <link>https://www.andrewedmond.com/blog/the-bar-for-ai-built-software/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/the-bar-for-ai-built-software/</guid>
+      <pubDate>Sun, 05 Jul 2026 09:00:00 +0000</pubDate>
+      <description>The checklist I refused to ship without — real users, full pipelines, tests in CI, monitoring, rate limiting, security headers, and a citation on every claim.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What makes an AI-built app &quot;real&quot; — Andrew Edmond</title>
+<meta name="description" content="The checklist I refused to ship without — real users, full pipelines, tests in CI, monitoring, rate limiting, security headers, and a citation on every claim.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/the-bar-for-ai-built-software/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/the-bar-for-ai-built-software/">
+<meta property="og:title" content="What makes an AI-built app &quot;real&quot; — Andrew Edmond">
+<meta property="og:description" content="The checklist I refused to ship without — real users, full pipelines, tests in CI, monitoring, rate limiting, security headers, and a citation on every claim.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 1 of 10</p>
+      <h1 class="article-title">What makes an AI-built app &quot;real&quot;</h1>
+    </div>
+    <p class="article-dek">Before the story of what I built, the standard I refused to ship without — and why it’s the standard, not the tooling, that separates a product from a demo.</p>
+    <p class="article-meta"><span>Jul 5, 2026</span><span class="dot">·</span><span>1 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">The bar</span><span class="fc-sub">No credit unless the app cleared every line</span></figcaption>
+<ul class="fc-checklist">
+<li>Real users on a real domain, full dev / staging / prod pipelines</li>
+<li>English and Spanish — plus German, Italian, French</li>
+<li>Unit, integration, and end-to-end tests in CI</li>
+<li>Error monitoring with uptime paging</li>
+<li>Rate limiting verified against live traffic</li>
+<li>Staged environments with deploy guardrails</li>
+<li>Security headers checked in production</li>
+<li>A citation on every claim, enforced by a build gate</li>
+</ul>
+</figure>
+<p>“Executive builds an app with AI” is a genre now. Most of them are demos.</p>
+<p>So before I tell you about mine, here’s the bar I held myself to — the eight lines above, and not one of them optional. A polished demo clears maybe three.</p>
+<p>That bar is met. Get Camino, a relocation guide for people moving to Spain, is live on the web today, with iOS and Android in app-store review.</p>
+<p>Here’s the part that should get your attention: I hadn’t written production code in 15 years. I built this in under a week with Claude Code and Anthropic’s Fable model, with some Opus 4.8 thrown in.</p>
+<p>And here’s the part that keeps it honest: the week was fast because of thirty years of engineering judgment, not despite it. AI collapsed the cost of typing. It did nothing to collapse the cost of being wrong — that part was still my job.</p>
+<p>In the notes that follow, I break the build down into leadership lessons for the AI era, with receipts: the architecture invariants, the truth pipeline, the ops story, the testing story, and the bug my wife found that three builds had survived.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <span></span>
+    <a class="next" href="/blog/invariants-before-features/"><span class="np-label">Next →</span><span class="np-title">The most productive day was the day nothing got built</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>

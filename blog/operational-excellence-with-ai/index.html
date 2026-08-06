@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The code was correct. The platform didn't care. — Andrew Edmond</title>
+<meta name="description" content="Four production ops lessons from an AI build — in-memory counters on serverless, wide-open CORS defaults, a staging DB baked into prod, and dead source links.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/operational-excellence-with-ai/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/operational-excellence-with-ai/">
+<meta property="og:title" content="The code was correct. The platform didn&#39;t care. — Andrew Edmond">
+<meta property="og:description" content="Four production ops lessons from an AI build — in-memory counters on serverless, wide-open CORS defaults, a staging DB baked into prod, and dead source links.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Get Camino build log · 5 of 10</p>
+      <h1 class="article-title">The code was correct. The platform didn't care.</h1>
+    </div>
+    <p class="article-dek">Four production lessons an AI wrote the fixes for in minutes — and would never have known to look for. Operational excellence is customer obsession by another name.</p>
+    <p class="article-meta"><span>Jul 15, 2026</span><span class="dot">·</span><span>2 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">Measured before believing</span><span class="fc-sub">Platform defaults the code review didn't catch</span></figcaption>
+<div class="fc-stats">
+<div class="fc-stat"><span class="fc-figure">70→0</span><span class="fc-label">requests in a burst, zero throttles — the limiter's counters lived in memory on a serverless runtime that recycles workers</span></div>
+<div class="fc-stat"><span class="fc-figure">CORS</span><span class="fc-label">default answer was wide open to any origin — now pinned to our own, checked in production</span></div>
+<div class="fc-stat"><span class="fc-figure">55</span><span class="fc-label">official source links fetched and verified; two had quietly died</span></div>
+</div>
+</figure>
+<p>Our rate limiter passed review. Then seventy requests in a burst produced zero throttles.</p>
+<p>This is why, when you build with AI, scrutiny on operational excellence matters so much. A live engineering team makes these same mistakes. Obsessing over operational excellence <em>is</em> obsessing over customers — as much as any UX or feature polish.</p>
+<p>The code was correct. The platform didn’t care. The counters lived in memory, and the serverless runtime quietly recycles workers — so the limiter was resetting itself all day. The fix was durable database counters, which now trip at exactly their limit. Verified against the real production runtime, not against the docs.</p>
+<p>That was the week’s real ops lesson, and it repeated three times:</p>
+<ul><li>The platform’s default CORS answer was wide open — any website could call our AI endpoint from a stranger’s browser. Now pinned to our own origins, checked in production.</li><li>One early build silently baked the staging database into production. The fix became a permanent guard: the deploy script sources the pulled env, wipes caches, and prints exactly what it baked.</li><li>All 55 official source links got fetched and checked against their steps. Two failed honestly — one government portal had been retired, and one link dumped visitors on a cookie wall. Both now point where they should.</li></ul>
+<p>Measured before believing. The platform you deploy on is a set of facts, not a set of promises — and an AI collaborator inherits your platform’s defaults exactly as cheerfully as it inherits your intentions.</p>
+<p>The AI wrote every one of these fixes in minutes. Knowing to burst-test the limiter, read the CORS headers in production, and print what the deploy baked — that judgment was the slow part, and it’s decades older than the tooling.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/the-truth-pipeline/"><span class="np-label">← Earlier</span><span class="np-title">The truth pipeline</span></a>
+    <a class="next" href="/blog/the-funnel-outranked-us/"><span class="np-label">Next →</span><span class="np-title">The funnel filed the complaints</span></a>
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>
