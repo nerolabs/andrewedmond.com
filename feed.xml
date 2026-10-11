@@ -6,7 +6,14 @@
     <atom:link href="https://www.andrewedmond.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Notes on building and assessing AI-era software.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 05 Aug 2026 09:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2026 09:00:00 +0000</lastBuildDate>
+    <item>
+      <title>You shouldn't have to pick two</title>
+      <link>https://www.andrewedmond.com/blog/introducing-silt/</link>
+      <guid isPermaLink="true">https://www.andrewedmond.com/blog/introducing-silt/</guid>
+      <pubDate>Thu, 06 Aug 2026 09:00:00 +0000</pubDate>
+      <description>silt is a distributed, encrypted storage network built to keep three things systems usually trade against each other — with an honest account of what's closed, what's held in tension, and what's still open.</description>
+    </item>
     <item>
       <title>What shipping it taught me</title>
       <link>https://www.andrewedmond.com/blog/what-shipping-it-taught-me/</link>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You shouldn't have to pick two — Andrew Edmond</title>
+<meta name="description" content="silt is a distributed, encrypted storage network built to keep three things systems usually trade against each other — with an honest account of what&#39;s closed, what&#39;s held in tension, and what&#39;s still open.">
+<meta name="theme-color" content="#211C18">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://www.andrewedmond.com/blog/introducing-silt/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.andrewedmond.com/blog/introducing-silt/">
+<meta property="og:title" content="You shouldn&#39;t have to pick two — Andrew Edmond">
+<meta property="og:description" content="silt is a distributed, encrypted storage network built to keep three things systems usually trade against each other — with an honest account of what&#39;s closed, what&#39;s held in tension, and what&#39;s still open.">
+<meta property="og:image" content="https://www.andrewedmond.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Andrew Edmond — Blog" href="https://www.andrewedmond.com/feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog/assets/blog.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="sheet">
+  <header class="masthead">
+    <div class="brand">
+      <a class="monogram" aria-hidden="true" href="/">AE</a>
+      <div class="wordmark">
+        <span class="name"><a href="/">Andrew Edmond</a></span>
+        <p class="kicker">Independent buy-side technical due diligence</p>
+      </div>
+    </div>
+    <p class="meta"><a href="https://www.linkedin.com/in/andrewedmond">linkedin.com/in/andrewedmond ↗</a><br>Southern Spain · Remote &amp; onsite</p>
+  </header>
+  <main id="main" class="article">
+    <a class="back" href="/blog/">← All posts</a>
+    <div class="article-head">
+      <p class="eyebrow">Building in the open</p>
+      <h1 class="article-title">You shouldn't have to pick two</h1>
+    </div>
+    <p class="article-dek">Announcing silt — an encrypted storage network built to hold privacy, accountability, and Sybil-resistance at once. Including the one keystone problem we haven’t solved.</p>
+    <p class="article-meta"><span>Aug 6, 2026</span><span class="dot">·</span><span>3 min read</span></p>
+    
+    <div class="prose">
+<figure class="field-card">
+<figcaption class="fc-head"><span class="fc-kicker">The bet</span><span class="fc-sub">Most systems hold two of these. silt is built to hold all three.</span></figcaption>
+<ol class="fc-steplist">
+<li><span class="fc-num">◆</span><div><h4>Privacy</h4><p>Your files — and even your access patterns — stay yours. KYC-and-logging systems give this up.</p></div></li>
+<li><span class="fc-num">◆</span><div><h4>Accountability</h4><p>Bad actors can still be held responsible. Fully anonymous systems give this up.</p></div></li>
+<li><span class="fc-num">◆</span><div><h4>Sybil-resistance</h4><p>One actor can't cheaply forge thousands of identities and seize the network. Open systems give this up.</p></div></li>
+</ol>
+</figure>
+<p>Almost every system that stores your data quietly makes you give up one of three things: your privacy, the ability to hold bad actors accountable, or resistance to being overrun by fake identities. Pick two. That’s not a law of nature — it’s just where the trade-offs usually land.</p>
+<p>silt is a bet that you can keep all three.</p>
+<h2>What silt is</h2>
+<p>silt is a distributed, encrypted storage network. Your files are encrypted and erasure-coded — split into redundant shards spread across many independent operators — so that no single operator can read your data, and no single operator losing shards can lose your file. Trust between strangers is established without a token or a coin: through reputation and quorum, not a cryptocurrency.</p>
+<p>It’s early, and we’re building it in the open. That means sharing the thinking — including the parts we haven’t finished.</p>
+<h2>The turn</h2>
+<p>For a while, the work was a losing loop. Design a mechanism to stop fake identities; the red team breaks it; design a stronger one; they break it again. It turns out that loop is unwinnable by construction — a result from 2002 (Douceur) shows no single primitive can be Sybil-proof in an open system with no permanent central authority. We weren’t failing to find the answer. We were asking a question that has none.</p>
+<p>The unlock wasn’t a better lock. It was changing the win condition. You don’t <em>prevent</em> fake identities — you <em>re-price</em> them. You make forging <em>N</em> identities cost as much as honestly being <em>N</em> operators. You hold the corner with composition and economics, not with a single magic primitive.</p>
+<p>When you keep losing the same fight, it’s worth checking whether the game is winnable before you grind harder.</p>
+<h2>How we keep ourselves honest</h2>
+<p>In a system people are asked to trust, the most dangerous thing you can say is “solved.” A false “solved” is the failure that gets someone hurt. So we track every claim in one of three buckets — <strong>closed</strong>, <strong>held-in-tension</strong> (bounded and documented, but not eliminated), and <strong>open</strong> — and the list of things we <em>haven’t</em> solved is a first-class artifact, maintained as carefully as the code.</p>
+<p>Precision about your limits isn’t humility theater. For anything built on trust, it’s the core engineering discipline.</p>
+<h2>Where we actually are</h2>
+<p>Not shipped. This is a design-and-early-build announcement, not a launch. The hard conceptual questions are largely closed or explicitly bounded — the core thesis is written down as a falsifiable claim and stress-tested against an adversarial process.</p>
+<p>And one keystone primitive is still open — and I can tell you exactly what it is. We can’t yet cryptographically bind a stored shard to a single identity, so we’re deliberate about where an operator’s standing comes from. We know what’s missing and why. Naming that out loud is the point, not a slip.</p>
+<h2>Build blind, then reconcile</h2>
+<p>One more lesson, because it’s how the rest got done. The work runs as separate streams that stay blind to each other on purpose: one that builds, one that only tries to break, and one that goes deep on the theory. They don’t coordinate in real time — they’re reconciled afterward. Keeping them blind kills the groupthink where whoever built a thing also grades it. Disagreement between the streams isn’t friction; it’s the most valuable output.</p>
+<p>They were run as orchestrated AI agents, with a human owning the decision ledger and the honesty calls. But the discipline is the point, not the tooling.</p>
+<h2>What’s next</h2>
+<p>We’re building silt in the open at <a href="https://silthq.com">silthq.com</a>. No sign-up, nothing to buy yet — just the work, and an honest account of what’s closed, what’s held, and what’s still open. If that’s the kind of thing you like to watch get built, follow along.</p>
+    </div>
+    <div class="article-cta">
+      This is one post from a longer build log. If you&#39;re weighing an AI-built codebase, <a class="link" href="/">that&#39;s the work I do</a> — or find me on <a class="link" href="https://www.linkedin.com/in/andrewedmond">LinkedIn</a>.
+    </div>
+    <nav class="post-nav">
+    <a class="prev" href="/blog/what-shipping-it-taught-me/"><span class="np-label">← Earlier</span><span class="np-title">What shipping it taught me</span></a>
+    
+    </nav>
+  </main>
+  <footer>
+    <span>Andrew Edmond</span>
+    <span><a href="/">andrewedmond.com</a> · <a href="/feed.xml">RSS</a></span>
+    <span>Southern Spain · Remote &amp; onsite</span>
+  </footer>
+</div>
+</body>
+</html>
