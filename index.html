@@ -479,6 +479,23 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     margin-bottom:.35rem;
   }
 
+  .fw-tool{
+    border:1px solid var(--hair-2);
+    border-left:3px solid var(--gold);
+    background:var(--panel);
+    border-radius:4px;
+    padding:1.25rem 1.35rem;
+    margin-top:1.8rem;
+    font-size:.96rem; line-height:1.62; color:var(--bone-2);
+    max-width:66ch;
+  }
+  .fw-tool b{
+    display:inline-block; color:var(--gold);
+    font-family:var(--serif); font-weight:560;
+    text-transform:uppercase; letter-spacing:.18em; font-size:.74rem;
+    margin-bottom:.35rem;
+  }
+
   /* ---- Evidence + Background ---- */
   .exhibit{ margin:0 0 1.8rem; }
   .exhibit:last-child{ margin-bottom:0; }
@@ -908,6 +925,11 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
           <p>A plain-English risk register the whole committee can read — every dimension rated, the material issues that must be fixed before close called out plainly, and a clear read on what integration will really take. Behind it sits the full report: a detailed write-up of all seven dimensions to dig into, raw notes and evidence included. I show my work.</p>
         </div>
       </div>
+
+      <div class="fw-tool">
+        <b>Now a working tool</b><br>
+        I built this framework into <a class="link" href="https://borehole.dev">Borehole</a> — technical due diligence read from the repository itself. It assesses these same seven dimensions and cites the commit, path and line behind every finding. <a class="link" href="https://borehole.dev">Run it free on any public repository</a> to see the method, or <a class="link" href="#contact">bring me in</a> for the full engagement.
+      </div>
     </div>
   </section>
 
@@ -916,6 +938,10 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
     <p class="eyebrow">Current hands-on practice</p>
     <div class="body">
       <div class="exhibit">
+        <h3>Borehole</h3>
+        <p>Technical due diligence, read from the repository itself — <a class="link" href="https://borehole.dev">borehole.dev</a>. The framework above, built into a product: it assesses a repository across the seven dimensions and cites the evidence behind every finding. Public repositories are free; private code is read by a local collector that never leaves the owner’s machine.</p>
+      </div>
+      <div class="exhibit">
         <h3>Get Camino</h3>
         <p>A Spain relocation planner — <a class="link" href="https://getcamino.app">getcamino.app</a>. Empty repo to live product in under a week — shipped on web and iOS, localized in five languages. The <a class="link" href="https://getcamino.app/how-i-was-built">build log</a> documents how it was engineered; <a class="link" href="https://github.com/nerolabs/camino-app">source on GitHub</a>.</p>
       </div>
@@ -923,7 +949,7 @@ posthog.init('phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu', {
         <h3>SiltHQ</h3>
         <p>Distributed file infrastructure, in progress — <a class="link" href="https://silthq.com">silthq.com</a>. Where I practice AI-assisted development against genuinely hard problems: distributed-systems logic, scaling, encryption, and networking; <a class="link" href="https://github.com/nerolabs/silt">source on GitHub</a>.</p>
       </div>
-      <p class="quiet">Both are open source — engineered to the standard the framework describes.</p>
+      <p class="quiet">Camino and Silt are open source — engineered to the standard the framework describes.</p>
     </div>
   </section>
 
