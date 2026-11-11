@@ -46,21 +46,21 @@ Body in Markdown. Blank line between paragraphs.
 | `seriesShort` | optional | small label under the date on the index |
 | `hero` / `heroAlt` / `heroCaption` | optional | lead image |
 
-The Markdown renderer is intentionally small (see `build.mjs`). It covers what
+The Markdown renderer is intentionally small (see `/build.mjs`). It covers what
 essays need; extend it deliberately if a post needs more.
 
 ## Build
 
 ```bash
-node blog/build.mjs
+node build.mjs
 ```
 
-Generates `blog/index.html`, `blog/<slug>/index.html`, and `/feed.xml`.
-Commit those generated files along with the Markdown — GitHub Pages serves them
-as-is (no CI build step). Re-run after any edit.
+The site-wide build (`/build.mjs`) renders the blog with everything else into
+`_site/`, which is gitignored. Commit only the Markdown and any images. GitHub
+Actions builds and deploys on every push to `main`. See `/content/README.md`.
 
 ## Workflow for co-authored posts
 
 1. A source project hands over a draft as Markdown (a "post idea").
 2. We edit it together into `_posts/<date>-<slug>.md` with front-matter.
-3. `node blog/build.mjs` → review locally → commit.
+3. `node build.mjs` → review locally → commit.

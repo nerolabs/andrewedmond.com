@@ -4,3 +4,4 @@ _internal/
 .claude/
 .DS_Store
 variations/
+_site/

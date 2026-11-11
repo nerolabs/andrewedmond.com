@@ -1,0 +1,64 @@
+# Builds and checks the site on every pull request, and deploys main to
+# GitHub Pages. The "build" job is the required check on main.
+name: Site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # MFL Marketing publishes through note/* and copy/* branches. Those may
+      # only touch content; layout, CSS and the build stay with the build.
+      - name: Content branches touch only content paths
+        if: github.event_name == 'pull_request' && (startsWith(github.head_ref, 'note/') || startsWith(github.head_ref, 'copy/'))
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          outside=$(git diff --name-only "origin/$BASE...HEAD" | grep -vE '^(notes/_posts/|notes/assets/|content/pages/)' || true)
+          if [ -n "$outside" ]; then
+            echo "This content branch changes files outside notes/_posts/, notes/assets/ and content/pages/:"
+            echo "$outside"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Build and check
+        run: node build.mjs
+
+      - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
