@@ -30,8 +30,9 @@ const AUTHOR = "Andrew Edmond";
 const LINKEDIN = "https://www.linkedin.com/in/andrewedmond";
 const POSTHOG_KEY = "phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu"; // project 237800, EU
 
-// TODO(cutover): Borehole's "Hire us" URL. The page doesn't exist yet.
-const BOREHOLE_HIRE = "https://borehole.dev/";
+// Borehole's "Hire us" page. It ships on Borehole's side the day we cut over.
+// TODO(cutover): map the old home anchors to its sections once Borehole names them.
+const BOREHOLE_HIRE = "https://borehole.dev/hire-us";
 // TODO(Kit): the form's action URL once Andrew has signed up. Until then the
 // sign-up block shows LinkedIn and RSS instead of a form.
 const KIT_FORM_ACTION = "";
@@ -532,7 +533,6 @@ function build() {
   const blog = loadPosts("blog/_posts", "blog");
   if (!notes.length) warn("notes/_posts", "no Lab Notes yet; the home page shows the newest blog post instead");
   if (!KIT_FORM_ACTION) warn("build.mjs", "KIT_FORM_ACTION is empty; the sign-up block shows LinkedIn and RSS instead of a form");
-  if (BOREHOLE_HIRE === "https://borehole.dev/") warn("build.mjs", "BOREHOLE_HIRE still points at the Borehole home page; set the Hire us URL at cutover");
 
   if (errors.length) return report(); // don't render half-valid content
 
