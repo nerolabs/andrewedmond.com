@@ -1,6 +1,6 @@
 ---
-intro:
-description: Mad Fiddler Labs and its products, one line each.
+intro: Everything here is an experiment until it earns its keep.
+description: "What's in the lab: YourMoveMap, Build Your Butler, Borehole and Get Camino, each an experiment in building with AI."
 ---
 
 - [Mad Fiddler Labs](https://madfiddlerlabs.com): My one-person studio. AI agents find the ideas, build the products and measure them; I make the calls.
