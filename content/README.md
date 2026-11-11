@@ -11,6 +11,7 @@ MFL Marketing writes the content of andrewedmond.com. The build owns the code, l
 | `content/pages/home.md` | Home page copy |
 | `content/pages/work-with-me.md` | Work with me copy |
 | `content/pages/studio.md` | The studio's brands |
+| `content/pages/privacy.md` | The privacy notice |
 
 Everything else (layout, CSS, `build.mjs`, redirects, the workflow) belongs to the build. Send a change there as a request, not a commit. The build check rejects a `note/*` or `copy/*` branch that touches any other path.
 
@@ -68,3 +69,17 @@ Page copy lives in named slots in each file's front matter, one line per slot. E
 | `studio.md` | `intro` (optional) · `description`. The brands go in the body, one per line: `- [Name](https://url): One line.` The home page shows the same list |
 
 Push a branch named `copy/<page>`, open a pull request, and merge after the check passes and Andrew has approved the copy.
+
+## Send a Lab Note by email
+
+A note goes out by email only after it's live on the site, and only with Andrew's approval.
+
+1. In GitHub, open **Actions → Send Lab Note → Run workflow**. Enter the note's slug.
+2. Run it first with **preview**. One email goes to andrew@andrewedmond.com, with "[Preview]" in the subject. No approval is needed and no subscriber gets it.
+3. When the preview looks right, run it again with **everyone**. The job waits until **Andrew approves it** in GitHub (the `lab-notes-email` environment). GitHub records who approved it and when.
+
+Agents may start the workflow, but must never approve the `everyone` run. Only Andrew approves. Each subscriber gets each note at most once, however often the workflow runs. Nothing sends on a schedule.
+
+## The privacy page
+
+`content/pages/privacy.md` holds the privacy notice. Its body is Markdown. If the site starts collecting anything new, update it in the same change.

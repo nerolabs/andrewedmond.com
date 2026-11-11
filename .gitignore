@@ -5,3 +5,5 @@ _internal/
 .DS_Store
 variations/
 _site/
+.dev.vars
+.wrangler/

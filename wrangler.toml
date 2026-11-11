@@ -1,0 +1,40 @@
+# andrewedmond.com on Cloudflare: a Worker serving the static build in _site/,
+# plus the Lab Notes email API. Deployed by .github/workflows/site.yml.
+name = "andrewedmond"
+account_id = "9172138826e5dfcc3cd6bf986bab5324" # MadFiddlerLabs Cloudflare account
+workers_dev = false
+main = "worker/index.js"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./_site"
+binding = "ASSETS"
+not_found_handling = "404-page"
+run_worker_first = true # redirects, 410s, headers and the API all live in the Worker
+
+[[d1_databases]]
+binding = "DB"
+database_name = "andrewedmond"
+database_id = "6ff68678-6923-4793-9666-198531fda3a6" # MFL request #222
+migrations_dir = "migrations"
+
+[vars]
+SITE_URL = "https://www.andrewedmond.com"
+MAIL_FROM = "Andrew Edmond <notes@andrewedmond.com>" # Andrew, 11 Nov 2026
+MAIL_REPLY_TO = "andrew@andrewedmond.com"
+MAIL_TEST_TO = "andrew@andrewedmond.com" # where "Send Lab Note" previews go
+MAIL_POSTAL_ADDRESS = "AELaboratories, 500 Westover Dr #34489, Sanford, NC 27330" # CAN-SPAM; Andrew, 11 Nov 2026
+TURNSTILE_SITE_KEY = "0x4AAAAAAF8yD_4JzlmVxipx" # public; the secret is TURNSTILE_SECRET_KEY
+# Secrets (GitHub Actions secrets, copied to the Worker by the deploy job):
+# RESEND_API_KEY, TURNSTILE_SECRET_KEY
+
+[observability]
+enabled = true
+
+[[routes]]
+pattern = "www.andrewedmond.com"
+custom_domain = true
+
+[[routes]]
+pattern = "andrewedmond.com"
+custom_domain = true

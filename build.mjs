@@ -29,17 +29,12 @@ const AUTHOR = "Andrew Edmond";
 const LINKEDIN = "https://www.linkedin.com/in/andrewedmond";
 const POSTHOG_KEY = "phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu"; // project 237800, EU
 
-// Borehole's "Hire us" page, where the diligence practice now lives.
+// Borehole's "Hire us" page, where the diligence practice now lives. Keep in
+// step with worker/index.js, which 301s /fractional/ there.
 const BOREHOLE_HIRE = "https://borehole.dev/hire-us";
-// TODO(Kit): the form's action URL once Andrew has signed up. Until then the
-// sign-up block shows LinkedIn and RSS instead of a form.
-const KIT_FORM_ACTION = "";
-
-// Old URLs that now live elsewhere. Each gets a redirect page.
-const REDIRECTS = {
-  "/fractional/": BOREHOLE_HIRE,
-  "/advisory/": "/work-with-me/#advisory",
-};
+// Cloudflare Turnstile, the sign-up form's spam check. The site key is public.
+// A local build can use Cloudflare's always-pass test key instead.
+const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAF8yD_4JzlmVxipx";
 // The old home page's section anchors. Browsers never send #fragments to the
 // server, so no host can redirect them; a script on the new home page does.
 // The section ids on Borehole's side come from the Borehole build (11 Nov).
@@ -52,7 +47,7 @@ const OLD_HOME_ANCHORS = {
   contact: "/work-with-me/",
 };
 // Files and folders copied into _site as they are.
-const STATIC = ["CNAME", "favicon.svg", "apple-touch-icon.png", "og.png", "assets", "notes/assets"];
+const STATIC = ["favicon.svg", "apple-touch-icon.png", "og.png", "assets", "notes/assets"];
 
 /* ------------------------------------------------------------ check report */
 const errors = [];
@@ -213,7 +208,7 @@ function loadPage(name, required) {
   for (const k of unknown) fail(where, `unknown slot "${k}" (check the spelling)`);
   return page;
 }
-const OPTIONAL_SLOTS = { studio: ["intro"] };
+const OPTIONAL_SLOTS = { studio: ["intro"], privacy: [] };
 
 // Studio brands: one Markdown list item per brand, "- [Name](https://url): one line".
 function parseBrands(body, where) {
@@ -293,8 +288,62 @@ const EVENTS = `<script>
       if (href.indexOf('mailto:') === 0) cap('cta_click', {cta:'email', page:page});
       else if (/^https?:/.test(href) && a.host !== location.host) cap('outbound_click', {host:a.host.replace(/^www\\./,''), href:href, page:page});
     });
-    document.querySelectorAll('form.signup-form').forEach(function(f){
-      f.addEventListener('submit', function(){ cap('signup_submit', {page:page}); });
+  })();
+</script>`;
+
+// The Lab Notes sign-up: posts to the Worker's /api/subscribe. Turnstile loads
+// only when someone focuses the email field, so most page views never fetch it.
+const SIGNUP_SCRIPT = () => `<script>
+  (function(){
+    var forms = document.querySelectorAll('form.signup-form');
+    if (!forms.length) return;
+    var CONSENT = ${JSON.stringify(consentText()).replace(/</g, "\\u003c")};
+    var loading = null;
+    function loadTurnstile(){
+      if (loading) return loading;
+      loading = new Promise(function(resolve, reject){
+        window.__aeTurnstile = resolve;
+        var s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__aeTurnstile';
+        s.async = true; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+      return loading;
+    }
+    forms.forEach(function(f){
+      var input = f.querySelector('input[type=email]'), button = f.querySelector('button');
+      var box = f.querySelector('.signup-check'), status = f.parentNode.querySelector('.signup-status');
+      var token = null, widget = null, waiting = [];
+      function prepare(){
+        return loadTurnstile().then(function(){
+          if (widget !== null) return;
+          widget = turnstile.render(box, {
+            sitekey: '${TURNSTILE_SITE_KEY}', appearance: 'interaction-only', theme: 'dark',
+            callback: function(t){ token = t; waiting.splice(0).forEach(function(w){ w(t); }); },
+            'expired-callback': function(){ token = null; }
+          });
+        });
+      }
+      function fail(msg){ status.textContent = msg; button.disabled = false; if (widget !== null) { turnstile.reset(widget); token = null; } }
+      input.addEventListener('focus', function(){ prepare().catch(function(){}); }, {once: true});
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        if (!input.value || !input.checkValidity()) { status.textContent = 'Please enter a valid email address.'; input.focus(); return; }
+        button.disabled = true; status.textContent = 'Sending…';
+        var got = prepare().then(function(){
+          return token || new Promise(function(resolve, reject){ waiting.push(resolve); setTimeout(reject, 20000); });
+        });
+        got.then(function(t){
+          return fetch('/api/subscribe', {method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: input.value, consent: CONSENT, turnstile: t})});
+        }).then(function(r){ return r.json().then(function(b){ return {ok: r.ok, b: b}; }); })
+        .then(function(x){
+          if (!x.ok) return fail(x.b.error || 'Something went wrong. Please try again.');
+          f.hidden = true;
+          status.textContent = 'Almost there: check your inbox and click the link to confirm.';
+          if (window.posthog && posthog.capture) posthog.capture('signup_submit', {page: location.pathname});
+        }).catch(function(){ fail('Something went wrong. Please try again.'); });
+      });
     });
   })();
 </script>`;
@@ -342,32 +391,113 @@ ${extraHead}${POSTHOG}
     </nav>
   </header>`;
 
-const FOOT = `
+const FOOT_HTML = () => `
   <footer>
     <span>${esc(AUTHOR)} · Jerez, Spain</span>
     <span><a href="${LINKEDIN}">LinkedIn</a> · <a href="/feed.xml">RSS</a></span>
   </footer>
 </div>
 ${EVENTS}
+${SIGNUP_SCRIPT()}
 </body>
 </html>`;
+let FOOT = ""; // set once the home page's copy is loaded (the sign-up script needs it)
 
-// The Lab Notes sign-up. A plain form that posts to Kit: no Kit script, so
-// the site stays cookieless. Until Kit exists it points to LinkedIn and RSS.
+// The Lab Notes sign-up block. The consent text the Worker records is the
+// sign-up line plus the small print, exactly as shown.
 let HOME = { meta: {} };
+const SMALL_PRINT = "Double opt-in: we'll email you a link to confirm. Unsubscribe any time.";
+const consentText = () => `${HOME.meta.signup} ${SMALL_PRINT}`;
 function signup() {
-  const action = KIT_FORM_ACTION
-    ? `<form class="signup-form" action="${escAttr(KIT_FORM_ACTION)}" method="post">
-        <label class="sr-only" for="signup-email">Email address</label>
-        <input id="signup-email" type="email" name="email_address" required autocomplete="email" placeholder="you@example.com">
-        <button type="submit">${esc(HOME.meta.button)}</button>
-      </form>`
-    : `<p class="signup-fallback">Email sign-up opens soon. Meanwhile: <a class="link" href="${LINKEDIN}">LinkedIn</a> or <a class="link" href="/feed.xml">RSS</a>.</p>`;
   return `
     <section class="signup" aria-label="Get Lab Notes by email">
       <p class="signup-line">${inline(HOME.meta.signup)}</p>
-      ${action}
+      <form class="signup-form" action="/api/subscribe" method="post" novalidate>
+        <label class="sr-only" for="signup-email">Email address</label>
+        <input id="signup-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <button type="submit">${esc(HOME.meta.button)}</button>
+        <div class="signup-check"></div>
+      </form>
+      <p class="signup-status" role="status" aria-live="polite"></p>
+      <p class="signup-small">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>.</p>
     </section>`;
+}
+
+/* ------------------------------------------------------------ note emails
+   Light and plain, with inline styles: email clients ignore stylesheets and
+   many render dark backgrounds badly. The Worker fills {{UNSUBSCRIBE_URL}} and
+   {{POSTAL_ADDRESS}} per send. */
+const MAIL = {
+  ink: "#211C18", soft: "#5f574e", faint: "#8E8477", gold: "#8a6a2c", rule: "#e4ddd2",
+  serif: "Georgia,'Times New Roman',serif", sans: "Arial,Helvetica,sans-serif",
+};
+function emailBody(html) {
+  const abs = (u) => (u.startsWith("/") ? SITE + u : u);
+  return html
+    .replace(/(href|src)="([^"]*)"/g, (_, a, u) => `${a}="${abs(u)}"`)
+    .replace(/<p>/g, `<p style="margin:0 0 18px">`)
+    .replace(/<h2>/g, `<h2 style="font-family:${MAIL.serif};font-weight:normal;font-size:23px;line-height:1.25;margin:30px 0 12px;color:${MAIL.ink}">`)
+    .replace(/<h3>/g, `<h3 style="font-family:${MAIL.serif};font-size:19px;margin:24px 0 10px;color:${MAIL.ink}">`)
+    .replace(/<a href=/g, `<a style="color:${MAIL.gold}" href=`)
+    .replace(/<(ul|ol)>/g, `<$1 style="margin:0 0 18px;padding-left:22px">`)
+    .replace(/<li>/g, `<li style="margin:0 0 8px">`)
+    .replace(/<blockquote>/g, `<blockquote style="margin:0 0 18px;padding-left:16px;border-left:3px solid ${MAIL.gold};font-style:italic;color:${MAIL.soft}">`)
+    .replace(/<img /g, `<img style="max-width:100%;height:auto" `)
+    .replace(/<hr>/g, `<hr style="border:0;border-top:1px solid ${MAIL.rule};margin:28px 0">`);
+}
+function noteEmailHtml(p) {
+  const url = SITE + postUrl(p);
+  return `<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(p.meta.title)}</title></head>
+<body style="margin:0;padding:0;background:#f4f1ec">
+<div style="display:none;max-height:0;overflow:hidden">${esc(p.meta.description)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ec"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#ffffff;border:1px solid ${MAIL.rule}">
+<tr><td style="padding:28px 32px 8px;font-family:${MAIL.sans};font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${MAIL.gold}">Lab Notes · Andrew Edmond</td></tr>
+<tr><td style="padding:0 32px">
+<h1 style="font-family:${MAIL.serif};font-weight:normal;font-size:30px;line-height:1.15;margin:8px 0 8px;color:${MAIL.ink}">${esc(p.meta.title)}</h1>
+<p style="font-family:${MAIL.sans};font-size:13px;color:${MAIL.faint};margin:0 0 22px">${humanDate(p.meta.date)}</p>
+</td></tr>
+<tr><td style="padding:0 32px 22px"><a href="${url}"><img src="${SITE}${p.meta.photo}" alt="${escAttr(p.meta.photoAlt)}" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:1px solid ${MAIL.rule}"></a></td></tr>
+<tr><td style="padding:0 32px;font-family:${MAIL.serif};font-size:18px;line-height:1.6;color:${MAIL.ink}">
+${emailBody(p.html)}
+</td></tr>
+<tr><td style="padding:6px 32px 30px;font-family:${MAIL.sans};font-size:15px">
+<a href="${url}" style="color:${MAIL.gold}">Read it on the site</a> &nbsp;·&nbsp; <a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.gold}">Comment on LinkedIn</a>
+</td></tr>
+</table>
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:18px 32px;font-family:${MAIL.sans};font-size:12px;line-height:1.6;color:${MAIL.faint}">
+You're getting this because you signed up for Lab Notes at <a href="${SITE}/" style="color:${MAIL.faint}">andrewedmond.com</a>. <a href="{{UNSUBSCRIBE_URL}}" style="color:${MAIL.faint}">Unsubscribe</a>.<br>{{POSTAL_ADDRESS}}
+</td></tr></table>
+</td></tr></table>
+</body>
+</html>
+`;
+}
+function noteEmailText(p) {
+  const abs = (u) => (u.startsWith("/") ? SITE + u : u);
+  const body = p.body.replace(/\r\n/g, "\n").trim()
+    .replace(/^!\[[^\]]*\]\([^)]*\)\s*$/gm, "")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => `${t} (${abs(u)})`)
+    .replace(/^#{1,4}\s+/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1$2").replace(/`([^`]+)`/g, "$1")
+    .replace(/\n{3,}/g, "\n\n");
+  return `LAB NOTES · ANDREW EDMOND
+
+${p.meta.title}
+${humanDate(p.meta.date)}
+
+${body}
+
+Read it on the site: ${SITE}${postUrl(p)}
+Comment on LinkedIn: ${p.meta.linkedin}
+
+--
+You're getting this because you signed up for Lab Notes at andrewedmond.com.
+Unsubscribe: {{UNSUBSCRIBE_URL}}
+{{POSTAL_ADDRESS}}
+`;
 }
 
 /* ------------------------------------------------------------------ pages */
@@ -442,25 +572,6 @@ function latestCard(p) {
       </article>`;
 }
 
-function redirectPage(target) {
-  const abs = absUrl(target);
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>This page has moved</title>
-<link rel="canonical" href="${escAttr(abs)}">
-<meta http-equiv="refresh" content="0; url=${escAttr(target)}">
-<script>location.replace(${JSON.stringify(target)});</script>
-<style>body{background:#211C18;color:#EDE7DC;font:1.05rem/1.6 system-ui,sans-serif;padding:3rem 1.5rem}a{color:#C2A15A}</style>
-</head>
-<body>
-<p>This page has moved to <a href="${escAttr(target)}">${esc(abs)}</a>.</p>
-</body>
-</html>
-`;
-}
-
 /* --------------------------------------------------------------- link check */
 function checkLinks() {
   const html = [];
@@ -496,12 +607,13 @@ function build() {
   HOME = loadPage("home", ["kicker", "intro", "signup", "button", "description"]);
   const WWM = loadPage("work-with-me", ["diligenceTitle", "diligence", "diligenceCta", "advisoryTitle", "advisory", "email", "description"]);
   const STUDIO = loadPage("studio", ["description"]);
+  const PRIVACY = loadPage("privacy", ["description"]);
   const brands = parseBrands(STUDIO.body, "content/pages/studio.md");
   KICKER = HOME.meta.kicker || "";
 
   const notes = loadNotes("notes/_posts");
   if (!notes.length) fail("notes/_posts", "the site needs at least one Lab Note");
-  if (!KIT_FORM_ACTION) warn("build.mjs", "KIT_FORM_ACTION is empty; the sign-up block shows LinkedIn and RSS instead of a form");
+  FOOT = FOOT_HTML();
 
   if (errors.length) return report(); // don't render half-valid content
 
@@ -605,6 +717,69 @@ function build() {
     </section>
   </main>` + FOOT);
 
+  /* ---- privacy ---- */
+  write("privacy/index.html", HEAD({
+    title: `Privacy — ${AUTHOR}`,
+    desc: PRIVACY.meta.description,
+    path: "/privacy/",
+  }) + `
+  <main id="main" class="article">
+    <div class="page-intro divider-top">
+      <p class="eyebrow" style="padding-top:2.5rem">Privacy</p>
+      <h1>Privacy</h1>
+    </div>
+    <div class="prose">
+${renderMarkdown(PRIVACY.body)}
+    </div>
+  </main>` + FOOT);
+
+  /* ---- confirm + unsubscribe (linked from emails; not indexed) ---- */
+  const actionPage = (path, eyebrow, title, intro, script) => write(`${path.slice(1)}index.html`, HEAD({
+    title: `${title} — ${AUTHOR}`,
+    desc: title,
+    path,
+  }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
+  <main id="main">
+    <div class="page-intro divider-top">
+      <p class="eyebrow" style="padding-top:2.5rem">${eyebrow}</p>
+      <h1>${title}</h1>
+      <p id="action-status" role="status" aria-live="polite">${intro}</p>
+    </div>
+  </main>
+<script>
+  (function(){
+    var t = new URLSearchParams(location.search).get('t') || '';
+    var status = document.getElementById('action-status');
+    function post(path){
+      return fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({t: t})})
+        .then(function(r){ return r.json().then(function(b){ return {ok: r.ok, b: b}; }); });
+    }
+    ${script}
+  })();
+</script>` + FOOT);
+
+  actionPage("/confirm/", "Lab Notes", "Confirming…", "One moment.", `
+    post('/api/confirm').then(function(x){
+      document.querySelector('h1').textContent = x.ok ? 'You’re subscribed.' : 'That didn’t work.';
+      status.textContent = x.ok ? 'Lab Notes will arrive by email every Tuesday. Every email has an unsubscribe link.' : (x.b.error || 'Please try again.');
+    }).catch(function(){ status.textContent = 'Something went wrong. Please try the link again.'; });`);
+
+  actionPage("/unsubscribe/", "Lab Notes", "Unsubscribe", "Stop getting Lab Notes by email? <button type=\"button\" id=\"unsub\" class=\"action-button\">Unsubscribe</button>", `
+    document.getElementById('unsub').addEventListener('click', function(){
+      status.textContent = 'One moment.';
+      post('/api/unsubscribe').then(function(x){
+        document.querySelector('h1').textContent = x.ok ? 'You’re unsubscribed.' : 'That didn’t work.';
+        status.textContent = x.ok ? 'You won’t get Lab Notes by email any more. They stay here on the site.' : (x.b.error || 'Please try again.');
+      }).catch(function(){ status.textContent = 'Something went wrong. Please try again.'; });
+    });`);
+
+  /* ---- each note's email, read by the Worker when a send runs (never served publicly) ---- */
+  for (const p of notes) {
+    write(`_email/${p.meta.slug}.html`, noteEmailHtml(p));
+    write(`_email/${p.meta.slug}.txt`, noteEmailText(p));
+    write(`_email/${p.meta.slug}.json`, JSON.stringify({ subject: p.meta.title }) + "\n");
+  }
+
   /* ---- 404 ---- */
   write("404.html", HEAD({
     title: `Not found — ${AUTHOR}`,
@@ -619,8 +794,6 @@ function build() {
     </div>
   </main>` + FOOT);
 
-  /* ---- redirects ---- */
-  for (const [from, to] of Object.entries(REDIRECTS)) write(`${from}index.html`, redirectPage(to));
 
   /* ---- RSS: Lab Notes, newest first ---- */
   const feedItems = notes.map((p) => {
@@ -648,7 +821,7 @@ ${feedItems}
 `);
 
   /* ---- sitemap + robots ---- */
-  const pages = ["/", "/notes/", "/studio/", "/work-with-me/", ...notes.map(postUrl)];
+  const pages = ["/", "/notes/", "/studio/", "/work-with-me/", "/privacy/", ...notes.map(postUrl)];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join("\n")}
