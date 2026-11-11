@@ -10,7 +10,7 @@ description: The hardest lesson of moving abroad happened back home, and how a h
 
 Lab Notes (November 10th). The hardest lesson of moving abroad had nothing to do with Spain. It cost my family nearly $18,000 and happened with our home in Seattle.
 
-When we left the US, we decided to rent out our house through a small, local property management firm. Then the rent stopped arriving. After they missed paying one month, then another, you bet we got a little worried.  We found the renters were still paying, but the PM firm simply stopped paying it's bills.
+When we left the US, we decided to rent out our house through a small, local property management firm. Then the rent stopped arriving. After they missed paying one month, then another, you bet we got a little worried.  We found the renters were still paying, but the PM firm simply stopped paying its bills.
 
 I found out I wasn't alone. Through Google and Yelp reviews, owners started finding each other.  In the end more than 100 owners, roughly 130 properties, and more than $1.4 million in unpaid rent, reserves and deposits from this one property management firm going dark.  But there was no organization, nothing to turn our collective set of bad situations into an organized voice of action.
 
