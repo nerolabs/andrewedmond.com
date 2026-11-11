@@ -354,7 +354,8 @@ footer a:hover{ color:var(--gold); }
   display:grid; grid-template-columns:minmax(0,22rem) minmax(0,1fr); gap:1.4rem 2.4rem; align-items:start;
 }
 .latest-card.no-img{ grid-template-columns:minmax(0,1fr); }
-.latest-img img{ display:block; width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:3px; border:1px solid var(--hair); }
+/* natural shape: note photos are often share cards with text, which a crop would cut */
+.latest-img img{ display:block; width:100%; height:auto; border-radius:3px; border:1px solid var(--hair); }
 .latest-card .p-date{
   font-family:var(--serif); font-weight:560; font-size:.72rem;
   letter-spacing:.16em; text-transform:uppercase; color:var(--gold); margin:0 0 .6rem;
