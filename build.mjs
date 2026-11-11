@@ -4,7 +4,6 @@
 
    Reads:   content/pages/*.md   page copy, as named front-matter slots
             notes/_posts/*.md    Lab Notes
-            blog/_posts/*.md     the July–August blog posts
    Writes:  _site/               the whole deployable site (gitignored)
 
    Every build also checks the content: required front matter, photos that
@@ -13,7 +12,7 @@
 
    No npm dependencies. Run with:  node build.mjs
    Preview with:                   python3 -m http.server -d _site 8765
-   Authoring guide: content/README.md (Lab Notes, page copy), blog/README.md
+   Authoring guide: content/README.md (Lab Notes, page copy)
    ========================================================================== */
 
 import {
@@ -53,7 +52,7 @@ const OLD_HOME_ANCHORS = {
   contact: "/work-with-me/",
 };
 // Files and folders copied into _site as they are.
-const STATIC = ["CNAME", "favicon.svg", "apple-touch-icon.png", "og.png", "assets", "blog/assets", "notes/assets"];
+const STATIC = ["CNAME", "favicon.svg", "apple-touch-icon.png", "og.png", "assets", "notes/assets"];
 
 /* ------------------------------------------------------------ check report */
 const errors = [];
@@ -111,7 +110,7 @@ function parseFrontMatter(raw, where) {
 }
 
 /* --------------------------------------------------------- markdown → html
-   Deliberately small: supports exactly what essays here use — headings,
+   Deliberately small: supports exactly what notes here use — headings,
    paragraphs, bold/italic/code, links, images, ordered & unordered lists,
    blockquotes, horizontal rules. Extend consciously if a post needs more. */
 
@@ -203,11 +202,6 @@ function renderMarkdown(md) {
   return out.join("\n");
 }
 
-function readingTime(md) {
-  const words = md.replace(/[#>*_`\-\[\]()!]/g, " ").split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 220));
-}
-
 /* ------------------------------------------------------------ content load */
 function loadPage(name, required) {
   const file = join(ROOT, "content/pages", `${name}.md`);
@@ -236,46 +230,40 @@ function parseBrands(body, where) {
 
 const NOTE_REQUIRED = ["title", "slug", "date", "linkedin", "photo", "photoAlt", "description"];
 const NOTE_OPTIONAL = ["dek"];
-const BLOG_FIELDS = ["title", "slug", "date", "series", "seriesShort", "dek", "description", "hero", "heroAlt", "heroCaption"];
 
-function loadPosts(dir, kind) {
+function loadNotes(dir) {
   const abs = join(ROOT, dir);
   if (!existsSync(abs)) return [];
-  const posts = [];
+  const notes = [];
   const slugs = new Set();
   for (const file of readdirSync(abs).filter((f) => f.endsWith(".md")).sort()) {
     const where = `${dir}/${file}`;
     const { meta, body } = parseFrontMatter(readFileSync(join(abs, file), "utf8"), where);
-    const required = kind === "note" ? NOTE_REQUIRED : ["title", "slug", "date"];
-    const allowed = kind === "note" ? [...NOTE_REQUIRED, ...NOTE_OPTIONAL] : BLOG_FIELDS;
-    for (const k of required) if (!meta[k]) fail(where, `front matter needs "${k}"`);
-    for (const k of Object.keys(meta)) if (!allowed.includes(k)) fail(where, `unknown front-matter field "${k}" (check the spelling)`);
+    for (const k of NOTE_REQUIRED) if (!meta[k]) fail(where, `front matter needs "${k}"`);
+    for (const k of Object.keys(meta)) if (![...NOTE_REQUIRED, ...NOTE_OPTIONAL].includes(k)) fail(where, `unknown front-matter field "${k}" (check the spelling)`);
     if (meta.slug && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug)) fail(where, `slug "${meta.slug}" must be lowercase words joined by hyphens`);
     if (meta.slug && slugs.has(meta.slug)) fail(where, `slug "${meta.slug}" is already used`);
     slugs.add(meta.slug);
     if (meta.date && (!/^\d{4}-\d{2}-\d{2}$/.test(meta.date) || isNaN(new Date(meta.date)))) fail(where, `date "${meta.date}" must be YYYY-MM-DD`);
-    if (kind === "note") {
-      if (meta.date && meta.slug && file !== `${meta.date}-${meta.slug}.md`) fail(where, `file name must be ${meta.date}-${meta.slug}.md`);
-      if (meta.linkedin && !/^https:\/\/(www\.)?linkedin\.com\/\S+$/.test(meta.linkedin)) fail(where, `linkedin must be a https://www.linkedin.com/... URL`);
-      if (meta.photo) {
-        if (!/^\/notes\/assets\/[^/]+\.(jpe?g|png|webp)$/i.test(meta.photo)) fail(where, `photo must be /notes/assets/<file>.jpg (or .png, .webp)`);
-        else if (!existsSync(join(ROOT, meta.photo))) fail(where, `photo ${meta.photo} doesn't exist`);
-        else if (statSync(join(ROOT, meta.photo)).size > 600 * 1024) warn(where, `photo ${meta.photo} is over 600 KB; aim for under 400 KB`);
-      }
-      if (/^\s*</m.test(body)) warn(where, "raw HTML in the body; ask the build before using it");
+    if (meta.date && meta.slug && file !== `${meta.date}-${meta.slug}.md`) fail(where, `file name must be ${meta.date}-${meta.slug}.md`);
+    if (meta.linkedin && !/^https:\/\/(www\.)?linkedin\.com\/\S+$/.test(meta.linkedin)) fail(where, `linkedin must be a https://www.linkedin.com/... URL`);
+    if (meta.photo) {
+      if (!/^\/notes\/assets\/[^/]+\.(jpe?g|png|webp)$/i.test(meta.photo)) fail(where, `photo must be /notes/assets/<file>.jpg (or .png, .webp)`);
+      else if (!existsSync(join(ROOT, meta.photo))) fail(where, `photo ${meta.photo} doesn't exist`);
+      else if (statSync(join(ROOT, meta.photo)).size > 600 * 1024) warn(where, `photo ${meta.photo} is over 600 KB; aim for under 400 KB`);
     }
-    posts.push({ kind, file, meta, body, html: renderMarkdown(body), mins: readingTime(body) });
+    if (/^\s*</m.test(body)) warn(where, "raw HTML in the body; ask the build before using it");
+    notes.push({ file, meta, body, html: renderMarkdown(body) });
   }
   // newest first
-  return posts.sort((a, b) => (a.meta.date < b.meta.date ? 1 : a.meta.date > b.meta.date ? -1 : 0));
+  return notes.sort((a, b) => (a.meta.date < b.meta.date ? 1 : a.meta.date > b.meta.date ? -1 : 0));
 }
 
-const postUrl = (p) => `/${p.kind === "note" ? "notes" : "blog"}/${p.meta.slug}/`;
+const postUrl = (p) => `/notes/${p.meta.slug}/`;
 
 /* ------------------------------------------------------------- page chrome */
 const NAV = [
   ["/notes/", "Lab Notes"],
-  ["/blog/", "Blog"],
   ["/studio/", "Studio"],
   ["/work-with-me/", "Work with me"],
 ];
@@ -383,26 +371,10 @@ function signup() {
 }
 
 /* ------------------------------------------------------------------ pages */
-function articlePage(p, list) {
+function notePage(p, list) {
   const i = list.indexOf(p);
   const older = list[i + 1];
   const newer = list[i - 1];
-  const isNote = p.kind === "note";
-  const path = postUrl(p);
-
-  const heroSrc = isNote ? p.meta.photo : p.meta.hero;
-  const heroAlt = isNote ? p.meta.photoAlt : p.meta.heroAlt || p.meta.title;
-  const hero = heroSrc
-    ? `<figure class="article-hero"><img src="${escAttr(heroSrc)}" alt="${escAttr(heroAlt)}">` +
-      (p.meta.heroCaption ? `<figcaption>${inline(p.meta.heroCaption)}</figcaption>` : "") + `</figure>`
-    : "";
-  const eyebrow = isNote ? "Lab Note" : p.meta.series || "Blog";
-  const meta = isNote
-    ? `<span>${humanDate(p.meta.date)}</span>`
-    : `<span>${humanDate(p.meta.date)}</span><span class="dot">·</span><span>${p.mins} min read</span>`;
-  const comment = isNote
-    ? `<p class="li-comment"><a class="link" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>` : "";
-
   const nav = [
     older ? `<a class="prev" href="${postUrl(older)}"><span class="np-label">← Earlier</span><span class="np-title">${esc(older.meta.title)}</span></a>` : "<span></span>",
     newer ? `<a class="next" href="${postUrl(newer)}"><span class="np-label">Next →</span><span class="np-title">${esc(newer.meta.title)}</span></a>` : "",
@@ -410,26 +382,26 @@ function articlePage(p, list) {
 
   return HEAD({
     title: `${p.meta.title} — ${AUTHOR}`,
-    desc: p.meta.description || "",
-    path,
-    og: { type: "article", image: heroSrc },
-    current: isNote ? "/notes/" : "/blog/",
+    desc: p.meta.description,
+    path: postUrl(p),
+    og: { type: "article", image: p.meta.photo },
+    current: "/notes/",
   }) + `
   <main id="main" class="article">
-    <a class="back" href="${isNote ? "/notes/" : "/blog/"}">← ${isNote ? "All Lab Notes" : "All posts"}</a>
+    <a class="back" href="/notes/">← All Lab Notes</a>
     <div class="article-head">
-      <p class="eyebrow">${esc(eyebrow)}</p>
+      <p class="eyebrow">Lab Note</p>
       <h1 class="article-title">${esc(p.meta.title)}</h1>
     </div>
     ${p.meta.dek ? `<p class="article-dek">${inline(p.meta.dek)}</p>` : ""}
-    <p class="article-meta">${meta}</p>
-    ${hero}
+    <p class="article-meta"><span>${humanDate(p.meta.date)}</span></p>
+    <figure class="article-hero"><img src="${escAttr(p.meta.photo)}" alt="${escAttr(p.meta.photoAlt)}"></figure>
     <div class="prose">
 ${p.html}
     </div>
-    ${comment}
+    <p class="li-comment"><a class="link" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>
     ${signup()}
-    ${older || newer ? `<nav class="post-nav" aria-label="More ${isNote ? "notes" : "posts"}">
+    ${older || newer ? `<nav class="post-nav" aria-label="More Lab Notes">
     ${nav}
     </nav>` : ""}
   </main>` + FOOT;
@@ -438,10 +410,10 @@ ${p.html}
 function postList(list) {
   return list.map((p) => `
     <li class="post-item">
-      <div class="p-date">${humanDate(p.meta.date)}${p.meta.seriesShort ? `<span class="p-series">${esc(p.meta.seriesShort)}</span>` : ""}</div>
+      <div class="p-date">${humanDate(p.meta.date)}</div>
       <div>
         <h2><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h2>
-        <p class="p-dek">${esc(p.meta.description || p.meta.dek || "")}</p>
+        <p class="p-dek">${esc(p.meta.description)}</p>
         <a class="link p-more" href="${postUrl(p)}">Read →</a>
       </div>
     </li>`).join("");
@@ -458,15 +430,13 @@ function brandList(brands, cls) {
 }
 
 function latestCard(p) {
-  const img = p.kind === "note" ? p.meta.photo : p.meta.hero;
-  const alt = p.kind === "note" ? p.meta.photoAlt : p.meta.heroAlt || "";
   return `
-      <article class="latest-card${img ? "" : " no-img"}">
-        ${img ? `<a class="latest-img" href="${postUrl(p)}" tabindex="-1" aria-hidden="true"><img src="${escAttr(img)}" alt="${escAttr(alt)}" loading="lazy"></a>` : ""}
+      <article class="latest-card">
+        <a class="latest-img" href="${postUrl(p)}" tabindex="-1" aria-hidden="true"><img src="${escAttr(p.meta.photo)}" alt="${escAttr(p.meta.photoAlt)}" loading="lazy"></a>
         <div>
           <p class="p-date">${humanDate(p.meta.date)}</p>
           <h3><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h3>
-          <p class="p-dek">${esc(p.meta.description || p.meta.dek || "")}</p>
+          <p class="p-dek">${esc(p.meta.description)}</p>
           <a class="link" href="${postUrl(p)}">Read the note →</a>
         </div>
       </article>`;
@@ -529,19 +499,16 @@ function build() {
   const brands = parseBrands(STUDIO.body, "content/pages/studio.md");
   KICKER = HOME.meta.kicker || "";
 
-  const notes = loadPosts("notes/_posts", "note");
-  const blog = loadPosts("blog/_posts", "blog");
-  if (!notes.length) warn("notes/_posts", "no Lab Notes yet; the home page shows the newest blog post instead");
+  const notes = loadNotes("notes/_posts");
+  if (!notes.length) fail("notes/_posts", "the site needs at least one Lab Note");
   if (!KIT_FORM_ACTION) warn("build.mjs", "KIT_FORM_ACTION is empty; the sign-up block shows LinkedIn and RSS instead of a form");
 
   if (errors.length) return report(); // don't render half-valid content
 
   /* ---- articles ---- */
-  for (const p of notes) write(`notes/${p.meta.slug}/index.html`, articlePage(p, notes));
-  for (const p of blog) write(`blog/${p.meta.slug}/index.html`, articlePage(p, blog));
+  for (const p of notes) write(`notes/${p.meta.slug}/index.html`, notePage(p, notes));
 
   /* ---- home ---- */
-  const latest = notes[0] || blog[0];
   const anchorScript = `<script>(function(){var m=${JSON.stringify(OLD_HOME_ANCHORS)};var h=location.hash.slice(1);if(m.hasOwnProperty(h))location.replace(m[h]);})();</script>\n`;
   write("index.html", HEAD({
     title: `${AUTHOR} — Lab Notes`,
@@ -557,9 +524,9 @@ function build() {
     </section>
     ${signup()}
     <section class="home-section divider-top" aria-labelledby="latest-h">
-      <h2 class="eyebrow" id="latest-h">${notes.length ? "Latest Lab Note" : "Latest from the lab"}</h2>
-      ${latestCard(latest)}
-      <p class="more"><a class="link" href="${notes.length ? "/notes/" : "/blog/"}">${notes.length ? "All Lab Notes →" : "All posts →"}</a></p>
+      <h2 class="eyebrow" id="latest-h">Latest Lab Note</h2>
+      ${latestCard(notes[0])}
+      <p class="more"><a class="link" href="/notes/">All Lab Notes →</a></p>
     </section>
     <section class="home-section divider-top" aria-labelledby="studio-h">
       <h2 class="eyebrow" id="studio-h">The studio</h2>
@@ -588,32 +555,14 @@ function build() {
     current: "/notes/",
   }) + `
   <main id="main">
-    <div class="blog-intro divider-top">
+    <div class="page-intro divider-top">
       <p class="eyebrow" style="padding-top:2.5rem">Lab Notes</p>
       <h1>Notes from <span class="em">the lab.</span></h1>
       <p>${inline(HOME.meta.signup)} <a class="link" href="/feed.xml">RSS →</a></p>
     </div>
-    ${notes.length ? `<ul class="post-list">${postList(notes)}
-    </ul>` : `<p class="empty">The first Lab Notes arrive here soon.</p>`}
-    <p class="more"><a class="link" href="/blog/">Earlier notes: the blog, July–August 2026 →</a></p>
-    ${signup()}
-  </main>` + FOOT);
-
-  /* ---- blog index (URL unchanged) ---- */
-  write("blog/index.html", HEAD({
-    title: `Blog — ${AUTHOR}`,
-    desc: "Notes on building and assessing AI-era software — architecture, truth pipelines, testing, and operations, with receipts.",
-    path: "/blog/",
-    current: "/blog/",
-  }) + `
-  <main id="main">
-    <div class="blog-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Blog</p>
-      <h1>Building and assessing <span class="em">AI-era software.</span></h1>
-      <p>Notes from the work — architecture invariants, truth pipelines, testing, and operations. Written with receipts. <a class="link" href="/feed.xml">RSS →</a></p>
-    </div>
-    <ul class="post-list">${postList(blog)}
+    <ul class="post-list">${postList(notes)}
     </ul>
+    ${signup()}
   </main>` + FOOT);
 
   /* ---- studio ---- */
@@ -624,7 +573,7 @@ function build() {
     current: "/studio/",
   }) + `
   <main id="main">
-    <div class="blog-intro divider-top">
+    <div class="page-intro divider-top">
       <p class="eyebrow" style="padding-top:2.5rem">Studio</p>
       <h1>The <span class="em">studio.</span></h1>
       ${STUDIO.meta.intro ? `<p>${inline(STUDIO.meta.intro)}</p>` : ""}
@@ -640,7 +589,7 @@ function build() {
     current: "/work-with-me/",
   }) + `
   <main id="main">
-    <div class="blog-intro divider-top">
+    <div class="page-intro divider-top">
       <p class="eyebrow" style="padding-top:2.5rem">Work with me</p>
       <h1>Work <span class="em">with me.</span></h1>
     </div>
@@ -663,26 +612,25 @@ function build() {
     path: "/404.html",
   }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
   <main id="main">
-    <div class="blog-intro divider-top">
+    <div class="page-intro divider-top">
       <p class="eyebrow" style="padding-top:2.5rem">Not found</p>
       <h1>Nothing <span class="em">here.</span></h1>
-      <p>Try <a class="link" href="/notes/">Lab Notes</a>, <a class="link" href="/blog/">the blog</a> or <a class="link" href="/">the home page</a>.</p>
+      <p>The old blog has been retired. New writing is in <a class="link" href="/notes/">Lab Notes</a>, or start at <a class="link" href="/">the home page</a>.</p>
     </div>
   </main>` + FOOT);
 
   /* ---- redirects ---- */
   for (const [from, to] of Object.entries(REDIRECTS)) write(`${from}index.html`, redirectPage(to));
 
-  /* ---- RSS: notes and blog together, newest first ---- */
-  const all = [...notes, ...blog].sort((a, b) => (a.meta.date < b.meta.date ? 1 : a.meta.date > b.meta.date ? -1 : 0));
-  const feedItems = all.map((p) => {
+  /* ---- RSS: Lab Notes, newest first ---- */
+  const feedItems = notes.map((p) => {
     const url = SITE + postUrl(p);
     return `    <item>
       <title>${esc(p.meta.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${rfc822(p.meta.date)}</pubDate>
-      <description>${esc(p.meta.description || p.meta.dek || "")}</description>
+      <description>${esc(p.meta.description)}</description>
     </item>`;
   }).join("\n");
   write("feed.xml", `<?xml version="1.0" encoding="UTF-8"?>
@@ -693,14 +641,14 @@ function build() {
     <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
     <description>${esc(HOME.meta.signup)}</description>
     <language>en</language>
-    <lastBuildDate>${rfc822(all[0].meta.date)}</lastBuildDate>
+    <lastBuildDate>${rfc822(notes[0].meta.date)}</lastBuildDate>
 ${feedItems}
   </channel>
 </rss>
 `);
 
   /* ---- sitemap + robots ---- */
-  const pages = ["/", "/notes/", "/blog/", "/studio/", "/work-with-me/", ...all.map(postUrl)];
+  const pages = ["/", "/notes/", "/studio/", "/work-with-me/", ...notes.map(postUrl)];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join("\n")}
@@ -709,17 +657,17 @@ ${pages.map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join("\n")}
   write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
   checkLinks();
-  report(notes.length, blog.length);
+  report(notes.length);
 }
 
-function report(nNotes, nBlog) {
+function report(nNotes) {
   for (const w of warnings) console.warn(`warning  ${w}`);
   if (errors.length) {
     for (const e of errors) console.error(`error    ${e}`);
     console.error(`\nBuild failed: ${errors.length} error(s). Nothing was published.`);
     process.exit(1);
   }
-  console.log(`Built ${nNotes} Lab Notes and ${nBlog} blog posts → _site/`);
+  console.log(`Built ${nNotes} Lab Notes → _site/`);
 }
 
 build();
