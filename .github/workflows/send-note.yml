@@ -1,0 +1,50 @@
+# Sends a published Lab Note by email. Nothing runs on a schedule.
+# - preview: one email to andrew@andrewedmond.com (MAIL_TEST_TO). No approval needed.
+# - everyone: every subscriber. The job waits in the lab-notes-email environment
+#   until Andrew approves it in GitHub; GitHub records who approved and when.
+#   Agents may start this workflow but must never approve the deployment.
+name: Send Lab Note
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "The note's slug, as in /notes/<slug>/"
+        required: true
+        type: string
+      audience:
+        description: "preview: one email to Andrew. everyone: all subscribers, after Andrew approves."
+        required: true
+        type: choice
+        options: [preview, everyone]
+        default: preview
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: send-note
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: inputs.audience == 'preview'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Send the preview
+        run: .github/scripts/send-note.sh "$SLUG" preview
+        env:
+          SLUG: ${{ inputs.slug }}
+
+  everyone:
+    if: inputs.audience == 'everyone'
+    runs-on: ubuntu-latest
+    environment: lab-notes-email
+    steps:
+      - uses: actions/checkout@v7
+      - name: Send to every subscriber
+        run: .github/scripts/send-note.sh "$SLUG" everyone
+        env:
+          SLUG: ${{ inputs.slug }}
