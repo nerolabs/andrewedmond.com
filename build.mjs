@@ -30,9 +30,11 @@ const AUTHOR = "Andrew Edmond";
 const LINKEDIN = "https://www.linkedin.com/in/andrewedmond";
 const POSTHOG_KEY = "phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu"; // project 237800, EU
 
-// Borehole's "Hire us" page. It ships on Borehole's side the day we cut over.
-// TODO(cutover): map the old home anchors to its sections once Borehole names them.
-const BOREHOLE_HIRE = "https://borehole.dev/hire-us";
+// Borehole's "Hire us" page is https://borehole.dev/hire-us, but it isn't live
+// yet (404 on 11 Nov). Until it is, diligence links go to Borehole's home page.
+// TODO: switch to /hire-us when it answers 200, and map the old home anchors
+// to its sections.
+const BOREHOLE_HIRE = "https://borehole.dev/";
 // TODO(Kit): the form's action URL once Andrew has signed up. Until then the
 // sign-up block shows LinkedIn and RSS instead of a form.
 const KIT_FORM_ACTION = "";
