@@ -295,6 +295,12 @@ const EVENTS = `<script>
 // only when someone focuses the email field, so most page views never fetch it.
 const SIGNUP_SCRIPT = () => `<script>
   (function(){
+    document.querySelectorAll('[data-labnotes-reset]').forEach(function(b){
+      b.addEventListener('click', function(){
+        if (window.labnotes) labnotes(null);
+        var i = document.getElementById('signup-email'); if (i) i.focus();
+      });
+    });
     var forms = document.querySelectorAll('form.signup-form');
     if (!forms.length) return;
     var CONSENT = ${JSON.stringify(consentText()).replace(/</g, "\\u003c")};
@@ -339,8 +345,9 @@ const SIGNUP_SCRIPT = () => `<script>
         }).then(function(r){ return r.json().then(function(b){ return {ok: r.ok, b: b}; }); })
         .then(function(x){
           if (!x.ok) return fail(x.b.error || 'Something went wrong. Please try again.');
-          f.hidden = true;
-          status.textContent = 'Almost there: check your inbox and click the link to confirm.';
+          status.textContent = ''; button.disabled = false; f.reset();
+          if (widget !== null) { turnstile.reset(widget); token = null; }
+          if (window.labnotes) labnotes('pending');
           if (window.posthog && posthog.capture) posthog.capture('signup_submit', {page: location.pathname});
         }).catch(function(){ fail('Something went wrong. Please try again.'); });
       });
@@ -348,6 +355,29 @@ const SIGNUP_SCRIPT = () => `<script>
   })();
 </script>`;
 
+// Remembers on this device that the visitor signed up, so the sign-up box says so instead of asking again.
+// Holds only "subscribed" or "pending:<time>", never an email; set by the visitor's own sign-up or confirm
+// click, cleared on unsubscribe. A user-requested interface setting, described on /privacy/.
+const LIST_STATE = `<script>
+(function(){
+  try {
+    var v = localStorage.getItem('labnotes'), s = null;
+    if (v === 'subscribed') s = v;
+    else if (v && v.indexOf('pending:') === 0 && Date.now() - Number(v.slice(8)) < 7 * 864e5) s = 'pending';
+    else if (v) localStorage.removeItem('labnotes');
+    if (s) document.documentElement.setAttribute('data-labnotes', s);
+  } catch (e) {}
+  window.labnotes = function(state){
+    try {
+      if (state) localStorage.setItem('labnotes', state === 'pending' ? 'pending:' + Date.now() : state);
+      else localStorage.removeItem('labnotes');
+    } catch (e) {}
+    if (state) document.documentElement.setAttribute('data-labnotes', state);
+    else document.documentElement.removeAttribute('data-labnotes');
+  };
+})();
+</script>
+`;
 let CSS_VERSION = "1";
 let KICKER = "";
 
@@ -374,7 +404,7 @@ const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => {
 <meta property="og:image" content="${og?.image ? absUrl(og.image) : SITE + "/og.png"}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="${escAttr(AUTHOR)} — Lab Notes" href="${SITE}/feed.xml">
-${extraHead}${POSTHOG}
+${extraHead}${LIST_STATE}${POSTHOG}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Big+Shoulders+Stencil+Display:wght@800&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -423,20 +453,32 @@ const SMALL_PRINT = "Double opt-in: we'll email you a link to confirm. Unsubscri
 const consentText = () => `${HOME.meta.signup} ${SMALL_PRINT}`;
 function signup() {
   return `
-    <section class="order" aria-labelledby="signup-h">
+    <section class="order" aria-label="Lab Notes by email">
       <span class="clip" aria-hidden="true"></span>
-      <h2 id="signup-h">${esc(HOME.meta.button)}</h2>
-      <p>${inline(HOME.meta.signup)}</p>
-      <form class="signup-form" action="/api/subscribe" method="post" novalidate>
-        <label for="signup-email">Email address</label>
-        <div class="field">
-          <input id="signup-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
-          <button type="submit">${esc(HOME.meta.button)}</button>
-        </div>
-        <div class="signup-check"></div>
-      </form>
-      <p class="signup-status" role="status" aria-live="polite"></p>
-      <p class="fine">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>. <a href="/feed.xml">Prefer RSS?</a></p>
+      <div class="order-new">
+        <h2>${esc(HOME.meta.button)}</h2>
+        <p>${inline(HOME.meta.signup)}</p>
+        <form class="signup-form" action="/api/subscribe" method="post" novalidate>
+          <label for="signup-email">Email address</label>
+          <div class="field">
+            <input id="signup-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+            <button type="submit">${esc(HOME.meta.button)}</button>
+          </div>
+          <div class="signup-check"></div>
+        </form>
+        <p class="signup-status" role="status" aria-live="polite"></p>
+        <p class="fine">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>. <a href="/feed.xml">Prefer RSS?</a></p>
+      </div>
+      <div class="order-pending">
+        <h2>Check your inbox</h2>
+        <p>I've sent you a link to confirm. Click it and you're on the list. It works for 7 days.</p>
+        <p class="fine">Nothing there? Check your spam folder, or <button type="button" class="linkbtn" data-labnotes-reset>sign up again</button>.</p>
+      </div>
+      <div class="order-done">
+        <h2>You're on the list</h2>
+        <p>Lab Notes lands in your inbox every Tuesday. Every email has an unsubscribe link.</p>
+        <p class="fine"><a href="/notes/">Read past notes</a>. Different address? <button type="button" class="linkbtn" data-labnotes-reset>Sign it up</button>.</p>
+      </div>
     </section>`;
 }
 
@@ -788,6 +830,7 @@ ${renderMarkdown(PRIVACY.body)}
 
   actionPage("/confirm/", "Lab Notes", "Confirming…", "One moment.", `
     post('/api/confirm').then(function(x){
+      if (x.ok && window.labnotes) labnotes('subscribed');
       document.querySelector('h1').textContent = x.ok ? 'You’re subscribed.' : 'That didn’t work.';
       status.textContent = x.ok ? 'Lab Notes will arrive by email every Tuesday. Every email has an unsubscribe link.' : (x.b.error || 'Please try again.');
     }).catch(function(){ status.textContent = 'Something went wrong. Please try the link again.'; });`);
@@ -796,6 +839,7 @@ ${renderMarkdown(PRIVACY.body)}
     document.getElementById('unsub').addEventListener('click', function(){
       status.textContent = 'One moment.';
       post('/api/unsubscribe').then(function(x){
+        if (x.ok && window.labnotes) labnotes(null);
         document.querySelector('h1').textContent = x.ok ? 'You’re unsubscribed.' : 'That didn’t work.';
         status.textContent = x.ok ? 'You won’t get Lab Notes by email any more. They stay here on the site.' : (x.b.error || 'Please try again.');
       }).catch(function(){ status.textContent = 'Something went wrong. Please try again.'; });
