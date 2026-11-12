@@ -32,12 +32,12 @@ async function resend(env, path, payload) {
 export function confirmEmail(env, token) {
   const url = `${env.SITE_URL}/confirm/?t=${token}`;
   const html = `<div style="font-family:Georgia,serif;font-size:17px;line-height:1.55;color:#211C18;max-width:560px">
-<p>Please confirm you'd like Lab Notes by email: one note each Tuesday, about what I built, what broke and what it taught me.</p>
+<p>Please confirm you'd like Lab Notes by email: each new note, about what I built, what broke and what it taught me.</p>
 <p><a href="${esc(url)}" style="display:inline-block;background:#211C18;color:#EDE7DC;padding:12px 22px;border-radius:3px;text-decoration:none;font-family:Arial,sans-serif;font-size:15px">Confirm my subscription</a></p>
 <p style="font-size:14px;color:#6b6157">The link works for 7 days. If you didn't ask for this, ignore this email and nothing happens.</p>
 <p style="font-size:14px;color:#6b6157">Andrew Edmond · <a href="${esc(env.SITE_URL)}" style="color:#6b6157">andrewedmond.com</a></p>
 </div>`;
-  const text = `Please confirm you'd like Lab Notes by email: one note each Tuesday, about what I built, what broke and what it taught me.
+  const text = `Please confirm you'd like Lab Notes by email: each new note, about what I built, what broke and what it taught me.
 
 Confirm: ${url}
 
