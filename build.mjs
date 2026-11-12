@@ -449,7 +449,7 @@ let FOOT = ""; // set once the home page's copy is loaded (the sign-up script ne
 // The Lab Notes sign-up block. The consent text the Worker records is the
 // sign-up line plus the small print, exactly as shown.
 let HOME = { meta: {} };
-const SMALL_PRINT = "Double opt-in: we'll email you a link to confirm. Unsubscribe any time.";
+const SMALL_PRINT = "Double opt-in: I'll email you a link to confirm. Unsubscribe any time.";
 const consentText = () => `${HOME.meta.signup} ${SMALL_PRINT}`;
 function signup() {
   return `
@@ -471,12 +471,12 @@ function signup() {
       </div>
       <div class="order-pending">
         <h2>Check your inbox</h2>
-        <p>I've sent you a link to confirm. Click it and you're on the list. It works for 7 days.</p>
+        <p>I've sent you a link to confirm. Click it and you're on the list. The link works for 7 days.</p>
         <p class="fine">Nothing there? Check your spam folder, or <button type="button" class="linkbtn" data-labnotes-reset>sign up again</button>.</p>
       </div>
       <div class="order-done">
         <h2>You're on the list</h2>
-        <p>Lab Notes lands in your inbox every Tuesday. Every email has an unsubscribe link.</p>
+        <p>Each new Lab Note comes to your inbox. Every email has an unsubscribe link.</p>
         <p class="fine"><a href="/notes/">Read past notes</a>. Different address? <button type="button" class="linkbtn" data-labnotes-reset>Sign it up</button>.</p>
       </div>
     </section>`;
@@ -832,7 +832,7 @@ ${renderMarkdown(PRIVACY.body)}
     post('/api/confirm').then(function(x){
       if (x.ok && window.labnotes) labnotes('subscribed');
       document.querySelector('h1').textContent = x.ok ? 'You’re subscribed.' : 'That didn’t work.';
-      status.textContent = x.ok ? 'Lab Notes will arrive by email every Tuesday. Every email has an unsubscribe link.' : (x.b.error || 'Please try again.');
+      status.textContent = x.ok ? 'Each new Lab Note will come to your inbox. Every email has an unsubscribe link.' : (x.b.error || 'Please try again.');
     }).catch(function(){ status.textContent = 'Something went wrong. Please try the link again.'; });`);
 
   actionPage("/unsubscribe/", "Lab Notes", "Unsubscribe", "Stop getting Lab Notes by email? <button type=\"button\" id=\"unsub\" class=\"btn\">Unsubscribe</button>", `
