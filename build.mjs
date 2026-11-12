@@ -351,14 +351,19 @@ const SIGNUP_SCRIPT = () => `<script>
 let CSS_VERSION = "1";
 let KICKER = "";
 
-const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => `<!doctype html>
+const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => {
+  const home = current === "/";
+  const name = home
+    ? `<h1 class="name"><a href="/">${esc(AUTHOR)}</a></h1>`
+    : `<p class="name"><a href="/">${esc(AUTHOR)}</a></p>`;
+  return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${escAttr(desc)}">
-<meta name="theme-color" content="#211C18">
+<meta name="theme-color" content="#ECE1C8">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="canonical" href="${SITE}${path}">
@@ -372,31 +377,39 @@ const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => `<!doctype 
 ${extraHead}${POSTHOG}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,420;0,9..144,560;1,9..144,340;1,9..144,420&family=Mulish:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Big+Shoulders+Stencil+Display:wght@800&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=${CSS_VERSION}">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="sheet">
-  <header class="masthead">
-    <div class="brand">
-      <a class="monogram" aria-hidden="true" tabindex="-1" href="/">AE</a>
-      <div class="wordmark">
-        <span class="name"><a href="/">${esc(AUTHOR)}</a></span>
+<header class="mast${home ? "" : " mast--compact"}">
+  <div class="wrap">
+    <div class="mast-row">
+      <div>
         <p class="kicker">${esc(KICKER)}</p>
+        ${name}
       </div>
+      <nav class="nav" aria-label="Site">
+        <ul>
+          ${NAV.map(([href, label]) => `<li><a href="${href}"${current === href ? ' aria-current="page"' : ""}><span class="tape">${label}</span></a></li>`).join("\n          ")}
+        </ul>
+      </nav>
     </div>
-    <nav class="site-nav" aria-label="Site">
-      ${NAV.map(([href, label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ""}>${label}</a>`).join("\n      ")}
-    </nav>
-  </header>`;
+  </div>
+</header>`;
+};
 
 const FOOT_HTML = () => `
-  <footer>
-    <span>${esc(AUTHOR)} · Jerez, Spain</span>
-    <span><a href="${LINKEDIN}">LinkedIn</a> · <a href="/feed.xml">RSS</a></span>
-  </footer>
-</div>
+<footer class="foot">
+  <div class="wrap">
+    <p>${esc(AUTHOR)} · Jerez, Spain</p>
+    <ul>
+      <li><a href="${LINKEDIN}">LinkedIn</a></li>
+      <li><a href="/feed.xml">RSS</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
 ${EVENTS}
 ${SIGNUP_SCRIPT()}
 </body>
@@ -410,16 +423,20 @@ const SMALL_PRINT = "Double opt-in: we'll email you a link to confirm. Unsubscri
 const consentText = () => `${HOME.meta.signup} ${SMALL_PRINT}`;
 function signup() {
   return `
-    <section class="signup" aria-label="Get Lab Notes by email">
-      <p class="signup-line">${inline(HOME.meta.signup)}</p>
+    <section class="order" aria-labelledby="signup-h">
+      <span class="clip" aria-hidden="true"></span>
+      <h2 id="signup-h">${esc(HOME.meta.button)}</h2>
+      <p>${inline(HOME.meta.signup)}</p>
       <form class="signup-form" action="/api/subscribe" method="post" novalidate>
-        <label class="sr-only" for="signup-email">Email address</label>
-        <input id="signup-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
-        <button type="submit">${esc(HOME.meta.button)}</button>
+        <label for="signup-email">Email address</label>
+        <div class="field">
+          <input id="signup-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+          <button type="submit">${esc(HOME.meta.button)}</button>
+        </div>
         <div class="signup-check"></div>
       </form>
       <p class="signup-status" role="status" aria-live="polite"></p>
-      <p class="signup-small">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>.</p>
+      <p class="fine">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>.</p>
     </section>`;
 }
 
@@ -501,14 +518,19 @@ Unsubscribe: {{UNSUBSCRIBE_URL}}
 }
 
 /* ------------------------------------------------------------------ pages */
+// A pinned print: how every note photo is shown (natural shape, never cropped).
+const print = (p, cls = "") =>
+  `<figure class="print${cls}"><span class="pin l" aria-hidden="true"></span><span class="pin r" aria-hidden="true"></span><img src="${escAttr(p.meta.photo)}" width="1200" height="630" alt="${escAttr(p.meta.photoAlt)}"></figure>`;
+const dateTag = (p) => `<time datetime="${p.meta.date}">${humanDate(p.meta.date)}</time>`;
+
 function notePage(p, list) {
   const i = list.indexOf(p);
   const older = list[i + 1];
   const newer = list[i - 1];
   const nav = [
-    older ? `<a class="prev" href="${postUrl(older)}"><span class="np-label">← Earlier</span><span class="np-title">${esc(older.meta.title)}</span></a>` : "<span></span>",
-    newer ? `<a class="next" href="${postUrl(newer)}"><span class="np-label">Next →</span><span class="np-title">${esc(newer.meta.title)}</span></a>` : "",
-  ].join("\n    ");
+    older ? `<a class="prevnext-item" href="${postUrl(older)}"><span class="tape">← Earlier</span><span class="prevnext-title">${esc(older.meta.title)}</span></a>` : "",
+    newer ? `<a class="prevnext-item next" href="${postUrl(newer)}"><span class="tape">Next →</span><span class="prevnext-title">${esc(newer.meta.title)}</span></a>` : "",
+  ].join("\n      ");
 
   return HEAD({
     title: `${p.meta.title} — ${AUTHOR}`,
@@ -517,60 +539,93 @@ function notePage(p, list) {
     og: { type: "article", image: p.meta.photo },
     current: "/notes/",
   }) + `
-  <main id="main" class="article">
-    <a class="back" href="/notes/">← All Lab Notes</a>
-    <div class="article-head">
-      <p class="eyebrow">Lab Note</p>
-      <h1 class="article-title">${esc(p.meta.title)}</h1>
-    </div>
-    ${p.meta.dek ? `<p class="article-dek">${inline(p.meta.dek)}</p>` : ""}
-    <p class="article-meta"><span>${humanDate(p.meta.date)}</span></p>
-    <figure class="article-hero"><img src="${escAttr(p.meta.photo)}" alt="${escAttr(p.meta.photoAlt)}"></figure>
+<main id="main">
+  <article class="wrap reading">
+    <header class="note-head">
+      <p class="back"><a href="/notes/">← All Lab Notes</a></p>
+      <p class="note-date"><span class="tape">Lab Note</span> ${dateTag(p)}</p>
+      <h1>${esc(p.meta.title)}</h1>
+      ${p.meta.dek ? `<p class="dek">${inline(p.meta.dek)}</p>` : ""}
+    </header>
+    ${print(p, " print--wide")}
     <div class="prose">
 ${p.html}
     </div>
-    <p class="li-comment"><a class="link" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>
+    <p class="li-comment"><a class="btn" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>
     ${signup()}
-    ${older || newer ? `<nav class="post-nav" aria-label="More Lab Notes">
-    ${nav}
+    ${older || newer ? `<nav class="prevnext" aria-label="More Lab Notes">
+      ${nav}
     </nav>` : ""}
-  </main>` + FOOT;
+  </article>
+</main>` + FOOT;
 }
 
 function postList(list) {
   return list.map((p) => `
-    <li class="post-item">
-      <div class="p-date">${humanDate(p.meta.date)}</div>
+    <li class="log-item">
+      <a class="log-thumb" href="${postUrl(p)}" tabindex="-1" aria-hidden="true">${print(p, " print--thumb")}</a>
       <div>
+        <p class="note-date">${dateTag(p)}</p>
         <h2><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h2>
-        <p class="p-dek">${esc(p.meta.description)}</p>
-        <a class="link p-more" href="${postUrl(p)}">Read →</a>
+        <p class="log-desc">${esc(p.meta.description)}</p>
+        <a class="plain" href="${postUrl(p)}">Read the note →</a>
       </div>
     </li>`).join("");
 }
 
-function brandList(brands, cls) {
-  return `<ul class="${cls}">${brands.map((b) => `
-      <li>
-        <h3><a href="${escAttr(b.url)}">${esc(b.name)}</a></h3>
-        <p>${inline(b.line)}</p>
-        <a class="host" href="${escAttr(b.url)}">${esc(b.host)} ↗</a>
-      </li>`).join("")}
-    </ul>`;
+// The studio's brands as shipping tags on a pegboard; the first (the studio itself) is the big yellow parent tag.
+function pegboard(brands, intro, headingTag = "h2") {
+  const tags = brands.map((b) => `
+        <li class="tag">
+          <svg viewBox="0 0 80 58" aria-hidden="true"><path d="M40 4 L28 42 M40 4 L52 42" stroke="#2A2620" stroke-width="2" fill="none"/></svg>
+          <div class="tag-in"><div class="card"><span class="hole" aria-hidden="true"></span>
+            <h3>${esc(b.name)}</h3>
+            <p>${inline(b.line)}</p>
+            <a href="${escAttr(b.url)}">${esc(b.host)}</a>
+          </div></div>
+        </li>`).join("");
+  return `
+    <div class="board">
+      <div class="board-head">
+        <${headingTag} id="studio-h" class="tape">The studio</${headingTag}>
+        ${intro ? `<p class="board-intro">${inline(intro)}</p>` : ""}
+      </div>
+      <ul class="tags">${tags}
+      </ul>
+    </div>`;
 }
 
 function latestCard(p) {
   return `
-      <article class="latest-card">
-        <a class="latest-img" href="${postUrl(p)}" tabindex="-1" aria-hidden="true"><img src="${escAttr(p.meta.photo)}" alt="${escAttr(p.meta.photoAlt)}" loading="lazy"></a>
+      <article class="note">
+        <a class="note-print" href="${postUrl(p)}" tabindex="-1" aria-hidden="true">${print(p)}</a>
         <div>
-          <p class="p-date">${humanDate(p.meta.date)}</p>
+          <p class="note-date">${dateTag(p)}</p>
           <h3><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h3>
-          <p class="p-dek">${esc(p.meta.description)}</p>
-          <a class="link" href="${postUrl(p)}">Read the note →</a>
+          <p class="note-desc">${esc(p.meta.description)}</p>
+          <div class="links">
+            <a class="btn" href="${postUrl(p)}">Read the note →</a>
+            <a class="plain" href="/notes/">All Lab Notes →</a>
+          </div>
         </div>
       </article>`;
 }
+
+// Inner pages open with a label-tape title on a shelf.
+const shelfTitle = (title, id = "") => `<div class="shelf"><h1${id ? ` id="${id}"` : ""} class="tape tape--lg">${esc(title)}</h1></div>`;
+const drawers = (WWM, withIds) => `
+    <div class="drawers">
+      <section class="drawer"${withIds ? ' id="diligence"' : ""}>
+        <div class="holder"><h3>${esc(WWM.meta.diligenceTitle)}</h3></div>
+        <p>${inline(WWM.meta.diligence)}</p>
+        <a href="${escAttr(BOREHOLE_HIRE)}">${esc(WWM.meta.diligenceCta)} →</a>
+      </section>
+      <section class="drawer"${withIds ? ' id="advisory"' : ""}>
+        <div class="holder"><h3>${esc(WWM.meta.advisoryTitle)}</h3></div>
+        <p>${inline(WWM.meta.advisory)}</p>
+        <a href="mailto:${escAttr(WWM.meta.email)}">${esc(WWM.meta.email)}</a>
+      </section>
+    </div>`;
 
 /* --------------------------------------------------------------- link check */
 function checkLinks() {
@@ -629,35 +684,23 @@ function build() {
     current: "/",
     extraHead: anchorScript,
   }) + `
-  <main id="main" class="home">
-    <section class="hero">
-      <h1 class="sr-only">${esc(AUTHOR)} — Lab Notes</h1>
-      <p class="lede">${inline(HOME.meta.intro)}</p>
-    </section>
+<main id="main">
+  <section class="wrap bench" aria-label="Introduction">
+    <p class="lede">${inline(HOME.meta.intro)}</p>
     ${signup()}
-    <section class="home-section divider-top" aria-labelledby="latest-h">
-      <h2 class="eyebrow" id="latest-h">Latest Lab Note</h2>
-      ${latestCard(notes[0])}
-      <p class="more"><a class="link" href="/notes/">All Lab Notes →</a></p>
-    </section>
-    <section class="home-section divider-top" aria-labelledby="studio-h">
-      <h2 class="eyebrow" id="studio-h">The studio</h2>
-      ${brandList(brands, "brands")}
-    </section>
-    <section class="home-section divider-top" aria-labelledby="wwm-h">
-      <h2 class="eyebrow" id="wwm-h">Work with me</h2>
-      <div class="wwm">
-        <div>
-          <h3>${esc(WWM.meta.diligenceTitle)}</h3>
-          <p><a class="link" href="${escAttr(BOREHOLE_HIRE)}">${esc(WWM.meta.diligenceCta)} →</a></p>
-        </div>
-        <div>
-          <h3>${esc(WWM.meta.advisoryTitle)}</h3>
-          <p><a class="link" href="/work-with-me/#advisory">About advisory →</a></p>
-        </div>
-      </div>
-    </section>
-  </main>` + FOOT);
+  </section>
+  <section class="wrap latest" aria-labelledby="latest-h">
+    <div class="shelf"><h2 id="latest-h" class="tape">Latest note</h2></div>
+    ${latestCard(notes[0])}
+  </section>
+  <section class="wrap studio" aria-labelledby="studio-h">
+    ${pegboard(brands, STUDIO.meta.intro)}
+  </section>
+  <section class="wrap work" aria-labelledby="work-h">
+    <div class="shelf"><h2 id="work-h" class="tape">Work with me</h2></div>
+    ${drawers(WWM, false)}
+  </section>
+</main>` + FOOT);
 
   /* ---- notes index ---- */
   write("notes/index.html", HEAD({
@@ -666,16 +709,15 @@ function build() {
     path: "/notes/",
     current: "/notes/",
   }) + `
-  <main id="main">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Lab Notes</p>
-      <h1>Notes from <span class="em">the lab.</span></h1>
-      <p>${inline(HOME.meta.signup)} <a class="link" href="/feed.xml">RSS →</a></p>
-    </div>
-    <ul class="post-list">${postList(notes)}
+<main id="main">
+  <section class="wrap page" aria-labelledby="notes-h">
+    ${shelfTitle("Lab Notes", "notes-h")}
+    <p class="page-intro">${inline(HOME.meta.signup)} <a href="/feed.xml">RSS →</a></p>
+    <ul class="log">${postList(notes)}
     </ul>
     ${signup()}
-  </main>` + FOOT);
+  </section>
+</main>` + FOOT);
 
   /* ---- studio ---- */
   write("studio/index.html", HEAD({
@@ -684,14 +726,11 @@ function build() {
     path: "/studio/",
     current: "/studio/",
   }) + `
-  <main id="main">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Studio</p>
-      <h1>The <span class="em">studio.</span></h1>
-      ${STUDIO.meta.intro ? `<p>${inline(STUDIO.meta.intro)}</p>` : ""}
-    </div>
-    ${brandList(brands, "brands brands-page")}
-  </main>` + FOOT);
+<main id="main">
+  <section class="wrap page studio" aria-labelledby="studio-h">
+    ${pegboard(brands, STUDIO.meta.intro, "h1")}
+  </section>
+</main>` + FOOT);
 
   /* ---- work with me ---- */
   write("work-with-me/index.html", HEAD({
@@ -700,22 +739,12 @@ function build() {
     path: "/work-with-me/",
     current: "/work-with-me/",
   }) + `
-  <main id="main">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Work with me</p>
-      <h1>Work <span class="em">with me.</span></h1>
-    </div>
-    <section class="wwm-item" id="diligence">
-      <h2>${esc(WWM.meta.diligenceTitle)}</h2>
-      <p>${inline(WWM.meta.diligence)}</p>
-      <p><a class="link" href="${escAttr(BOREHOLE_HIRE)}">${esc(WWM.meta.diligenceCta)} →</a></p>
-    </section>
-    <section class="wwm-item" id="advisory">
-      <h2>${esc(WWM.meta.advisoryTitle)}</h2>
-      <p>${inline(WWM.meta.advisory)}</p>
-      <p><a class="link" href="mailto:${escAttr(WWM.meta.email)}">${esc(WWM.meta.email)}</a></p>
-    </section>
-  </main>` + FOOT);
+<main id="main">
+  <section class="wrap page work" aria-labelledby="work-h">
+    ${shelfTitle("Work with me", "work-h")}
+    ${drawers(WWM, true)}
+  </section>
+</main>` + FOOT);
 
   /* ---- privacy ---- */
   write("privacy/index.html", HEAD({
@@ -723,15 +752,14 @@ function build() {
     desc: PRIVACY.meta.description,
     path: "/privacy/",
   }) + `
-  <main id="main" class="article">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Privacy</p>
-      <h1>Privacy</h1>
-    </div>
+<main id="main">
+  <article class="wrap page reading">
+    ${shelfTitle("Privacy")}
     <div class="prose">
 ${renderMarkdown(PRIVACY.body)}
     </div>
-  </main>` + FOOT);
+  </article>
+</main>` + FOOT);
 
   /* ---- confirm + unsubscribe (linked from emails; not indexed) ---- */
   const actionPage = (path, eyebrow, title, intro, script) => write(`${path.slice(1)}index.html`, HEAD({
@@ -739,13 +767,13 @@ ${renderMarkdown(PRIVACY.body)}
     desc: title,
     path,
   }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
-  <main id="main">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">${eyebrow}</p>
-      <h1>${title}</h1>
-      <p id="action-status" role="status" aria-live="polite">${intro}</p>
-    </div>
-  </main>
+<main id="main">
+  <section class="wrap page">
+    <div class="shelf"><p class="tape">${eyebrow}</p></div>
+    <h1 class="big">${title}</h1>
+    <p id="action-status" class="page-intro" role="status" aria-live="polite">${intro}</p>
+  </section>
+</main>
 <script>
   (function(){
     var t = new URLSearchParams(location.search).get('t') || '';
@@ -764,7 +792,7 @@ ${renderMarkdown(PRIVACY.body)}
       status.textContent = x.ok ? 'Lab Notes will arrive by email every Tuesday. Every email has an unsubscribe link.' : (x.b.error || 'Please try again.');
     }).catch(function(){ status.textContent = 'Something went wrong. Please try the link again.'; });`);
 
-  actionPage("/unsubscribe/", "Lab Notes", "Unsubscribe", "Stop getting Lab Notes by email? <button type=\"button\" id=\"unsub\" class=\"action-button\">Unsubscribe</button>", `
+  actionPage("/unsubscribe/", "Lab Notes", "Unsubscribe", "Stop getting Lab Notes by email? <button type=\"button\" id=\"unsub\" class=\"btn\">Unsubscribe</button>", `
     document.getElementById('unsub').addEventListener('click', function(){
       status.textContent = 'One moment.';
       post('/api/unsubscribe').then(function(x){
@@ -786,13 +814,13 @@ ${renderMarkdown(PRIVACY.body)}
     desc: "This page doesn't exist.",
     path: "/404.html",
   }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
-  <main id="main">
-    <div class="page-intro divider-top">
-      <p class="eyebrow" style="padding-top:2.5rem">Not found</p>
-      <h1>Nothing <span class="em">here.</span></h1>
-      <p>The old blog has been retired. New writing is in <a class="link" href="/notes/">Lab Notes</a>, or start at <a class="link" href="/">the home page</a>.</p>
-    </div>
-  </main>` + FOOT);
+<main id="main">
+  <section class="wrap page">
+    <div class="shelf"><p class="tape">Not found</p></div>
+    <h1 class="big">Nothing here.</h1>
+    <p class="page-intro">The old blog has been retired. New writing is in <a href="/notes/">Lab Notes</a>, or start at <a href="/">the home page</a>.</p>
+  </section>
+</main>` + FOOT);
 
 
   /* ---- RSS: Lab Notes, newest first ---- */
