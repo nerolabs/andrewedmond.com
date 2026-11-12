@@ -358,8 +358,20 @@ const SIGNUP_SCRIPT = () => `<script>
 // Remembers on this device that the visitor signed up, so the sign-up box says so instead of asking again.
 // Holds only "subscribed" or "pending:<time>", never an email; set by the visitor's own sign-up or confirm
 // click, cleared on unsubscribe. A user-requested interface setting, described on /privacy/.
+// For testing, ?labnotes=1 (form), 2 (check your inbox) or 3 (on the list) sets it on any page, then the
+// parameter is dropped from the address bar.
 const LIST_STATE = `<script>
 (function(){
+  var q = /[?&]labnotes=([^&#]*)/.exec(location.search);
+  if (q) {
+    var want = { '1': '', form: '', '2': 'pending', pending: 'pending', '3': 'subscribed', subscribed: 'subscribed' }[decodeURIComponent(q[1])];
+    try {
+      if (want === 'pending') localStorage.setItem('labnotes', 'pending:' + Date.now());
+      else if (want) localStorage.setItem('labnotes', want);
+      else if (want === '') localStorage.removeItem('labnotes');
+    } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.search.replace(/[?&]labnotes=[^&#]*/, '').replace(/^&/, '?') + location.hash); } catch (e) {}
+  }
   try {
     var v = localStorage.getItem('labnotes'), s = null;
     if (v === 'subscribed') s = v;
