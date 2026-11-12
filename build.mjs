@@ -436,7 +436,7 @@ function signup() {
         <div class="signup-check"></div>
       </form>
       <p class="signup-status" role="status" aria-live="polite"></p>
-      <p class="fine">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>.</p>
+      <p class="fine">${esc(SMALL_PRINT)} <a href="/privacy/">Privacy</a>. <a href="/feed.xml">Prefer RSS?</a></p>
     </section>`;
 }
 
