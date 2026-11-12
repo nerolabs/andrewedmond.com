@@ -140,6 +140,11 @@ a:focus-visible,button:focus-visible,input:focus-visible{ outline:3px solid var(
 .card h3{ font-family:var(--display); font-weight:900; font-size:30px; line-height:.95; text-transform:uppercase; margin:0 0 10px; }
 .card p{ margin:0 0 16px; font-size:17px; line-height:1.45; }
 .card a{ display:inline-flex; align-items:center; min-height:44px; font-weight:700; font-size:17px; word-break:break-word; }
+/* The whole tag is the link: the domain link's hit area stretches over the card (one link, one tab stop). */
+.card a::after{ content:""; position:absolute; inset:0; z-index:1; }
+.tag-in{ transition:filter .15s ease, translate .15s ease; }
+.tag:hover .tag-in{ translate:0 -3px; filter:drop-shadow(0 9px 0 rgba(60,40,15,.35)); }
+.tag:hover .card a{ text-decoration-color:var(--ink); text-decoration-thickness:4px; }
 .tags li:first-child .card{ background:var(--yellow); }
 .tags li:first-child .hole{ box-shadow:0 0 0 6px #D9A600,0 0 0 7px rgba(22,20,15,.25); }
 @media (min-width:900px){
