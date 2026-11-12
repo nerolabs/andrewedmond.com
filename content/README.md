@@ -46,11 +46,12 @@ Everything else (layout, CSS, `build.mjs`, redirects, the workflow) belongs to t
 | `title` | yes | The headline |
 | `slug` | yes | Lowercase words joined by hyphens. It becomes `/notes/<slug>/`. Never change it after publishing |
 | `date` | yes | `YYYY-MM-DD`, the day it ran on LinkedIn. The file name is `<date>-<slug>.md` |
-| `linkedin` | yes | The LinkedIn post's URL. It becomes the "Comment on LinkedIn" link |
+| `linkedin` | no | The LinkedIn post's URL. It becomes the "Comment on LinkedIn" link. Leave it out for a note that never ran on LinkedIn |
 | `photo` | yes | `/notes/assets/<file>.jpg` (`.png` and `.webp` also work). The file must exist |
 | `photoAlt` | yes | A plain description of the photo |
 | `description` | yes | One sentence |
 | `dek` | no | A standfirst shown under the title |
+| `email` | no | `no` keeps the note off email entirely: no email is built, so "Send Lab Note" refuses it. Use it for site-only notes |
 
 Any other field fails the build, which catches typos such as `photoalt`.
 

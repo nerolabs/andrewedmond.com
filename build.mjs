@@ -223,8 +223,10 @@ function parseBrands(body, where) {
   return brands;
 }
 
-const NOTE_REQUIRED = ["title", "slug", "date", "linkedin", "photo", "photoAlt", "description"];
-const NOTE_OPTIONAL = ["dek"];
+const NOTE_REQUIRED = ["title", "slug", "date", "photo", "photoAlt", "description"];
+// linkedin: the post's URL; leave it out for a note that never ran on LinkedIn (no "Comment on LinkedIn" link).
+// email: "no" keeps a note off email entirely: no email is built for it, so "Send Lab Note" can't send it.
+const NOTE_OPTIONAL = ["dek", "linkedin", "email"];
 
 function loadNotes(dir) {
   const abs = join(ROOT, dir);
@@ -247,6 +249,7 @@ function loadNotes(dir) {
       else if (!existsSync(join(ROOT, meta.photo))) fail(where, `photo ${meta.photo} doesn't exist`);
       else if (statSync(join(ROOT, meta.photo)).size > 600 * 1024) warn(where, `photo ${meta.photo} is over 600 KB; aim for under 400 KB`);
     }
+    if (meta.email && meta.email !== "no") fail(where, `email may only be "no" (or left out)`);
     if (/^\s*</m.test(body)) warn(where, "raw HTML in the body; ask the build before using it");
     notes.push({ file, meta, body, html: renderMarkdown(body) });
   }
@@ -535,7 +538,7 @@ function noteEmailHtml(p) {
 ${emailBody(p.html)}
 </td></tr>
 <tr><td style="padding:6px 32px 30px;font-family:${MAIL.sans};font-size:15px">
-<a href="${url}" style="color:${MAIL.gold}">Read it on the site</a> &nbsp;·&nbsp; <a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.gold}">Comment on LinkedIn</a>
+<a href="${url}" style="color:${MAIL.gold}">Read it on the site</a>${p.meta.linkedin ? ` &nbsp;·&nbsp; <a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.gold}">Comment on LinkedIn</a>` : ""}
 </td></tr>
 </table>
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:18px 32px;font-family:${MAIL.sans};font-size:12px;line-height:1.6;color:${MAIL.faint}">
@@ -562,8 +565,7 @@ ${humanDate(p.meta.date)}
 ${body}
 
 Read it on the site: ${SITE}${postUrl(p)}
-Comment on LinkedIn: ${p.meta.linkedin}
-
+${p.meta.linkedin ? `Comment on LinkedIn: ${p.meta.linkedin}\n` : ""}
 --
 You're getting this because you signed up for Lab Notes at andrewedmond.com.
 Unsubscribe: {{UNSUBSCRIBE_URL}}
@@ -605,7 +607,7 @@ function notePage(p, list) {
     <div class="prose">
 ${p.html}
     </div>
-    <p class="li-comment"><a class="btn" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>
+    ${p.meta.linkedin ? `<p class="li-comment"><a class="btn" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>` : ""}
     ${signup()}
     ${older || newer ? `<nav class="prevnext" aria-label="More Lab Notes">
       ${nav}
@@ -858,7 +860,7 @@ ${renderMarkdown(PRIVACY.body)}
     });`);
 
   /* ---- each note's email, read by the Worker when a send runs (never served publicly) ---- */
-  for (const p of notes) {
+  for (const p of notes.filter((n) => n.meta.email !== "no")) {
     write(`_email/${p.meta.slug}.html`, noteEmailHtml(p));
     write(`_email/${p.meta.slug}.txt`, noteEmailText(p));
     write(`_email/${p.meta.slug}.json`, JSON.stringify({ subject: p.meta.title }) + "\n");
