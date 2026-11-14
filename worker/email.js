@@ -31,12 +31,14 @@ async function resend(env, path, payload) {
 /* ---------------------------------------------------------- confirmation */
 export function confirmEmail(env, token) {
   const url = `${env.SITE_URL}/confirm/?t=${token}`;
-  const html = `<div style="font-family:Georgia,serif;font-size:17px;line-height:1.55;color:#211C18;max-width:560px">
+  // Workbench colours, matching the note emails build.mjs writes.
+  const html = `<div style="background:#ECE1C8;padding:24px 12px"><div style="font-family:Georgia,serif;font-size:17px;line-height:1.55;color:#16140F;max-width:560px;margin:0 auto;background:#FFFDF6;border:1px solid #9F9987;padding:24px 28px">
+<p style="margin:0 0 16px"><span style="display:inline-block;background:#F3C11B;color:#16140F;padding:6px 10px 5px;font-family:'Arial Narrow',Arial,sans-serif;font-weight:bold;font-size:13px;letter-spacing:2px;text-transform:uppercase">Lab Notes</span></p>
 <p>Please confirm you'd like Lab Notes by email: each new note, about what I built, what broke and what it taught me.</p>
-<p><a href="${esc(url)}" style="display:inline-block;background:#211C18;color:#EDE7DC;padding:12px 22px;border-radius:3px;text-decoration:none;font-family:Arial,sans-serif;font-size:15px">Confirm my subscription</a></p>
-<p style="font-size:14px;color:#6b6157">The link works for 7 days. If you didn't ask for this, ignore this email and nothing happens.</p>
-<p style="font-size:14px;color:#6b6157">Andrew Edmond · <a href="${esc(env.SITE_URL)}" style="color:#6b6157">andrewedmond.com</a></p>
-</div>`;
+<p><a href="${esc(url)}" style="display:inline-block;background:#16140F;color:#F3C11B;padding:13px 20px;text-decoration:none;font-family:'Arial Narrow',Arial,sans-serif;font-weight:bold;font-size:16px;letter-spacing:1px;text-transform:uppercase">Confirm my subscription</a></p>
+<p style="font-size:14px;color:#4A4232">The link works for 7 days. If you didn't ask for this, ignore this email and nothing happens.</p>
+<p style="font-size:14px;color:#4A4232;margin-bottom:0">Andrew Edmond · <a href="${esc(env.SITE_URL)}" style="color:#4A4232">andrewedmond.com</a></p>
+</div></div>`;
   const text = `Please confirm you'd like Lab Notes by email: each new note, about what I built, what broke and what it taught me.
 
 Confirm: ${url}

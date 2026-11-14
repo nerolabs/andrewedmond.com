@@ -498,48 +498,57 @@ function signup() {
    Light and plain, with inline styles: email clients ignore stylesheets and
    many render dark backgrounds badly. The Worker fills {{UNSUBSCRIBE_URL}} and
    {{POSTAL_ADDRESS}} per send. */
+// Workbench in email: ply ground, a paper sheet, label tape, ink and workshop yellow. Web fonts load in Apple Mail;
+// Gmail and Outlook fall back to Arial Narrow / Georgia.
 const MAIL = {
-  ink: "#211C18", soft: "#5f574e", faint: "#8E8477", gold: "#8a6a2c", rule: "#e4ddd2",
-  serif: "Georgia,'Times New Roman',serif", sans: "Arial,Helvetica,sans-serif",
+  ink: "#16140F", ink2: "#4A4232", ply: "#ECE1C8", paper: "#FFFDF6", yellow: "#F3C11B", edge: "#9F9987",
+  display: "'Big Shoulders Display','Arial Narrow',Arial,sans-serif",
+  body: "'Zilla Slab',Georgia,'Times New Roman',serif",
 };
 function emailBody(html) {
   const abs = (u) => (u.startsWith("/") ? SITE + u : u);
+  const head = (size, mt) => `font-family:${MAIL.display};font-weight:800;text-transform:uppercase;font-size:${size}px;line-height:1.05;letter-spacing:.5px;margin:${mt}px 0 10px;color:${MAIL.ink}`;
   return html
     .replace(/(href|src)="([^"]*)"/g, (_, a, u) => `${a}="${abs(u)}"`)
     .replace(/<p>/g, `<p style="margin:0 0 18px">`)
-    .replace(/<h2>/g, `<h2 style="font-family:${MAIL.serif};font-weight:normal;font-size:23px;line-height:1.25;margin:30px 0 12px;color:${MAIL.ink}">`)
-    .replace(/<h3>/g, `<h3 style="font-family:${MAIL.serif};font-size:19px;margin:24px 0 10px;color:${MAIL.ink}">`)
-    .replace(/<a href=/g, `<a style="color:${MAIL.gold}" href=`)
+    .replace(/<h2>/g, `<h2 style="${head(28, 30)}">`)
+    .replace(/<h3>/g, `<h3 style="${head(22, 24)}">`)
+    .replace(/<a href=/g, `<a style="color:${MAIL.ink};text-decoration:underline;text-decoration-color:${MAIL.yellow};text-decoration-thickness:2px" href=`)
     .replace(/<(ul|ol)>/g, `<$1 style="margin:0 0 18px;padding-left:22px">`)
     .replace(/<li>/g, `<li style="margin:0 0 8px">`)
-    .replace(/<blockquote>/g, `<blockquote style="margin:0 0 18px;padding-left:16px;border-left:3px solid ${MAIL.gold};font-style:italic;color:${MAIL.soft}">`)
+    .replace(/<blockquote>/g, `<blockquote style="margin:0 0 18px;padding-left:16px;border-left:4px solid ${MAIL.yellow};font-style:italic;color:${MAIL.ink2}">`)
     .replace(/<img /g, `<img style="max-width:100%;height:auto" `)
-    .replace(/<hr>/g, `<hr style="border:0;border-top:1px solid ${MAIL.rule};margin:28px 0">`);
+    .replace(/<hr>/g, `<hr style="border:0;border-top:2px dashed ${MAIL.edge};margin:28px 0">`);
 }
 function noteEmailHtml(p) {
   const url = SITE + postUrl(p);
+  const tape = (text, bg, fg) => `<span style="display:inline-block;background:${bg};color:${fg};padding:6px 10px 5px;font-family:${MAIL.display};font-weight:800;font-size:14px;line-height:1;letter-spacing:2px;text-transform:uppercase">${text}</span>`;
   return `<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(p.meta.title)}</title></head>
-<body style="margin:0;padding:0;background:#f4f1ec">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${esc(p.meta.title)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Zilla+Slab:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"></head>
+<body style="margin:0;padding:0;background:${MAIL.ply}">
 <div style="display:none;max-height:0;overflow:hidden">${esc(p.meta.description)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ec"><tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#ffffff;border:1px solid ${MAIL.rule}">
-<tr><td style="padding:28px 32px 8px;font-family:${MAIL.sans};font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${MAIL.gold}">Lab Notes · Andrew Edmond</td></tr>
-<tr><td style="padding:0 32px">
-<h1 style="font-family:${MAIL.serif};font-weight:normal;font-size:30px;line-height:1.15;margin:8px 0 8px;color:${MAIL.ink}">${esc(p.meta.title)}</h1>
-<p style="font-family:${MAIL.sans};font-size:13px;color:${MAIL.faint};margin:0 0 22px">${humanDate(p.meta.date)}</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${MAIL.ply}"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px">
+<tr><td style="padding:0 0 12px"><a href="${SITE}/" style="text-decoration:none">${tape("Lab Notes", MAIL.yellow, MAIL.ink)}&nbsp;${tape("Andrew Edmond", MAIL.ink, MAIL.yellow)}</a></td></tr>
+</table>
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${MAIL.paper};border:1px solid ${MAIL.edge}">
+<tr><td style="padding:30px 32px 0">
+<p style="font-family:${MAIL.display};font-weight:800;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:${MAIL.ink2};margin:0 0 10px">${humanDate(p.meta.date)}</p>
+<h1 style="font-family:${MAIL.display};font-weight:900;font-size:42px;line-height:.95;text-transform:uppercase;margin:0 0 24px;color:${MAIL.ink}">${esc(p.meta.title)}</h1>
 </td></tr>
-<tr><td style="padding:0 32px 22px"><a href="${url}"><img src="${SITE}${p.meta.photo}" alt="${escAttr(p.meta.photoAlt)}" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:1px solid ${MAIL.rule}"></a></td></tr>
-<tr><td style="padding:0 32px;font-family:${MAIL.serif};font-size:18px;line-height:1.6;color:${MAIL.ink}">
+<tr><td style="padding:0 32px 26px"><a href="${url}"><img src="${SITE}${p.meta.photo}" alt="${escAttr(p.meta.photoAlt)}" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:1px solid ${MAIL.edge}"></a></td></tr>
+<tr><td style="padding:0 32px;font-family:${MAIL.body};font-size:18px;line-height:1.62;color:${MAIL.ink}">
 ${emailBody(p.html)}
 </td></tr>
-<tr><td style="padding:6px 32px 30px;font-family:${MAIL.sans};font-size:15px">
-<a href="${url}" style="color:${MAIL.gold}">Read it on the site</a> &nbsp;·&nbsp; <a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.gold}">Comment on LinkedIn</a>
+<tr><td style="padding:8px 32px 32px">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${MAIL.ink}"><a href="${url}" style="display:inline-block;padding:14px 20px 13px;font-family:${MAIL.display};font-weight:800;font-size:17px;line-height:1;letter-spacing:1.5px;text-transform:uppercase;color:${MAIL.yellow};text-decoration:none">Read it on the site &rarr;</a></td></tr></table>
+<p style="font-family:${MAIL.body};font-size:16px;margin:16px 0 0"><a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.ink};text-decoration:underline;text-decoration-color:${MAIL.yellow};text-decoration-thickness:2px">Comment on LinkedIn</a></p>
 </td></tr>
 </table>
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:18px 32px;font-family:${MAIL.sans};font-size:12px;line-height:1.6;color:${MAIL.faint}">
-You're getting this because you signed up for Lab Notes at <a href="${SITE}/" style="color:${MAIL.faint}">andrewedmond.com</a>. <a href="{{UNSUBSCRIBE_URL}}" style="color:${MAIL.faint}">Unsubscribe</a>.<br>{{POSTAL_ADDRESS}}
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:18px 4px;font-family:${MAIL.body};font-size:13px;line-height:1.6;color:${MAIL.ink2}">
+You're getting this because you signed up for Lab Notes at <a href="${SITE}/" style="color:${MAIL.ink2}">andrewedmond.com</a>. <a href="{{UNSUBSCRIBE_URL}}" style="color:${MAIL.ink2}">Unsubscribe</a>.<br>{{POSTAL_ADDRESS}}
 </td></tr></table>
 </td></tr></table>
 </body>
