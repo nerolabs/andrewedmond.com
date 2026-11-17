@@ -676,20 +676,19 @@ function pegboard(brands, intro, headingTag = "h2") {
     </div>`;
 }
 
-function latestCard(p) {
-  return `
-      <article class="note">
+// The home page's newest notes, side by side, then one big way into the archive.
+function latestNotes(list) {
+  const cards = list.map((p) => `
+      <article class="note-card">
         <a class="note-print" href="${postUrl(p)}" tabindex="-1" aria-hidden="true">${print(p)}</a>
-        <div>
-          <p class="note-date">${dateTag(p)}</p>
-          <h3><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h3>
-          <p class="note-desc">${esc(p.meta.description)}</p>
-          <div class="links">
-            <a class="btn" href="${postUrl(p)}">Read the note →</a>
-            <a class="plain" href="/notes/">All Lab Notes →</a>
-          </div>
-        </div>
-      </article>`;
+        <p class="note-date">${dateTag(p)}</p>
+        <h3><a href="${postUrl(p)}">${esc(p.meta.title)}</a></h3>
+        <p class="note-desc">${esc(p.meta.description)}</p>
+      </article>`).join("");
+  return `
+    <div class="note-cards">${cards}
+    </div>
+    <p class="see-all"><a class="btn btn--big" href="/notes/">See all Lab Notes →</a></p>`;
 }
 
 // Inner pages open with a label-tape title on a shelf.
@@ -771,8 +770,8 @@ function build() {
     ${signup()}
   </section>
   <section class="wrap latest" aria-labelledby="latest-h">
-    <div class="shelf"><h2 id="latest-h" class="tape">Latest note</h2></div>
-    ${latestCard(notes[0])}
+    <div class="shelf"><h2 id="latest-h" class="tape">Latest notes</h2></div>
+    ${latestNotes(notes.slice(0, 2))}
   </section>
   <section class="wrap studio" aria-labelledby="studio-h">
     ${pegboard(brands, STUDIO.meta.intro)}
