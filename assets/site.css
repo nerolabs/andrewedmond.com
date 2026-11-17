@@ -115,17 +115,24 @@ html[data-labnotes="pending"] .order-pending,html[data-labnotes="subscribed"] .o
 
 /* ---- home: latest note ---- */
 .latest{ padding-bottom:clamp(56px,7vw,96px); }
-.note{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr)); gap:clamp(28px,4vw,56px); align-items:center; }
-.note-print{ display:block; }
+.note-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:clamp(48px,5vw,64px); align-items:start; }
+.note-card{ position:relative; }
+.note-print{ display:block; margin-bottom:26px; }
+.note-card:nth-child(2) .print{ transform:rotate(.8deg); }
 .note-date{ font-family:var(--display); font-weight:800; font-size:18px; letter-spacing:.1em; text-transform:uppercase; margin:0 0 8px; color:var(--ink2); }
 .note-date .tape{ margin-right:10px; vertical-align:2px; }
-.note h3{ font-family:var(--display); font-weight:900; font-size:clamp(44px,5.4vw,70px); line-height:.9; text-transform:uppercase; margin:0 0 18px; }
-.note h3 a{ text-decoration:none; }
-.note h3 a:hover{ text-decoration:underline; text-decoration-color:var(--yellow); text-decoration-thickness:6px; }
-.note-desc{ margin:0 0 22px; max-width:36ch; font-size:21px; }
+.note-card h3{ font-family:var(--display); font-weight:900; font-size:clamp(38px,4vw,54px); line-height:.92; text-transform:uppercase; margin:0 0 14px; text-wrap:balance; }
+.note-card h3 a{ text-decoration:none; }
+.note-card h3 a::after{ content:""; position:absolute; inset:0; z-index:1; }
+.note-card:hover h3 a{ text-decoration:underline; text-decoration-color:var(--yellow); text-decoration-thickness:6px; }
+.note-desc{ margin:0; max-width:40ch; font-size:20px; }
+.see-all{ margin:clamp(48px,6vw,72px) 0 0; text-align:center; }
 .links{ display:flex; flex-wrap:wrap; gap:12px 28px; align-items:center; }
 .btn{ display:inline-flex; align-items:center; min-height:48px; padding:0 20px; background:var(--ink); color:var(--yellow); font-family:var(--display); font-weight:800; font-size:20px; letter-spacing:.06em; text-transform:uppercase; text-decoration:none; border:2px solid var(--ink); cursor:pointer; }
 .btn:hover{ background:var(--yellow); color:var(--ink); }
+.btn--big{ justify-content:center; min-height:72px; padding:0 clamp(24px,4vw,44px); font-size:clamp(24px,2.6vw,32px); letter-spacing:.08em; box-shadow:6px 6px 0 var(--yellow); }
+.btn--big:hover{ box-shadow:6px 6px 0 var(--ink); }
+@media (max-width:560px){ .btn--big{ display:flex; width:100%; } }
 .plain{ display:inline-flex; align-items:center; min-height:44px; font-weight:600; font-size:19px; }
 
 /* ---- the studio: a pegboard of shipping tags ---- */
