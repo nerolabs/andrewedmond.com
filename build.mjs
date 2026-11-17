@@ -581,9 +581,27 @@ Unsubscribe: {{UNSUBSCRIBE_URL}}
 }
 
 /* ------------------------------------------------------------------ pages */
+// A photo's pixel size, read from the file so the page reserves the right shape before it loads. JPEG and PNG;
+// anything else falls back to a share card's 1200×630.
+function photoSize(path) {
+  const b = readFileSync(join(ROOT, path));
+  if (b.readUInt32BE(0) === 0x89504e47) return [b.readUInt32BE(16), b.readUInt32BE(20)];
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    for (let i = 2; i + 9 < b.length; ) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const m = b[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)];
+      i += 2 + b.readUInt16BE(i + 2);
+    }
+  }
+  return [1200, 630];
+}
+
 // A pinned print: how every note photo is shown (natural shape, never cropped).
-const print = (p, cls = "") =>
-  `<figure class="print${cls}"><span class="pin l" aria-hidden="true"></span><span class="pin r" aria-hidden="true"></span><img src="${escAttr(p.meta.photo)}" width="1200" height="630" alt="${escAttr(p.meta.photoAlt)}"></figure>`;
+const print = (p, cls = "") => {
+  const [w, h] = photoSize(p.meta.photo);
+  return `<figure class="print${cls}"><span class="pin l" aria-hidden="true"></span><span class="pin r" aria-hidden="true"></span><img src="${escAttr(p.meta.photo)}" width="${w}" height="${h}" alt="${escAttr(p.meta.photoAlt)}"></figure>`;
+};
 const dateTag = (p) => `<time datetime="${p.meta.date}">${humanDate(p.meta.date)}</time>`;
 
 function notePage(p, list) {
