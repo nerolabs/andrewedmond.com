@@ -706,10 +706,10 @@ function toolPage(t, notes) {
       <h1>${esc(t.meta.title)}</h1>
       <p class="dek">${inline(t.meta.description)}</p>
     </header>
-    ${t.html.trim() ? `<div class="prose">
+    ${kit(t, { about: false })}
+    ${t.html.trim() ? `<div class="prose kit-howto">
 ${t.html}
     </div>` : ""}
-    ${kit(t, { about: false })}
     ${from.length ? `<p class="kit-from">From the Lab Note ${from.map((n) => `<a href="${postUrl(n)}">${esc(n.meta.title)}</a>`).join(", ")}.</p>` : ""}
   </article>
 </main>` + FOOT;
