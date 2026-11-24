@@ -1035,10 +1035,18 @@ ${feedItems}
 `);
 
   /* ---- sitemap + robots ---- */
-  const pages = ["/", "/notes/", "/tools/", "/studio/", "/work-with-me/", "/privacy/", ...notes.map(postUrl), ...tools.map(toolUrl)];
+  // <lastmod> only where the content carries a real date; a guessed date is worse than none.
+  const newestNote = notes[0]?.meta.date;
+  const newestTool = tools[0]?.meta.updated;
+  const pages = [
+    ["/", newestNote], ["/notes/", newestNote], ["/tools/", newestTool],
+    ["/studio/"], ["/work-with-me/"], ["/privacy/"],
+    ...notes.map((n) => [postUrl(n), n.meta.date]),
+    ...tools.map((t) => [toolUrl(t), t.meta.updated]),
+  ];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join("\n")}
+${pages.map(([p, d]) => `  <url><loc>${SITE}${p}</loc>${d ? `<lastmod>${d}</lastmod>` : ""}</url>`).join("\n")}
 </urlset>
 `);
   write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
