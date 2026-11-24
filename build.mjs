@@ -223,8 +223,11 @@ function parseBrands(body, where) {
   return brands;
 }
 
-const NOTE_REQUIRED = ["title", "slug", "date", "linkedin", "photo", "photoAlt", "description"];
-const NOTE_OPTIONAL = ["dek"];
+const NOTE_REQUIRED = ["title", "slug", "date", "photo", "photoAlt", "description"];
+// linkedin: the post's URL; leave it out until the post exists (no "Comment on LinkedIn" link).
+// tool: a tool's slug from content/tools/; the note then ends with its download beside the sign-up.
+// photoCaption: a short line under the photo, e.g. to say an image is AI-made.
+const NOTE_OPTIONAL = ["dek", "linkedin", "tool", "photoCaption"];
 
 function loadNotes(dir) {
   const abs = join(ROOT, dir);
@@ -256,9 +259,39 @@ function loadNotes(dir) {
 
 const postUrl = (p) => `/notes/${p.meta.slug}/`;
 
+// Tools: things people can download and use. content/tools/<slug>.md describes one; its file sits in content/tools/files/.
+const TOOL_REQUIRED = ["title", "slug", "description", "file", "updated"];
+function loadTools(dir) {
+  const abs = join(ROOT, dir);
+  if (!existsSync(abs)) return [];
+  const tools = [];
+  for (const file of readdirSync(abs).filter((f) => f.endsWith(".md")).sort()) {
+    const where = `${dir}/${file}`;
+    const { meta, body } = parseFrontMatter(readFileSync(join(abs, file), "utf8"), where);
+    for (const k of TOOL_REQUIRED) if (!meta[k]) fail(where, `front matter needs "${k}"`);
+    for (const k of Object.keys(meta)) if (!TOOL_REQUIRED.includes(k)) fail(where, `unknown front-matter field "${k}" (check the spelling)`);
+    if (meta.slug && file !== `${meta.slug}.md`) fail(where, `file name must be ${meta.slug}.md`);
+    if (meta.slug && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug)) fail(where, `slug "${meta.slug}" must be lowercase words joined by hyphens`);
+    if (meta.updated && (!/^\d{4}-\d{2}-\d{2}$/.test(meta.updated) || isNaN(new Date(meta.updated)))) fail(where, `updated "${meta.updated}" must be YYYY-MM-DD`);
+    let size = 0;
+    if (meta.file) {
+      const src = join(abs, "files", meta.file);
+      if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(meta.file)) fail(where, `file must be a plain file name such as HANDOFF.md`);
+      else if (!existsSync(src)) fail(where, `file content/tools/files/${meta.file} doesn't exist`);
+      else size = statSync(src).size;
+    }
+    tools.push({ meta, body, html: renderMarkdown(body), size, src: meta.file && join(abs, "files", meta.file) });
+  }
+  return tools.sort((a, b) => (a.meta.updated < b.meta.updated ? 1 : -1));
+}
+const toolUrl = (t) => `/tools/${t.meta.slug}/`;
+const toolFileUrl = (t) => `${toolUrl(t)}${t.meta.file}`;
+const kb = (n) => `${Math.max(1, Math.round(n / 1024))} KB`;
+
 /* ------------------------------------------------------------- page chrome */
 const NAV = [
   ["/notes/", "Lab Notes"],
+  ["/tools/", "Tools"],
   ["/studio/", "Studio"],
   ["/work-with-me/", "Work with me"],
 ];
@@ -544,7 +577,8 @@ ${emailBody(p.html)}
 </td></tr>
 <tr><td style="padding:8px 32px 32px">
 <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${MAIL.ink}"><a href="${url}" style="display:inline-block;padding:14px 20px 13px;font-family:${MAIL.display};font-weight:800;font-size:17px;line-height:1;letter-spacing:1.5px;text-transform:uppercase;color:${MAIL.yellow};text-decoration:none">Read it on the site &rarr;</a></td></tr></table>
-<p style="font-family:${MAIL.body};font-size:16px;margin:16px 0 0"><a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.ink};text-decoration:underline;text-decoration-color:${MAIL.yellow};text-decoration-thickness:2px">Comment on LinkedIn</a></p>
+${p.tool ? `<p style="font-family:${MAIL.body};font-size:16px;margin:16px 0 0"><a href="${SITE}${toolUrl(p.tool)}" style="color:${MAIL.ink};text-decoration:underline;text-decoration-color:${MAIL.yellow};text-decoration-thickness:2px">Download ${esc(p.tool.meta.title)}</a> (free, ${kb(p.tool.size)})</p>` : ""}
+${p.meta.linkedin ? `<p style="font-family:${MAIL.body};font-size:16px;margin:16px 0 0"><a href="${escAttr(p.meta.linkedin)}" style="color:${MAIL.ink};text-decoration:underline;text-decoration-color:${MAIL.yellow};text-decoration-thickness:2px">Comment on LinkedIn</a></p>` : ""}
 </td></tr>
 </table>
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:18px 4px;font-family:${MAIL.body};font-size:13px;line-height:1.6;color:${MAIL.ink2}">
@@ -571,8 +605,7 @@ ${humanDate(p.meta.date)}
 ${body}
 
 Read it on the site: ${SITE}${postUrl(p)}
-Comment on LinkedIn: ${p.meta.linkedin}
-
+${p.tool ? `Download ${p.tool.meta.title}: ${SITE}${toolUrl(p.tool)}\n` : ""}${p.meta.linkedin ? `Comment on LinkedIn: ${p.meta.linkedin}\n` : ""}
 --
 You're getting this because you signed up for Lab Notes at andrewedmond.com.
 Unsubscribe: {{UNSUBSCRIBE_URL}}
@@ -598,9 +631,9 @@ function photoSize(path) {
 }
 
 // A pinned print: how every note photo is shown (natural shape, never cropped).
-const print = (p, cls = "") => {
+const print = (p, cls = "", caption = false) => {
   const [w, h] = photoSize(p.meta.photo);
-  return `<figure class="print${cls}"><span class="pin l" aria-hidden="true"></span><span class="pin r" aria-hidden="true"></span><img src="${escAttr(p.meta.photo)}" width="${w}" height="${h}" alt="${escAttr(p.meta.photoAlt)}"></figure>`;
+  return `<figure class="print${cls}"><span class="pin l" aria-hidden="true"></span><span class="pin r" aria-hidden="true"></span><img src="${escAttr(p.meta.photo)}" width="${w}" height="${h}" alt="${escAttr(p.meta.photoAlt)}">${caption && p.meta.photoCaption ? `<figcaption>${esc(p.meta.photoCaption)}</figcaption>` : ""}</figure>`;
 };
 const dateTag = (p) => `<time datetime="${p.meta.date}">${humanDate(p.meta.date)}</time>`;
 
@@ -628,15 +661,56 @@ function notePage(p, list) {
       <h1>${esc(p.meta.title)}</h1>
       ${p.meta.dek ? `<p class="dek">${inline(p.meta.dek)}</p>` : ""}
     </header>
-    ${print(p, " print--wide")}
+    ${print(p, " print--wide", true)}
     <div class="prose">
 ${p.html}
     </div>
-    <p class="li-comment"><a class="btn" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>
-    ${signup()}
+    ${p.meta.linkedin ? `<p class="li-comment"><a class="btn" href="${escAttr(p.meta.linkedin)}">Comment on LinkedIn →</a></p>` : ""}
+    ${p.tool ? kit(p.tool) : signup()}
     ${older || newer ? `<nav class="prevnext" aria-label="More Lab Notes">
       ${nav}
     </nav>` : ""}
+  </article>
+</main>` + FOOT;
+}
+
+// A tool's download card. On a note or tool page it sits beside the sign-up, never in front of it: the download isn't gated.
+function toolCard(t, { about = true, headingTag = "h2" } = {}) {
+  return `
+      <div class="kit-file">
+        <p class="kit-kind"><span class="tape">Free download</span></p>
+        <${headingTag} class="kit-title">${about ? `<a href="${toolUrl(t)}">${esc(t.meta.title)}</a>` : esc(t.meta.title)}</${headingTag}>
+        <p>${inline(t.meta.description)}</p>
+        <p class="kit-actions"><a class="btn" href="${toolFileUrl(t)}" download>Download ${esc(t.meta.file)} ↓</a>${about ? ` <a class="plain" href="${toolUrl(t)}">About it →</a>` : ""}</p>
+        <p class="fine">Plain text, ${kb(t.size)}. Updated ${humanDate(t.meta.updated)}.</p>
+      </div>`;
+}
+const kit = (t, opts) => `
+    <section class="kit" aria-label="Download and Lab Notes by email">${toolCard(t, opts)}
+      ${signup()}
+    </section>`;
+
+function toolPage(t, notes) {
+  const from = notes.filter((n) => n.meta.tool === t.meta.slug);
+  return HEAD({
+    title: `${t.meta.title} — Tools — ${AUTHOR}`,
+    desc: t.meta.description,
+    path: toolUrl(t),
+    current: "/tools/",
+  }) + `
+<main id="main">
+  <article class="wrap reading">
+    <header class="note-head">
+      <p class="back"><a href="/tools/">← All tools</a></p>
+      <p class="note-date"><span class="tape">Tool</span> Updated <time datetime="${t.meta.updated}">${humanDate(t.meta.updated)}</time></p>
+      <h1>${esc(t.meta.title)}</h1>
+      <p class="dek">${inline(t.meta.description)}</p>
+    </header>
+    ${kit(t, { about: false })}
+    ${t.html.trim() ? `<div class="prose kit-howto">
+${t.html}
+    </div>` : ""}
+    ${from.length ? `<p class="kit-from">From the Lab Note ${from.map((n) => `<a href="${postUrl(n)}">${esc(n.meta.title)}</a>`).join(", ")}.</p>` : ""}
   </article>
 </main>` + FOOT;
 }
@@ -748,12 +822,40 @@ function build() {
 
   const notes = loadNotes("notes/_posts");
   if (!notes.length) fail("notes/_posts", "the site needs at least one Lab Note");
+  const TOOLS = loadPage("tools", ["intro", "description"]);
+  const tools = loadTools("content/tools");
+  for (const n of notes) {
+    if (!n.meta.tool) continue;
+    n.tool = tools.find((t) => t.meta.slug === n.meta.tool);
+    if (!n.tool) fail(`notes/_posts/${n.file}`, `tool "${n.meta.tool}" isn't in content/tools/`);
+  }
   FOOT = FOOT_HTML();
 
   if (errors.length) return report(); // don't render half-valid content
 
   /* ---- articles ---- */
   for (const p of notes) write(`notes/${p.meta.slug}/index.html`, notePage(p, notes));
+
+  /* ---- tools ---- */
+  for (const t of tools) {
+    write(`tools/${t.meta.slug}/index.html`, toolPage(t, notes));
+    cpSync(t.src, join(OUT, "tools", t.meta.slug, t.meta.file));
+  }
+  write("tools/index.html", HEAD({
+    title: `Tools — ${AUTHOR}`,
+    desc: TOOLS.meta.description,
+    path: "/tools/",
+    current: "/tools/",
+  }) + `
+<main id="main">
+  <section class="wrap page" aria-labelledby="tools-h">
+    ${shelfTitle("Tools", "tools-h")}
+    <p class="page-intro">${inline(TOOLS.meta.intro)}</p>
+    ${tools.length ? `<div class="kit-list">${tools.map((t) => toolCard(t)).join("")}
+    </div>` : `<p class="page-intro">The first one is on its way.</p>`}
+    ${signup()}
+  </section>
+</main>` + FOOT);
 
   /* ---- home ---- */
   const anchorScript = `<script>(function(){var m=${JSON.stringify(OLD_HOME_ANCHORS)};var h=location.hash.slice(1);if(m.hasOwnProperty(h))location.replace(m[h]);})();</script>\n`;
@@ -931,7 +1033,7 @@ ${feedItems}
 `);
 
   /* ---- sitemap + robots ---- */
-  const pages = ["/", "/notes/", "/studio/", "/work-with-me/", "/privacy/", ...notes.map(postUrl)];
+  const pages = ["/", "/notes/", "/tools/", "/studio/", "/work-with-me/", "/privacy/", ...notes.map(postUrl), ...tools.map(toolUrl)];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join("\n")}

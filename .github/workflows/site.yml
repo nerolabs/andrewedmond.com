@@ -30,9 +30,9 @@ jobs:
         env:
           BASE: ${{ github.base_ref }}
         run: |
-          outside=$(git diff --name-only "origin/$BASE...HEAD" | grep -vE '^(notes/_posts/|notes/assets/|content/pages/)' || true)
+          outside=$(git diff --name-only "origin/$BASE...HEAD" | grep -vE '^(notes/_posts/|notes/assets/|content/pages/|content/tools/)' || true)
           if [ -n "$outside" ]; then
-            echo "This content branch changes files outside notes/_posts/, notes/assets/ and content/pages/:"
+            echo "This content branch changes files outside notes/_posts/, notes/assets/, content/pages/ and content/tools/:"
             echo "$outside"
             exit 1
           fi
