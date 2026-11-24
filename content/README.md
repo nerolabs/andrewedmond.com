@@ -12,6 +12,9 @@ MFL Marketing writes the content of andrewedmond.com. The build owns the code, l
 | `content/pages/work-with-me.md` | Work with me copy |
 | `content/pages/studio.md` | The studio's brands |
 | `content/pages/privacy.md` | The privacy notice |
+| `content/pages/tools.md` | The Tools page's intro |
+| `content/tools/<slug>.md` | One tool's page |
+| `content/tools/files/<file>` | That tool's download, served as-is |
 
 Everything else (layout, CSS, `build.mjs`, redirects, the workflow) belongs to the build. Send a change there as a request, not a commit. The build check rejects a `note/*` or `copy/*` branch that touches any other path.
 
@@ -46,11 +49,13 @@ Everything else (layout, CSS, `build.mjs`, redirects, the workflow) belongs to t
 | `title` | yes | The headline |
 | `slug` | yes | Lowercase words joined by hyphens. It becomes `/notes/<slug>/`. Never change it after publishing |
 | `date` | yes | `YYYY-MM-DD`, the day it ran on LinkedIn. The file name is `<date>-<slug>.md` |
-| `linkedin` | yes | The LinkedIn post's URL. It becomes the "Comment on LinkedIn" link |
+| `linkedin` | no | The LinkedIn post's URL. It becomes the "Comment on LinkedIn" link. Leave it out until the post exists |
 | `photo` | yes | `/notes/assets/<file>.jpg` (`.png` and `.webp` also work). The file must exist |
 | `photoAlt` | yes | A plain description of the photo |
 | `description` | yes | One sentence |
 | `dek` | no | A standfirst shown under the title |
+| `photoCaption` | no | A short line under the photo, for example "Image made with ChatGPT." |
+| `tool` | no | A tool's slug from `content/tools/`. The note then ends with that download beside the sign-up |
 
 Any other field fails the build, which catches typos such as `photoalt`.
 
@@ -83,3 +88,24 @@ Agents may start the workflow, but must never approve the `everyone` run. Only A
 ## The privacy page
 
 `content/pages/privacy.md` holds the privacy notice. Its body is Markdown. If the site starts collecting anything new, update it in the same change.
+
+## Publish a tool
+
+A tool is something people can download and use, listed at `/tools/`. The download is never gated: the sign-up sits beside it.
+
+1. Put the file in `content/tools/files/`, for example `HANDOFF.md`. It's served exactly as written at `/tools/<slug>/<file>`. Replacing the file keeps the URL.
+2. Add `content/tools/<slug>.md`:
+
+   ```markdown
+   ---
+   title: HANDOFF.md
+   slug: handoff
+   description: One sentence: what it is and what it does for you.
+   file: HANDOFF.md
+   updated: 2026-11-24
+   ---
+
+   Optional: how to use it, in Markdown. It becomes /tools/<slug>/.
+   ```
+
+3. Change `updated` whenever the file changes. Use a `copy/<slug>` branch, as for page copy.
