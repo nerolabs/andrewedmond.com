@@ -245,7 +245,7 @@ const NOTE_REQUIRED = ["title", "slug", "date", "photo", "photoAlt", "descriptio
 // linkedin: the post's URL; leave it out until the post exists (no "Comment on LinkedIn" link).
 // tool: a tool's slug from content/tools/; the note then ends with its download beside the sign-up.
 // photoCaption: a short line under the photo, e.g. to say an image is AI-made.
-// shareImage: a 1200x627 crop for link previews (LinkedIn, X); without it, previews use the photo.
+// shareImage: a 1200x630 crop for link previews (LinkedIn, X); without it, previews use the photo.
 const NOTE_OPTIONAL = ["dek", "linkedin", "tool", "photoCaption", "shareImage"];
 
 function loadNotes(dir) {
@@ -488,6 +488,7 @@ const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${escAttr(desc)}">
+<meta name="author" content="${escAttr(AUTHOR)}">
 <meta name="theme-color" content="#ECE1C8">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
