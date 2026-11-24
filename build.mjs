@@ -287,6 +287,8 @@ function loadTools(dir) {
 const toolUrl = (t) => `/tools/${t.meta.slug}/`;
 const toolFileUrl = (t) => `${toolUrl(t)}${t.meta.file}`;
 const kb = (n) => `${Math.max(1, Math.round(n / 1024))} KB`;
+// Long file names such as MAC_ORGANIZER_HANDOFF.md may break after an underscore, never mid-word.
+const fileTitle = (s) => esc(s).replace(/_/g, "_<wbr>");
 
 /* ------------------------------------------------------------- page chrome */
 const NAV = [
@@ -679,7 +681,7 @@ function toolCard(t, { about = true, headingTag = "h2" } = {}) {
   return `
       <div class="kit-file">
         <p class="kit-kind"><span class="tape">Free download</span></p>
-        <${headingTag} class="kit-title">${about ? `<a href="${toolUrl(t)}">${esc(t.meta.title)}</a>` : esc(t.meta.title)}</${headingTag}>
+        <${headingTag} class="kit-title">${about ? `<a href="${toolUrl(t)}">${fileTitle(t.meta.title)}</a>` : fileTitle(t.meta.title)}</${headingTag}>
         <p>${inline(t.meta.description)}</p>
         <p class="kit-actions"><a class="btn" href="${toolFileUrl(t)}" download>Download ${esc(t.meta.file)} ↓</a>${about ? ` <a class="plain" href="${toolUrl(t)}">About it →</a>` : ""}</p>
         <p class="fine">Plain text, ${kb(t.size)}. Updated ${humanDate(t.meta.updated)}.</p>
@@ -703,7 +705,7 @@ function toolPage(t, notes) {
     <header class="note-head">
       <p class="back"><a href="/tools/">← All tools</a></p>
       <p class="note-date"><span class="tape">Tool</span> Updated <time datetime="${t.meta.updated}">${humanDate(t.meta.updated)}</time></p>
-      <h1>${esc(t.meta.title)}</h1>
+      <h1 class="tool-h1">${fileTitle(t.meta.title)}</h1>
       <p class="dek">${inline(t.meta.description)}</p>
     </header>
     ${kit(t, { about: false })}

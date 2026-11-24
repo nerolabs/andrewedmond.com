@@ -11,6 +11,9 @@ const BOREHOLE_HIRE = "https://borehole.dev/hire-us";
 const REDIRECTS = {
   "/fractional/": BOREHOLE_HIRE,
   "/advisory/": "/work-with-me/#advisory",
+  // HANDOFF.md was renamed on 24 Nov 2026 (Andrew: more handoffs will follow). Paths are matched with a trailing slash.
+  "/tools/handoff/": "/tools/mac-organizer-handoff/",
+  "/tools/handoff/HANDOFF.md/": "/tools/mac-organizer-handoff/MAC_ORGANIZER_HANDOFF.md",
 };
 // The blog was retired on 11 Nov 2026 (Andrew). 410 tells search engines it's gone on purpose.
 const GONE = /^\/blog(\/|$)/;

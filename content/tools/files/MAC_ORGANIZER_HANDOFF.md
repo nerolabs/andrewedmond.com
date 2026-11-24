@@ -5,9 +5,10 @@ From Andrew Edmond's Lab Notes: andrewedmond.com/notes/. Free to use and adapt. 
 ## For the person: how to use this
 
 1. Put this file in an empty folder on your Mac, for example `~/organise/`.
-2. Open Claude Code in that folder and say: "Read HANDOFF.md and follow it. Start with step 0."
-3. Expect it to take days, not minutes. Most of the time goes into copying, checking and waiting for cloud services.
-4. You stay in charge. Claude proposes and you approve. Nothing is permanently deleted unless you do it yourself.
+2. Open Terminal and install Claude Code: `curl -fsSL https://claude.ai/install.sh | bash`
+3. In Terminal, go to that folder (`cd ~/organise`) and run `claude`. Then say: "Read MAC_ORGANIZER_HANDOFF.md and follow it. Start with step 0."
+4. Expect it to take days, not minutes. Most of the time goes into copying, checking and waiting for cloud services.
+5. You stay in charge. Claude proposes and you approve. Nothing is permanently deleted unless you do it yourself.
 
 You need a Mac, Claude Code, and enough free disk space, or an external drive, to hold a working copy of what you're organising. It helps to install `rclone` (for iCloud and Google Drive), `exiftool`, `poppler` and `tesseract` (for reading documents), and `ffmpeg` (for video frames). Claude will tell you which ones it needs before it starts.
 
