@@ -19,3 +19,5 @@ If you sign up, your browser remembers that you did, so the sign-up box says "Yo
 ## Analytics
 
 The site counts visits with PostHog's EU cloud. It sets no cookies and stores nothing on your device, so there's no consent banner.
+
+Downloads from the Tools page are counted per day and per file. The count records nothing about who downloaded.

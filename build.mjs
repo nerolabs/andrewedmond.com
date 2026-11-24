@@ -26,6 +26,24 @@ const ROOT = dirname(fileURLToPath(import.meta.url));
 const OUT = join(ROOT, "_site");
 const SITE = "https://www.andrewedmond.com";
 const AUTHOR = "Andrew Edmond";
+// Who Andrew is, for search engines (JSON-LD). Profiles from MFL Marketing's registry/socials.yaml (24 Nov 2026).
+const PERSON = {
+  "@type": "Person",
+  "@id": "https://www.andrewedmond.com/#person",
+  name: "Andrew Edmond",
+  url: "https://www.andrewedmond.com/",
+  jobTitle: "Founder",
+  worksFor: { "@type": "Organization", name: "Mad Fiddler Labs", url: "https://madfiddlerlabs.com" },
+  sameAs: [
+    "https://www.linkedin.com/in/andrewedmond/",
+    "https://www.youtube.com/@AndrewEdmondCTO",
+    "https://x.com/nerolabs",
+    "https://github.com/nerolabs",
+  ],
+};
+const ldJson = (data) => `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", ...data }).replace(/</g, "\\u003c")}</script>\n`;
+// IndexNow (Bing and others): the key is public by design; the deploy job pings with it.
+const INDEXNOW_KEY = "4f8c1888ab6b862c059c1b45709a1166";
 const LINKEDIN = "https://www.linkedin.com/in/andrewedmond";
 const POSTHOG_KEY = "phc_BMejvK5GHnQV9qCFDDEHWrhjuZfbqV86JzVY5oScUgBu"; // project 237800, EU
 
@@ -227,7 +245,8 @@ const NOTE_REQUIRED = ["title", "slug", "date", "photo", "photoAlt", "descriptio
 // linkedin: the post's URL; leave it out until the post exists (no "Comment on LinkedIn" link).
 // tool: a tool's slug from content/tools/; the note then ends with its download beside the sign-up.
 // photoCaption: a short line under the photo, e.g. to say an image is AI-made.
-const NOTE_OPTIONAL = ["dek", "linkedin", "tool", "photoCaption"];
+// shareImage: a 1200x627 crop for link previews (LinkedIn, X); without it, previews use the photo.
+const NOTE_OPTIONAL = ["dek", "linkedin", "tool", "photoCaption", "shareImage"];
 
 function loadNotes(dir) {
   const abs = join(ROOT, dir);
@@ -250,6 +269,7 @@ function loadNotes(dir) {
       else if (!existsSync(join(ROOT, meta.photo))) fail(where, `photo ${meta.photo} doesn't exist`);
       else if (statSync(join(ROOT, meta.photo)).size > 600 * 1024) warn(where, `photo ${meta.photo} is over 600 KB; aim for under 400 KB`);
     }
+    if (meta.shareImage && (!/^\/notes\/assets\/[^/]+\.(jpe?g|png)$/i.test(meta.shareImage) || !existsSync(join(ROOT, meta.shareImage)))) fail(where, `shareImage must be an existing /notes/assets/<file>.jpg`);
     if (/^\s*</m.test(body)) warn(where, "raw HTML in the body; ask the build before using it");
     notes.push({ file, meta, body, html: renderMarkdown(body) });
   }
@@ -320,7 +340,9 @@ const EVENTS = `<script>
       var a = e.target.closest && e.target.closest('a[href]');
       if (!a) return;
       var href = a.getAttribute('href');
-      if (href.indexOf('mailto:') === 0) cap('cta_click', {cta:'email', page:page});
+      var dl = href.match(/^\/tools\/([a-z0-9-]+)\/[^\/]+\.md$/);
+      if (dl) cap('handoff_download', {tool: dl[1].replace(/-handoff$/, ''), page:page});
+      else if (href.indexOf('mailto:') === 0) cap('cta_click', {cta:'email', page:page});
       else if (/^https?:/.test(href) && a.host !== location.host) cap('outbound_click', {host:a.host.replace(/^www\\./,''), href:href, page:page});
     });
   })();
@@ -428,6 +450,32 @@ const LIST_STATE = `<script>
 let CSS_VERSION = "1";
 let KICKER = "";
 
+// Link-preview tags. LinkedIn and X read these; the image's size and alt text help them render a large card.
+function socialMeta({ title, desc, path, og = {} }) {
+  const img = og.image || "/og.png";
+  const [w, h] = img.startsWith("/") && existsSync(join(ROOT, img)) ? photoSize(img) : [1200, 630];
+  const alt = og.imageAlt || `${AUTHOR}: Lab Notes`;
+  return [
+    `<meta property="og:site_name" content="${escAttr(AUTHOR)}">`,
+    `<meta property="og:locale" content="en_US">`,
+    `<meta property="og:type" content="${og.type || "website"}">`,
+    `<meta property="og:url" content="${SITE}${path}">`,
+    `<meta property="og:title" content="${escAttr(og.title || title)}">`,
+    `<meta property="og:description" content="${escAttr(desc)}">`,
+    `<meta property="og:image" content="${absUrl(img)}">`,
+    `<meta property="og:image:width" content="${w}">`,
+    `<meta property="og:image:height" content="${h}">`,
+    `<meta property="og:image:alt" content="${escAttr(alt)}">`,
+    og.published ? `<meta property="article:published_time" content="${og.published}">` : "",
+    og.published ? `<meta property="article:author" content="${SITE}/">` : "",
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escAttr(og.title || title)}">`,
+    `<meta name="twitter:description" content="${escAttr(desc)}">`,
+    `<meta name="twitter:image" content="${absUrl(img)}">`,
+    `<meta name="twitter:image:alt" content="${escAttr(alt)}">`,
+  ].filter(Boolean).join("\n");
+}
+
 const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => {
   const home = current === "/";
   const name = home
@@ -444,12 +492,7 @@ const HEAD = ({ title, desc, path, og, current, extraHead = "" }) => {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="canonical" href="${SITE}${path}">
-<meta property="og:type" content="${og?.type || "website"}">
-<meta property="og:url" content="${SITE}${path}">
-<meta property="og:title" content="${escAttr(title)}">
-<meta property="og:description" content="${escAttr(desc)}">
-<meta property="og:image" content="${og?.image ? absUrl(og.image) : SITE + "/og.png"}">
-<meta name="twitter:card" content="summary_large_image">
+${socialMeta({ title, desc, path, og })}
 <link rel="alternate" type="application/rss+xml" title="${escAttr(AUTHOR)} — Lab Notes" href="${SITE}/feed.xml">
 ${extraHead}${LIST_STATE}${POSTHOG}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -652,8 +695,21 @@ function notePage(p, list) {
     title: `${p.meta.title} — ${AUTHOR}`,
     desc: p.meta.description,
     path: postUrl(p),
-    og: { type: "article", image: p.meta.photo },
+    og: { type: "article", title: p.meta.title, image: p.meta.shareImage || p.meta.photo, imageAlt: p.meta.photoAlt, published: p.meta.date },
     current: "/notes/",
+    extraHead: ldJson({
+      "@type": "BlogPosting",
+      headline: p.meta.title,
+      description: p.meta.description,
+      url: SITE + postUrl(p),
+      mainEntityOfPage: SITE + postUrl(p),
+      datePublished: p.meta.date,
+      dateModified: p.meta.date,
+      image: absUrl(p.meta.shareImage || p.meta.photo),
+      author: { "@id": PERSON["@id"] },
+      publisher: { "@id": PERSON["@id"] },
+      isPartOf: { "@type": "Blog", name: "Lab Notes", url: SITE + "/notes/" },
+    }),
   }) + `
 <main id="main">
   <article class="wrap reading">
@@ -699,6 +755,17 @@ function toolPage(t, notes) {
     desc: t.meta.description,
     path: toolUrl(t),
     current: "/tools/",
+    extraHead: ldJson({
+      "@type": "CreativeWork",
+      name: t.meta.title,
+      description: t.meta.description,
+      url: SITE + toolUrl(t),
+      encodingFormat: "text/markdown",
+      dateModified: t.meta.updated,
+      isAccessibleForFree: true,
+      author: { "@id": PERSON["@id"] },
+      ...(from.length ? { isBasedOn: SITE + postUrl(from[0]) } : {}),
+    }),
   }) + `
 <main id="main">
   <article class="wrap reading">
@@ -866,7 +933,7 @@ function build() {
     desc: HOME.meta.description,
     path: "/",
     current: "/",
-    extraHead: anchorScript,
+    extraHead: anchorScript + ldJson({ "@graph": [PERSON, { "@type": "WebSite", name: AUTHOR, url: SITE + "/", author: { "@id": PERSON["@id"] } }] }),
   }) + `
 <main id="main">
   <section class="wrap bench" aria-label="Introduction">
@@ -1033,6 +1100,29 @@ ${feedItems}
   </channel>
 </rss>
 `);
+
+  /* ---- llms.txt: the site in brief, for AI search tools ---- */
+  write("llms.txt", `# ${AUTHOR}
+
+> ${HOME.meta.description}
+
+Lab Notes: a weekly note about what Andrew built, what broke, and what it taught him. Every note: ${SITE}/notes/ (RSS: ${SITE}/feed.xml).
+
+## Lab Notes
+
+${notes.map((n) => `- [${n.meta.title}](${SITE}${postUrl(n)}) (${n.meta.date}): ${n.meta.description}`).join("\n")}
+
+## Tools
+
+${tools.map((t) => `- [${t.meta.title}](${SITE}${toolUrl(t)}): ${t.meta.description} Raw file: ${SITE}${toolFileUrl(t)}`).join("\n")}
+
+## Pages
+
+- [Studio](${SITE}/studio/): ${STUDIO.meta.description}
+- [Work with me](${SITE}/work-with-me/): ${WWM.meta.description}
+- [Privacy](${SITE}/privacy/)
+`);
+  write(`${INDEXNOW_KEY}.txt`, INDEXNOW_KEY);
 
   /* ---- sitemap + robots ---- */
   // <lastmod> only where the content carries a real date; a guessed date is worse than none.

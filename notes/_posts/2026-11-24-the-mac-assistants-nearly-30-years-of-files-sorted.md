@@ -5,6 +5,8 @@ date: 2026-11-24
 photo: /notes/assets/the-mac-assistants-nearly-30-years-of-files-sorted.jpg
 photoAlt: Illustration: a laptop on a cluttered desk, with photos, folders, emails, calendars and documents bursting out of its screen.
 photoCaption: Image made with ChatGPT.
+shareImage: /notes/assets/the-mac-assistants-nearly-30-years-of-files-sorted-share.jpg
+linkedin: https://www.linkedin.com/feed/update/urn:li:activity:7531029101122371586/
 description: How my Mac assistants turned nearly 30 years of files, photos and email into one organised, searchable set, and the HANDOFF file behind it.
 tool: mac-organizer-handoff
 ---

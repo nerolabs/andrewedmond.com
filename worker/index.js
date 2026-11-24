@@ -17,6 +17,8 @@ const REDIRECTS = {
 };
 // The blog was retired on 11 Nov 2026 (Andrew). 410 tells search engines it's gone on purpose.
 const GONE = /^\/blog(\/|$)/;
+// Tool files (e.g. the Mac organizer handoff). Each successful GET adds one to that day's count.
+const TOOL_FILE = /^\/tools\/[a-z0-9-]+\/[^/]+\.md$/;
 
 const HEADERS = {
   "Strict-Transport-Security": "max-age=31536000",
@@ -74,7 +76,7 @@ async function api(request, env, url) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     // Bare domain and plain http go to https://www. (Skipped under `wrangler dev --var DEV:1`, which serves http.)
     if (!env.DEV && (url.hostname === "andrewedmond.com" || url.protocol === "http:")) {
@@ -89,9 +91,26 @@ export default {
     if (url.pathname.startsWith("/_email/")) return secure(await notFound(env, url, 404)); // read by the Worker only
     if (GONE.test(url.pathname)) return secure(await notFound(env, url, 410));
 
-    return secure(await env.ASSETS.fetch(request));
+    const res = await env.ASSETS.fetch(request);
+    if (request.method === "GET" && res.status === 200 && TOOL_FILE.test(url.pathname)) {
+      ctx.waitUntil(countDownload(env, url.pathname, request.headers.get("User-Agent") || ""));
+    }
+    return secure(res);
   },
 };
+
+// Downloads are counted, never attributed: the day, the file and a rough kind of client, nothing about the person.
+async function countDownload(env, path, ua) {
+  const agent = /bot|crawl|spider|slurp|preview|facebookexternalhit|linkedin/i.test(ua) ? "bot"
+    : /^Mozilla\//.test(ua) ? "browser" : "script";
+  try {
+    await env.DB.prepare(
+      "INSERT INTO downloads (day, path, agent, n) VALUES (date('now'), ?, ?, 1) ON CONFLICT (day, path, agent) DO UPDATE SET n = n + 1",
+    ).bind(path, agent).run();
+  } catch (e) {
+    console.error("download count failed", e);
+  }
+}
 
 // The site's 404 page, with the given status.
 async function notFound(env, url, status) {
