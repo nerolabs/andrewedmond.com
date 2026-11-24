@@ -6,7 +6,7 @@ photo: /notes/assets/the-mac-assistants-nearly-30-years-of-files-sorted.jpg
 photoAlt: Illustration: a laptop on a cluttered desk, with photos, folders, emails, calendars and documents bursting out of its screen.
 photoCaption: Image made with ChatGPT.
 description: How my Mac assistants turned nearly 30 years of files, photos and email into one organised, searchable set, and the HANDOFF file behind it.
-tool: handoff
+tool: mac-organizer-handoff
 ---
 
 Weekly Lab Notes (Nov 24th). When you move countries, you don't just pack boxes. You drag nearly 30 years of digital life along with you. Mine was a mess.
@@ -43,7 +43,7 @@ The rules earned their keep. One click trashed 20 original photos along with 62,
 
 My favourite bug: I was sure two of my Macs were fighting each other. They weren't: Apple's servers kept bringing back folders I'd deleted, about 885,000 records' worth.
 
-Just a semi-retired builder who can find anything he's ever digitally touched in seconds. Hit me up if you want a HANDOFF document that will get your digital ecosystem in order. I sent my wife this HANDOFF and she could not believe how fast, efficient and organized her own digital ecosystem now is!
+I made this easy to do yourself: download [my Mac organizer handoff](/tools/mac-organizer-handoff/), hand it to Claude Code, and try it.
 
 I write one of these every Tuesday. Get them by email below.
 

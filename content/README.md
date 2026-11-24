@@ -93,15 +93,15 @@ Agents may start the workflow, but must never approve the `everyone` run. Only A
 
 A tool is something people can download and use, listed at `/tools/`. The download is never gated: the sign-up sits beside it.
 
-1. Put the file in `content/tools/files/`, for example `HANDOFF.md`. It's served exactly as written at `/tools/<slug>/<file>`. Replacing the file keeps the URL.
+1. Put the file in `content/tools/files/`, for example `MAC_ORGANIZER_HANDOFF.md`. It's served exactly as written at `/tools/<slug>/<file>`. Replacing the file keeps the URL.
 2. Add `content/tools/<slug>.md`:
 
    ```markdown
    ---
-   title: HANDOFF.md
-   slug: handoff
+   title: MAC_ORGANIZER_HANDOFF.md
+   slug: mac-organizer-handoff
    description: One sentence: what it is and what it does for you.
-   file: HANDOFF.md
+   file: MAC_ORGANIZER_HANDOFF.md
    updated: 2026-11-24
    ---
 
