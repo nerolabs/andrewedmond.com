@@ -92,3 +92,18 @@ jobs:
             sleep 10
           done
           echo "Home page answered $code"; exit 1
+
+      # IndexNow tells Bing (and the search tools that use its index) what's on the site. A failure doesn't fail the deploy.
+      - name: Ping IndexNow
+        continue-on-error: true
+        run: |
+          node -e '
+            const fs = require("fs");
+            const key = fs.readFileSync("build.mjs", "utf8").match(/INDEXNOW_KEY = "([0-9a-f]+)"/)[1];
+            const urlList = [...fs.readFileSync("_site/sitemap.xml", "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+            fs.writeFileSync(process.env.RUNNER_TEMP + "/indexnow.json", JSON.stringify({
+              host: "www.andrewedmond.com", key, keyLocation: `https://www.andrewedmond.com/${key}.txt`, urlList,
+            }));'
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' --data @"$RUNNER_TEMP/indexnow.json")
+          echo "IndexNow answered $code (200 or 202 means accepted)"
